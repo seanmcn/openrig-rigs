@@ -1,17 +1,19 @@
-# Your team has a review pair
+# Your team reviews in pairs
 
-Where your role file says "the code reviewer", this team has two: `review-r1` and `review-r2`, on different runtimes.
-The builder hands each commit to the QA seat first, and to both reviewers once QA passes it. They review
-independently.
+Where your role file says "the code reviewer", this team uses a review pair: two code reviewers on different runtimes,
+which you name for each slice when QA first passes it ("This team's shape" says how). The builder hands each commit to
+the slice's QA seat first, and to both reviewers once QA passes it. They review independently.
 
-- **Roster:** list both reviewers. Match `review-r1` and `review-r2` to code reviewer, each as its own member entry with
-  the addresses from `rig ps --nodes`.
 - **Compare the two reviews** when both verdicts are in for the same commit. Sort the findings into:
   - those both reviewers raised;
   - those only one reviewer raised.
 
   A finding only one reviewer raised isn't wrong for that reason. Ask the other reviewer to check it against the code.
   Decide each disagreement from the evidence, and tell the builder what must change.
+- **Release the pair** once both have recorded PASS at the same commit and you have compared them: tell each to close
+  its row on the slice.
 - **Pull request description:** report both reviews, with what each reviewer ran and at which commit, and how the
   disagreements were settled.
-- **One reviewer unavailable:** proceed only if the person agrees, and say in the pull request which review is missing.
+- **No free pair:** when no two free reviewers are on different runtimes, the slice waits for one to free up. When the
+  team has reviewers on only one runtime, proceed only if the person agrees, and say in the pull request which review
+  is missing.

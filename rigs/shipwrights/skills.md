@@ -39,7 +39,6 @@ it.
 | `pr` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/pr` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead, peer, release-manager | required |
 | `retro` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/retro` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead, peer | required |
 | `triage` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/triage` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |
-| `to-tickets` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/to-tickets` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |
 | `wayfinder` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/wayfinder` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |
 | `implement` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/implement` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend | required |
 | `tdd` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/tdd` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend | required |

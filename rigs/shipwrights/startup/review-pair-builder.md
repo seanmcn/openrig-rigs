@@ -1,6 +1,5 @@
-# This team has two code reviewers
+# This team reviews in pairs
 
-Where your role file says "the code reviewer", this team has two: `review-r1` and `review-r2`. Once QA has passed a
-commit, hand it to both of them, with a queue row each and the same essentials. Fix findings from either reviewer in
-new commits, hand each fix to QA before the reviewers see it again, and tell the reviewer who raised a finding which
-commit answers it.
+Where your role file says "the code reviewers", this team uses a review pair: the two code reviewers the lead names for
+your slice once QA has first passed a commit. Hand each commit to both of them, and tell the reviewer who raised a
+finding which commit answers it.

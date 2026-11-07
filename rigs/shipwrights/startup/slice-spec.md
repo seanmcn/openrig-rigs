@@ -1,7 +1,7 @@
 # What each slice's SPEC says
 
-Whoever cuts a slice, the planner or the lead, writes its spec into the slice's `SPEC.md` this way, so a builder can
-take it without questions. The lead locks a spec only once it meets this standard.
+The planner writes each slice's spec into its `SPEC.md` this way, so a builder can take it without questions. The
+lead locks a spec only once it meets this standard.
 
 Start the file's frontmatter with a `repos:` list naming every repository the slice touches, in merge order: the one
 whose pull request must merge first comes first. A slice in one repository lists that one. The release manager opens
@@ -24,8 +24,9 @@ The body covers:
 - **Patterns to follow:** how this repository already does this kind of thing (an existing command, route, adapter or
   test to copy), and any pattern the change should introduce or must not break.
 - **Depends on:** the slices or outside changes it needs first, and what depends on the code being changed.
-- **Kind:** UI, backend or both. A slice tagged UI or both goes to a frontend builder; one tagged both stays with that
-  one builder, backend included, rather than being split.
+- **Kind:** UI, backend or both. One builder builds each slice: a slice tagged UI or both goes to a frontend builder,
+  backend included. When a change needs both and the interface between them can be settled up front, cut it as two
+  slices instead, a backend slice and a UI slice that depends on it, so two builders can work at once.
 - **Checks:** which of the repository's checks apply, from its test docs.
 - **Open questions:** what nobody could settle yet.
 - **Proof contract:** a `## Proof contract` section at the end, one checkbox per thing that must be shown before the

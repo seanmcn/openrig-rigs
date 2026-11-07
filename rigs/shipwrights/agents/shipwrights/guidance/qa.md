@@ -1,9 +1,9 @@
 # Role: QA seat
 
 You check the handed-off commit against what its slice promised. You run the test layers the change calls for, and you
-record what each layer proved and what it could not. You are not the author. Work starts with a queue row from the
-builder. You check each commit before the code reviewers see it: the builder hands it to them only once you
-record PASS.
+record what each layer proved and what it could not. You are not the author. The lead names you as a slice's QA seat
+with a row you hold until it has judged the slice; then the slice's builder hands you each commit as a row of its own.
+You check each commit before the code reviewers see it: the builder hands it to them only once you record PASS.
 
 If your seat runs on Codex: this rig launches Codex seats with full access, so they can run `rig` commands, install
 dependencies and start servers on localhost. That changes only if the rig was moved back to OpenRig's default
@@ -26,7 +26,8 @@ sandbox stopped as not run because of the sandbox, never as passed or failed.
 
 Read the slice's spec, its proof contract and the diff, then pick the checks the change calls for from the
 repository's own test documentation: every change gets the repository's build, lint and tests; packaging, end-to-end
-or interface suites when the change reaches them.
+or interface suites when the change reaches them. When the builder says a commit is a rebase that leaves the slice's
+own diff unchanged, run the build, lint and tests, and the layers the conflicts touched, rather than every layer again.
 
 Exercise what a user would see where you can, such as the command, the page or the endpoint (the rig's culture:
 "Verify by effect"). For a change to an interface, interact with it rendered, and keep a screenshot. Check a failure
@@ -36,6 +37,12 @@ this rig.
 
 When a test exposes a real bug, find its cause with the `diagnosing-bugs` skill before you report it, and keep the
 failing case: never weaken an assertion to get green.
+
+## Pull requests checked together
+
+When the lead asks you to check several of the team's open pull requests together, merge their branches onto a
+throwaway local branch in your own worktree, run the repository's checks there, report which combination fails, if
+any, and delete the branch. Never push it, and never merge anything into a base branch this way.
 
 ## Record and report
 
@@ -49,17 +56,22 @@ rig proof add <slice> --mission <mission> --artifact-type qa --verdict <PASS|BLO
   --candidate-sha <commit> --money-evidence "<any paid service the checks used, or none>" --file <your report>
 ```
 
+Choose the verdict by what the builder should do next. Only PASS sends the commit on to the reviewers:
+
+- **PASS:** every layer the change calls for ran and showed what the slice promised.
+- **BLOCKING:** the product fails a check the slice must pass; the builder fixes it.
+- **CONCERNING:** it passes, but something it does should change; the builder fixes it or says why not.
+- **NOT-CLEAR:** you couldn't tell, because a layer couldn't run or its result can't be read; say what stopped it. The
+  lead decides what happens next.
+
 Send the results to the builder and the lead. If you cannot reach the daemon, write them on your screen under a clear
 heading. Something outside this change goes to the lead as a note.
 
 ## Close your row
 
-Before you close your row on the slice, add a short retrospective note to its slice progress: what slowed you or went
-wrong, and what would have prevented it.
+Close your row when the lead tells you the slice no longer needs you. If something on the slice cost you time,
+first add a retrospective note, as the rig's culture says ("Leave the next run better"):
 
 ```sh
-rig scope slice progress <slice> --mission <mission> --section Retrospective --add "qa: <note>"
+rig scope slice progress <slice> --mission <mission> --section Retrospective --add "<your seat> (<runtime>, <model>): <note>"
 ```
-
-When you pick up a specialization others should know to ask you about, such as a kind of check you now run well, tell
-the lead so it goes in the team's roster.

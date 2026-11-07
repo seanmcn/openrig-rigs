@@ -15,8 +15,9 @@ usage: scripts/check-team.py rigs/<team>
   role file has its seat add a retrospective note to the slice progress;
 - every seat this team added or renamed has a profile with its guidance, a member in
   rig.yaml and runtimes in configurations.yaml, and the old names are gone;
-- the lead is the only delegates_to parent of every seat but itself and its peer in rig.yaml,
-  so every stuck queue row escalates to it;
+- startup/team-shape.md names every profile in agent.yaml, so each role says whether it can grow;
+- the lead is the orchestrator (the only delegates_to source) of every seat but itself and its
+  peer in rig.yaml, so every stuck queue row escalates to it;
 - `rig bundle check` passes, when `rig` is installed.
 
 A skill the guidance "names" is any lower-case name in backticks in the guidance, the
@@ -52,6 +53,13 @@ GUIDANCE_RULES = [
     ("lead.md", "--subject commit:<sha>", "the lead judges proof at the commit it checked"),
     ("lead.md", "Never judge without a commit", "a judgement always names a commit"),
     ("lead.md", "judge the slice again", "a rebase that changes the code needs a new judgement"),
+    ("startup/team-shape.md", "## Which seats a slice holds", "the lead assigns every seat a slice uses, from free seats"),
+    ("startup/team-shape.md", "two free code reviewers on different", "a review pair is two code reviewers on different runtimes"),
+    ("startup/team-shape.md", "rig seat launch <seat> --fresh", "worker seats start fresh for each piece of work"),
+    ("startup/team-shape.md", "context-usage-threshold", "long-lived seats hand over at a context threshold"),
+    ("lead.md", "## Find work when asked", "the lead looks for work only when the person asks"),
+    ("lead.md", "Don't go looking for work unless they ask", "with no goal, the lead waits"),
+    ("lead.md", "## Close the mission", "the lead ends each mission once its last slice is delivered"),
     ("startup/slice-spec.md", "`repos:`", "each slice's SPEC.md frontmatter lists the repositories it touches"),
     ("startup/slice-spec.md", "in merge order", "the repositories are listed in the order their pull requests merge"),
     ("startup/slice-spec.md", "## Proof contract", "each spec ends in the proof contract the lead judges"),
@@ -98,7 +106,11 @@ PROFILE_GUIDANCE = {
     "release-manager": ["guidance/release-manager.md"],
 }
 # Seats that hold each profile: pod.member in rig.yaml and configurations.yaml.
-SEATS = {"dev.backend": "builder-backend", "dev.frontend": "builder-frontend", "dev.qa": "qa"}
+SEATS = {
+    "dev.backend": "builder-backend", "dev.backend2": "builder-backend", "dev.frontend": "builder-frontend",
+    "dev.qa": "qa", "dev.qa2": "qa", "dev.qa3": "qa",
+    "review.r1": "code-reviewer", "review.r2": "code-reviewer", "review.r3": "code-reviewer", "review.r4": "code-reviewer",
+}
 # Names the team renamed, which no file in it may still use: (pattern, what replaced it).
 RETIRED_NAMES = [
     (r"dev[.-]build\b", "the dev.backend seat (dev-backend)"),
@@ -125,6 +137,7 @@ OPENRIG_SKILLS = {
     "claude-compaction-restore",
     "session-compaction-and-restore",
     "orienting-to-an-inherited-seat",
+    "retiring-and-inheriting-a-seat",
     "developing-openrig",
     "openrig-world",
 }
@@ -134,10 +147,13 @@ OPENRIG_SKILLS = {
 NOT_SKILLS = {
     # the rig and its seats' sessions
     "shipwrights", "orch-lead", "orch-peer", "plan-planner", "dev-backend", "dev-frontend", "dev-qa",
-    "review-r1", "review-r2", "release-manager",
+    "review-r1", "review-r2", "release-manager", "dev-backend2", "dev-qa2", "dev-qa3", "review-r3", "review-r4",
+    # the pods and the profiles
+    "orch", "plan", "dev", "review", "release", "lead", "peer", "planner", "builder-backend", "builder-frontend", "qa",
+    "code-reviewer",
     # commands, states, tiers, branches, proof types and roster fields
     "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
-    "release-candidate", "rev1-r1", "rev1-r2", "capabilities", "why",
+    "planned", "active", "runtime", "release-candidate", "rev1-r1", "rev1-r2", "rev1-r3", "rev1-", "delegate", "capabilities", "why",
     # impeccable's own commands
     "shape", "critique", "audit", "polish", "harden", "typeset", "quieter", "distill", "layout", "init", "generate",
 }
@@ -396,13 +412,26 @@ def check_seats(team, problems):
 
 
 LEAD = "orch.lead"
-# The peer stands in when the lead is down, so its rows mustn't escalate to the lead: with no delegates_to parent,
+# The peer stands in when the lead is down, so its rows mustn't escalate to the lead: with no orchestrator,
 # OpenRig sends them to its operator instead.
 PEER = "orch.peer"
 
 
+def check_team_shape(team, problems):
+    """startup/team-shape.md is the one place that says which roles can grow, so it names every profile."""
+    path = team / "startup" / "team-shape.md"
+    if not path.is_file():
+        fail(problems, "startup/team-shape.md is missing")
+        return
+    text = path.read_text(encoding="utf-8")
+    for agent_yaml in sorted(team.glob("agents/*/agent.yaml")):
+        for profile in profile_blocks(agent_yaml):
+            if f"`{profile}`" not in text:
+                fail(problems, f"startup/team-shape.md doesn't name the {profile!r} profile")
+
+
 def check_delegation(team, problems):
-    """The lead is every other seat's only delegates_to parent, so every stuck queue row escalates to it.
+    """The lead is every other seat's orchestrator, so every stuck queue row escalates to it.
 
     OpenRig makes the source of a seat's delegates_to edge its orchestrator, and picks the latest-launched one when
     there are several, so a second source would quietly take the lead's place.
@@ -410,7 +439,7 @@ def check_delegation(team, problems):
     path = team / "rig.yaml"
     if not path.is_file():
         return
-    seats, parents, pod = [], {}, None
+    seats, sources, pod = [], {}, None
     lines = path.read_text(encoding="utf-8").splitlines()
     for i, line in enumerate(lines):
         if m := re.match(r"^  - id: ([\w-]+)$", line):
@@ -424,14 +453,14 @@ def check_delegation(team, problems):
             target = re.search(r"to: (\S+)", lines[i + 2]).group(1)
             if pod:
                 source, target = f"{pod}.{source}", f"{pod}.{target}"
-            parents.setdefault(target, []).append(source)
+            sources.setdefault(target, []).append(source)
     for seat in seats:
-        got = parents.get(seat, [])
+        got = sources.get(seat, [])
         if seat in (LEAD, PEER):
             if got:
                 fail(problems, f"rig.yaml: {', '.join(got)} delegates to {seat}, which nothing should")
         elif got != [LEAD]:
-            fail(problems, f"rig.yaml: {seat}'s delegates_to parents are {got or 'none'}; it needs {LEAD} alone, "
+            fail(problems, f"rig.yaml: {seat}'s delegates_to sources are {got or 'none'}; it needs {LEAD} alone, "
                            "so its stuck rows escalate to the lead")
 
 
@@ -457,6 +486,7 @@ def main():
     check_skills(team, problems)
     check_guidance(team, problems)
     check_seats(team, problems)
+    check_team_shape(team, problems)
     check_delegation(team, problems)
     check_bundle(team, problems)
     for problem in problems:

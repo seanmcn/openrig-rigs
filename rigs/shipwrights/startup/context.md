@@ -1,9 +1,8 @@
 # Start (every seat on this rig)
 
 1. Run `rig whoami --json`. It names your seat and the other seats' sessions. Use those names; do not guess addresses.
-   During launch a seat may not be listed yet: if one of the team's seats (the lead and its peer, the planner, the
-   builders, the QA seat, the two code reviewers and the release manager) is missing, check `rig ps --nodes` again a
-   little later before telling anyone it is missing.
+   During launch a seat may not be listed yet: if one of the team's seats (your "This team's shape" startup guidance
+   lists the roles) is missing, check `rig ps --nodes` again a little later before telling anyone it is missing.
 2. Find where you work. If your working directory is this rig's own folder (it holds this rig's `rig.yaml`), the rig
    was launched without `--cwd`: stop and say so. Otherwise:
    - If `git rev-parse --show-toplevel` succeeds, you work in that one repository.
@@ -30,9 +29,9 @@ Last, submit your startup proof: run the `rig startup-proof submit` command from
 challenge" in your startup text, exactly as given. It tells OpenRig and the lead that you read your start steps. If
 your `rig` commands fail in the sandbox, say so instead.
 
-Then the lead starts from the person's goal, usually delivered in the kernel operator's queue row, and follows its
-"Your first move" startup guidance. It does not ask for that goal again. Only when no goal was supplied does it
-propose work from the repository. Everyone else waits for work. The lead brings it as queue rows, and an idle seat is
+Then the lead starts from the person's goal, usually delivered in the kernel operator's queue row, and follows its "Your
+first move" startup guidance. It does not ask for that goal again. With no goal, it waits for one, and looks for work
+only when the person asks it to. Everyone else waits for work. The lead brings it as queue rows, and an idle seat is
 fine.
 
 Need expertise your team lacks? `rig roster find <topic>` lists who to ask and why.

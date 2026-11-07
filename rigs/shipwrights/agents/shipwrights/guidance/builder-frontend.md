@@ -63,9 +63,9 @@ and take the choice to the lead as one round.
 
 ## Retrospectives
 
-Before you close your row on the slice, add a short note to its slice progress: what slowed you or went wrong, and what
-would have prevented it.
+If something on a slice cost you time, add a retrospective note before you close your row on it, as the rig's
+culture says ("Leave the next run better"):
 
 ```sh
-rig scope slice progress <slice> --mission <mission> --section Retrospective --add "frontend builder: <note>"
+rig scope slice progress <slice> --mission <mission> --section Retrospective --add "<your seat> (<runtime>, <model>): <note>"
 ```

@@ -5,7 +5,7 @@ words these docs use, such as team, rig, seat and slice, are in the [glossary](G
 
 | Team | What it is |
 |---|---|
-| [`rigs/shipwrights`](rigs/shipwrights) | An engineering team built on OpenRig's Workshop: nine seats, from a lead and a planner through backend and frontend builders, QA and two independent reviewers to a release manager, who take a goal to judged, mergeable pull requests. |
+| [`rigs/shipwrights`](rigs/shipwrights) | An engineering team built on OpenRig's Workshop: fourteen seats, from a lead and a planner through backend and frontend builders, a QA seat for each builder and two pairs of independent reviewers to a release manager, who take a goal to judged, mergeable pull requests. |
 
 Each team's README says how to install it.
 
