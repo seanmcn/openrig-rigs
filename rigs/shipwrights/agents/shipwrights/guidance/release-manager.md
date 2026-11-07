@@ -77,7 +77,8 @@ builder for code, the lead for scope or the description) as a queue row, and upd
 - When every slice in a mission has a pull request ready to merge, set the mission's status to `release-candidate`:
   edit `metadata.status` in its `mission.yaml` (`rig scope mission show <mission>` gives its path).
 - After the person merges a slice's pull request, approve it for delivery with
-  `rig scope slice approve <slice> --scope delivery`, and close your row.
+  `rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and tell
+  the lead the slice is delivered, so it can close the mission and the person's goal when their last slice is.
 
 ## Merging, tagging and releasing
 
