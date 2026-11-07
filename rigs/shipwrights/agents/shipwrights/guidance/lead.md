@@ -151,7 +151,7 @@ rig queue create --destination <builder session> --body-file <file> \
 ```
 
 The tier gives the row its deadline: choose it as the team settings' slice time limit says. The `queue-handoff` skill
-covers the rest. The builder hands commits to the code reviewers and the QA seat directly; you don't relay them. While
+covers the rest. The builder hands each commit to the QA seat and, once QA passes it, to the code reviewers; you don't relay them. While
 the work is in flight, your main job is answering scope questions quickly.
 
 ## Judge the proof
