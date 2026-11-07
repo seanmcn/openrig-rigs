@@ -1,7 +1,8 @@
 # Your team has a review pair
 
 Where your role file says "the code reviewer", this team has two: `review-r1` and `review-r2`, on different runtimes.
-The builder hands each commit to both of them and to the QA seat. They review independently.
+The builder hands each commit to the QA seat first, and to both reviewers once QA passes it. They review
+independently.
 
 - **Roster:** list both reviewers. Match `review-r1` and `review-r2` to code reviewer, each as its own member entry with
   the addresses from `rig ps --nodes`.

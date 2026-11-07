@@ -55,6 +55,7 @@ GUIDANCE_RULES = [
     ("release-manager.md", "judged at the commit you are about to push", "only proof judged at the pushed commit publishes"),
     ("builder-backend.md", "AGENTS.md", "a slice starts by reading the repository's AGENTS.md"),
     ("builder-backend.md", "inside the worktree", "commands run from inside the worktree"),
+    ("builder-backend.md", "until QA records PASS", "QA passes each commit before the reviewers see it"),
     ("qa.md", "AGENTS.md", "a slice starts by reading the repository's AGENTS.md"),
     ("qa.md", "inside the worktree", "commands run from inside the worktree"),
     ("code-reviewer.md", "AGENTS.md", "a slice starts by reading the repository's AGENTS.md"),

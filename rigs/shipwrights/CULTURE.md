@@ -32,8 +32,8 @@ and settings apply.
 
 ## Ship the product, not the process
 
-Work keeps moving unless a real problem stops it. Review and QA start as soon as there's a commit to look at, and
-they run side by side. A finding is a fix to make, not a permission to wait for. Nobody adds a step, a sign-off or a
+Work keeps moving unless a real problem stops it. QA starts as soon as there's a commit to look at, and review starts
+as soon as QA passes it. A finding is a fix to make, not a permission to wait for. Nobody adds a step, a sign-off or a
 refusal without saying who it protects and what it costs everyone else. Match rigor to stakes: be thorough where a
 mistake is expensive and hard to undo, and quick where it isn't. Ceremony always feels like rigor, and it never is.
 
