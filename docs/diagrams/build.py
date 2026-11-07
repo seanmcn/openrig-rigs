@@ -151,33 +151,20 @@ def _sign(v: float) -> int:
 # How the work moves: one lane per role, time running down. ----------------------------------------------------------
 
 LANE_W, NODE_W, NODE_H, ROW = 176, 144, 48, 80
-LANES = ["You", "Lead & planner", "Builder & QA", "Reviewers", "Release manager"]
 
 
-def work(t: Tokens, slug: str) -> Canvas:
-    steps = [  # (lane, name, sublabel, kind), one per row
-        (0, "Your goal", "an issue or a request", "step"),
-        (1, "Cut and lock", "mission, slices, specs", "step"),
-        (2, "Build", "commit in a worktree", "step"),
-        (2, "QA checks", "at that commit", "step"),
-        (3, "Review", "r1 and r2, apart", "step"),
-        (1, "Judge proof", "at that commit", "step"),
-        (4, "Open pull requests", "with the merge gate", "step"),
-        (0, "Merge", "your decision", "focal"),
-        (4, "Approve delivery", "the slice is done", "step"),
-    ]
-    rows = len(steps)
-    bottom = 56 + (rows - 1) * ROW + NODE_H + 16
-    c = Canvas(t, slug, LANE_W * len(LANES), bottom + 48, "How the work moves",
-               "A slice goes from your goal through the lead, a builder and QA until QA passes, then two reviewers, "
-               "the lead's judgement and the release manager, to your merge and its delivery; reviewers' findings "
-               "go back to the builder and through QA again.")
+def swimlane(t: Tokens, slug: str, title: str, desc: str, lanes: list[str],
+             steps: list[tuple[int, str, str, str]]) -> tuple[Canvas, callable, int]:
+    """Lanes side by side and one step per row; each step hands on to the next. Returns the canvas, a function giving a
+    row's box, and the bottom of the lanes, so the caller can add its loops."""
+    bottom = 56 + (len(steps) - 1) * ROW + NODE_H + 16
+    c = Canvas(t, slug, LANE_W * len(lanes), bottom + 48, title, desc)
     c.legend_x = (LANE_W - NODE_W) // 2
-    for k, lane in enumerate(LANES):
+    for k, lane in enumerate(lanes):
         c.eyebrow(k * LANE_W + LANE_W / 2, 28, lane)
         if k:
             c.line(k * LANE_W, 12, k * LANE_W, bottom)
-    c.line(0, 40, LANE_W * len(LANES), 40)
+    c.line(0, 40, LANE_W * len(lanes), 40)
 
     def box(row: int) -> tuple[int, int]:
         return steps[row][0] * LANE_W + (LANE_W - NODE_W) // 2, 56 + row * ROW
@@ -185,31 +172,74 @@ def work(t: Tokens, slug: str) -> Canvas:
     for row, (_, name, sub, kind) in enumerate(steps):
         x, y = box(row)
         c.node(x, y, NODE_W, NODE_H, name, sub, kind)
-
-    def handoff(row: int) -> None:
-        """Out of the side facing the next step's lane, across, then down into its top."""
+    for row in range(len(steps) - 1):
         (x, y), (nx, ny) = box(row), box(row + 1)
-        cy, ncx = y + NODE_H / 2, nx + NODE_W / 2
-        start = x + NODE_W if steps[row + 1][0] > steps[row][0] else x
+        cx, cy, ncx = x + NODE_W / 2, y + NODE_H / 2, nx + NODE_W / 2
         kind = "accent" if steps[row + 1][3] == "focal" else "muted"
-        c.arrow([(start, cy), (ncx, cy), (ncx, ny)], kind)
+        if steps[row + 1][0] == steps[row][0]:
+            c.arrow([(cx, y + NODE_H), (ncx, ny)], kind)  # the same lane: straight down
+        else:
+            # Out of the side facing the next step's lane, across, then down into its top.
+            start = x + NODE_W if steps[row + 1][0] > steps[row][0] else x
+            c.arrow([(start, cy), (ncx, cy), (ncx, ny)], kind)
+    return c, box, bottom
 
-    for row in (0, 1, 3, 4, 5, 6, 7):
-        handoff(row)
 
-    # Build and QA, one lane: down to QA, and back up when it fails.
-    (bx, by), (qx, qy) = box(2), box(3)
-    bcx = bx + NODE_W / 2
-    c.arrow([(bcx - 24, by + NODE_H), (bcx - 24, qy)])
-    c.arrow([(bcx + 24, qy), (bcx + 24, by + NODE_H)], "dashed")
-    c.label(bcx + 32, (by + NODE_H + qy) / 2 + 3, "fails", anchor="start")
-    c.label(3 * LANE_W + 48, qy + NODE_H / 2 - 10, "passes")
+def work(t: Tokens, slug: str) -> Canvas:
+    steps = [  # (lane, name, sublabel, kind), one per row
+        (0, "Your goal", "an issue or a request", "step"),
+        (2, "Cut the work", "mission, slices, specs", "step"),
+        (1, "Lock and assign", "builder and QA seat", "step"),
+        (1, "Built and reviewed", "the next diagram", "step"),
+        (1, "Judge proof", "at the reviewed commit", "step"),
+        (3, "Open pull requests", "with the merge gate", "step"),
+        (0, "Merge", "your decision", "focal"),
+        (3, "Approve delivery", "tells the lead", "step"),
+        (1, "Close the mission", "and your goal", "step"),
+    ]
+    c, box, _ = swimlane(
+        t, slug, "How the work moves",
+        "Your goal goes to the planner, which cuts it; the lead locks each slice's spec and assigns it a builder and a "
+        "QA seat, judges the proof once it is built and reviewed, and hands it to the release manager, which opens "
+        "the pull requests; a failing CI run or a conflict goes back to the lead to assign; you merge, the release "
+        "manager approves delivery, and the lead closes the mission.",
+        ["You", "Lead", "Planner", "Release manager"], steps)
+    # A failing CI run or a conflict goes back to the lead, which assigns the fix or the rebase: up the release
+    # manager's lane, clear of the arrow coming in, and into the side of "Lock and assign".
+    (ox, oy), (ax, ay) = box(5), box(2)
+    lx = ox + NODE_W / 2 + 40
+    c.arrow([(lx, oy), (lx, ay + NODE_H / 2), (ax + NODE_W, ay + NODE_H / 2)], "dashed")
+    c.label(lx - 8, (ay + NODE_H + oy) / 2 + 3, "ci, conflict", anchor="end")
+    return c
 
-    # Reviewers' findings go back to the builder, and so through QA again. The label stays clear of the next lane's rule.
-    rx, ry = box(4)
-    fx = rx + NODE_W / 2 + 24
-    c.arrow([(fx, ry), (fx, by + NODE_H / 2), (bx + NODE_W, by + NODE_H / 2)], "dashed")
-    c.label(fx + 8, (by + NODE_H / 2 + ry) / 2 + 3, "findings", anchor="start")
+
+def building(t: Tokens, slug: str) -> Canvas:
+    steps = [
+        (0, "Assign", "builder and QA seat", "step"),
+        (1, "Build", "commit in a worktree", "step"),
+        (2, "QA checks", "at that commit", "step"),
+        (0, "Name a pair", "on two runtimes", "step"),
+        (3, "Review", "a pair, apart", "step"),
+        (0, "Compare reviews", "then judge", "step"),
+    ]
+    c, box, _ = swimlane(
+        t, slug, "How a slice is built",
+        "The lead assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder "
+        "until it passes; the lead then names a review pair on two runtimes, whose findings go back to the builder "
+        "and through QA again, and compares their reviews once both pass.",
+        ["Lead", "Builder", "QA", "Reviewers"], steps)
+    (bx, by), (qx, qy), (rx, ry) = box(1), box(2), box(4)
+    qcx, rcx = qx + NODE_W / 2, rx + NODE_W / 2
+    # QA's failures go back to the builder: up from QA's top and into the builder's side above the arrow going out.
+    c.arrow([(qcx + 24, qy), (qcx + 24, by + 12), (bx + NODE_W, by + 12)], "dashed")
+    c.label(qcx + 32, (by + NODE_H + qy) / 2 + 3, "fails", anchor="start")
+    # Reviewers' findings go back to the builder: up the reviewers' lane, over QA, and into the builder's top.
+    c.arrow([(rcx + 24, ry), (rcx + 24, by - 16), (bx + NODE_W / 2 + 24, by - 16), (bx + NODE_W / 2 + 24, by)],
+            "dashed")
+    c.label(rcx + 32, (by + ry) / 2 + 3, "findings", anchor="start")
+    # The two hand-backs to the lead, labelled above their runs across the lanes.
+    c.label(qx - 8, qy + NODE_H / 2 - 8, "passes", anchor="end")
+    c.label(rx - 8, ry + NODE_H / 2 - 8, "both pass", anchor="end")
     return c
 
 
@@ -219,14 +249,14 @@ PW, GAP = 128, 56
 
 
 def lifecycle(t: Tokens, slug: str) -> Canvas:
-    c = Canvas(t, slug, 920, 424, "A slice's lifecycle",
-               "A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed, judged, and "
-               "its pull requests published; findings, a failing CI run and a rebase loop back, it can be paused or "
-               "stopped from any phase, and it is delivered once you merge.")
+    c = Canvas(t, slug, 920, 456, "A slice's lifecycle",
+               "A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed by a pair, "
+               "judged and published; findings, a failing CI run and a rebase loop back to building. From any phase "
+               "you can pause it and resume it, or stop it; it is delivered once you merge.")
     c.legend_x = 24
     rail_y = 104
     xs = [24 + i * (PW + GAP) for i in range(5)]
-    phases = [("Spec locked", "lead"), ("Building", "builder and QA"), ("In review", "r1 and r2"),
+    phases = [("Spec locked", "lead"), ("Building", "builder and QA"), ("In review", "a review pair"),
               ("Judged", "lead"), ("Published", "release manager")]
     c.eyebrow(24, 20, "Phases", anchor="start")
     for x, (name, sub) in zip(xs, phases):
@@ -237,39 +267,35 @@ def lifecycle(t: Tokens, slug: str) -> Canvas:
         c.arrow([(xs[i] + PW, cy), (xs[i + 1], cy)])
         c.label(xs[i] + PW + GAP / 2, cy - 10, word)
 
-    # Loops back, above the rail: two short ones, and CI's long one over both, each on its own attach points.
+    # Loops back, above the rail: findings' short one, and the long one for CI and rebases over it, each on its own
+    # attach points.
     top = rail_y - 24
-    for later, earlier, word in ((2, 1, "findings"), (4, 3, "rebase")):
-        sx, ex = xs[later] + 40, xs[earlier] + 88
-        c.arrow([(sx, rail_y), (sx, top), (ex, top), (ex, rail_y)], "dashed")
-        c.label((sx + ex) / 2, top - 10, word)
+    sx, ex = xs[2] + 40, xs[1] + 88
+    c.arrow([(sx, rail_y), (sx, top), (ex, top), (ex, rail_y)], "dashed")
+    c.label((sx + ex) / 2, top - 10, "findings")
     high = top - 40
     sx, ex = xs[4] + 88, xs[1] + 40
     c.arrow([(sx, rail_y), (sx, high), (ex, high), (ex, rail_y)], "dashed")
-    c.label((sx + ex) / 2, high - 10, "ci fails")
+    c.label((sx + ex) / 2, high - 10, "ci, rebase")
 
-    # From any phase: a bracket under the rail that pause and stop leave from.
-    bracket_y, bracket_end = rail_y + 72, xs[4] + 56
-    c.line(24, bracket_y, bracket_end, bracket_y, t.muted)
-    c.line(24, bracket_y - 8, 24, bracket_y, t.muted)
-    c.line(bracket_end, bracket_y - 8, bracket_end, bracket_y, t.muted)
-    c.label(xs[2] + PW / 2, bracket_y - 8, "from any phase")
+    # Pause and stop: an explicit "any phase" box, so they don't look like steps of the rail.
+    held_y = rail_y + NODE_H + 72
+    c.eyebrow(24, held_y - 12, "Pause or stop", anchor="start")
+    any_x, paused_x = xs[0], xs[1] + 24
+    c.node(any_x, held_y, PW, NODE_H, "Any phase", "of the five above")
+    c.node(paused_x, held_y, PW, NODE_H, "Paused", "rows blocked", "held")
+    hy = held_y + NODE_H / 2
+    c.arrow([(any_x + PW, hy - 8), (paused_x, hy - 8)])
+    c.label((any_x + PW + paused_x) / 2, hy - 16, "pause")
+    c.arrow([(paused_x, hy + 8), (any_x + PW, hy + 8)], "dashed")
+    c.label((any_x + PW + paused_x) / 2, hy + 24, "resume")
 
-    held_y = bracket_y + 44
-    c.eyebrow(24, held_y - 12, "Held", anchor="start")
-    px = xs[1]
-    c.node(px, held_y, PW, NODE_H, "Paused", "rows blocked", "held")
-    c.arrow([(px + 40, bracket_y), (px + 40, held_y)])
-    c.label(px + 32, bracket_y + 26, "pause", anchor="end")
-    c.arrow([(px + 88, held_y), (px + 88, bracket_y)], "dashed")
-    c.label(px + 96, bracket_y + 26, "resume", anchor="start")
-
-    out_y = held_y + 92
+    out_y = held_y + NODE_H + 72
     c.eyebrow(24, out_y - 12, "Outcomes", anchor="start")
-    sx = xs[0] + 96
-    c.node(xs[0], out_y, PW, NODE_H, "Stopped", "rows closed", "end")
-    c.arrow([(sx, bracket_y), (sx, out_y)])
-    c.label(sx + 8, bracket_y + 26, "stop", anchor="start")
+    c.node(any_x, out_y, PW, NODE_H, "Stopped", "rows closed", "end")
+    stop_x = any_x + PW - 32  # right of centre, clear of the eyebrows down the left
+    c.arrow([(stop_x, held_y + NODE_H), (stop_x, out_y)])
+    c.label(stop_x + 8, held_y + NODE_H + 40, "stop", anchor="start")
 
     mx = xs[4] + 96
     c.node(xs[4], out_y, PW, NODE_H, "Delivered", "delivery approved", "focal")
@@ -326,7 +352,7 @@ def seat_start(t: Tokens, slug: str) -> Canvas:
     sx, sw, top, rh = 136, 432, 48, 56
     layers = [  # (scope, name, files, what an overlay does)
         ("every seat", "Culture", "CULTURE.md", ""),
-        ("every seat", "Start steps", "startup/context.md", ""),
+        ("every seat", "Start steps", "context.md, team-shape.md", ""),
         ("every seat", "Settings", "settings.md", "your copy"),
         ("every seat", "Skills", "openrig-core, user-level", "swap any for yours"),
         ("per profile", "Role guidance", "guidance/<role>.md", "keep as it is"),
@@ -362,91 +388,50 @@ def seat_start(t: Tokens, slug: str) -> Canvas:
     return c
 
 
-# The team's seats: its five pods, each seat's runtime, and who hands work to whom. -------------------------------
+# The team's seats: its five pods, and each role's seats and runtime. ----------------------------------------------
 
 def seats(t: Tokens, slug: str) -> Canvas:
-    w, h, pad, gap = 136, 48, 16, 64
-    zone_y, zone_h, row1, row2 = 268, 160, 284, 364
+    w, h, pad = 136, 48, 16
     side = w + 2 * pad  # a pod of one column
-
-    # The bottom row of pods, left to right in the order work reaches them.
     plan_x = 24
     dev_x = plan_x + side + 24
     dev_w = 2 * w + 12 + 2 * pad
-    review_x = dev_x + dev_w + gap
+    review_x = dev_x + dev_w + 24
     release_x = review_x + side + 24
     width = release_x + side + 24
-    c = Canvas(t, slug, width, 492, "Shipwrights' seats",
-               "The lead is the hub: it hands your goal to the planner, which sends back slices; it hands each locked "
-               "slice to a builder, which hands each commit to QA and then the reviewers, and the builders, QA and "
-               "reviewers report back to it; it hands judged slices to the release manager, which reports the pull "
-               "request and its delivery. Reviewers' findings go straight to the builders.")
+
+    # The orch pod on top, centred: the lead, which you talk to, and its peer, which stands in while the lead is down.
+    orch_w = 2 * w + 24 + 2 * pad
+    orch_x, orch_y = (width - orch_w) // 2, 32
+    zone_y, zone_h = orch_y + h + 2 * pad + 40, 160
+    row1, row2 = zone_y + 16, zone_y + 96
+    c = Canvas(t, slug, width, zone_y + zone_h + 64, "Shipwrights' seats",
+               "Shipwrights' fourteen seats in five pods: the lead and its peer; a planner; two backend builders, a "
+               "frontend builder and three QA seats; four code reviewers, two on each runtime; and a release manager.")
     c.legend_x = 24
+    c.rect(orch_x, orch_y, orch_w, h + 2 * pad, rx=8)
+    c.eyebrow(orch_x, orch_y - 8, "orch", anchor="start")
+    c.node(orch_x + pad, orch_y + pad, w, h, "Lead", "Codex", "focal")
+    c.node(orch_x + pad + w + 24, orch_y + pad, w, h, "Peer", "Claude Code", "held")
+
     for name, x, zw in (("plan", plan_x, side), ("dev", dev_x, dev_w), ("review", review_x, side),
                         ("release", release_x, side)):
         c.rect(x, zone_y, zw, zone_h, rx=8)
         c.eyebrow(x, zone_y - 8, name, anchor="start")
-    backend_x, frontend_x = dev_x + pad, dev_x + pad + w + 12
-    qa_x = dev_x + (dev_w - w) // 2
     c.node(plan_x + pad, row1, w, h, "Planner", "Claude Code")
-    c.node(backend_x, row1, w, h, "Backend builder", "Claude Code")
-    c.node(frontend_x, row1, w, h, "Frontend builder", "Claude Code")
-    c.node(qa_x, row2, w, h, "QA", "Claude Code")
-    c.node(review_x + pad, row1, w, h, "Reviewer r1", "Claude Code")
-    c.node(review_x + pad, row2, w, h, "Reviewer r2", "Codex")
+    c.node(dev_x + pad, row1, w, h, "Backend builders", "2 × Claude Code")
+    c.node(dev_x + pad + w + 12, row1, w, h, "Frontend builder", "Claude Code")
+    c.node(dev_x + (dev_w - w) // 2, row2, w, h, "QA seats", "3 × Claude Code")
+    c.node(review_x + pad, row1, w, h, "Reviewers", "2 × Claude Code")
+    c.node(review_x + pad, row2, w, h, "Reviewers", "2 × Codex")
     c.node(release_x + pad, row1, w, h, "Release manager", "Codex")
-
-    # The orch pod on top: the lead, which you talk to, and its peer, which stands in while the lead is down.
-    lead_x, orch_y = dev_x + dev_w // 2 + 46, 76
-    peer_x = lead_x + w + gap
-    c.rect(lead_x - pad, orch_y - pad, 2 * w + gap + 2 * pad, h + 2 * pad, rx=8)
-    c.eyebrow(lead_x - pad, orch_y - pad - 8, "orch", anchor="start")
-    c.node(lead_x, orch_y, w, h, "Lead", "Codex", "focal")
-    c.node(peer_x, orch_y, w, h, "Peer", "Claude Code", "held")
-    lcx = lead_x + w / 2
-    c.arrow([(lcx, 8), (lcx, orch_y)], "accent")
-    c.label(lcx + 8, 36, "your goal", anchor="start", accent=True)
-
-    # The lead is the hub. Each pod's pair, out and back, leaves the lead's bottom edge from its own port, seven of
-    # them 17px apart. The pods to the left nest their pairs, the farthest outermost and highest, and so do those to
-    # the right, so no two routes cross.
-    bottom = orch_y + h
-    port = [lead_x + 17 * k for k in range(1, 8)]
-    levels = [172, 196, 220, 244]  # the first clears the orch pod's edge, the last the other pods' eyebrows
-    planner_cx, dev_cx = plan_x + side / 2, dev_x + dev_w / 2
-    review_cx, release_cx = review_x + side / 2, release_x + side / 2
-
-    def out(p: float, level: int, x: float, y: float, word: str) -> None:
-        c.arrow([(p, bottom), (p, level), (x, level), (x, y)])
-        c.label((p + x) / 2, level - 8, word)
-
-    def back(x: float, y: float, level: int, p: float, word: str) -> None:
-        c.arrow([(x, y), (x, level), (p, level), (p, bottom)], "dashed")
-        c.label((p + x) / 2, level - 8, word)
-
-    out(port[0], levels[0], planner_cx - 12, row1, "goal")
-    back(planner_cx + 12, row1, levels[1], port[1], "slices")
-    out(port[2], levels[2], dev_cx - 12, zone_y, "locked slice")
-    back(dev_cx + 12, zone_y, levels[3], port[3], "results")
-    back(review_cx, zone_y, levels[2], port[4], "verdicts")
-    back(release_cx - 12, row1, levels[1], port[5], "pr, delivered")
-    out(port[6], levels[0], release_cx + 12, row1, "judged slice")
-
-    # Inside the work: each builder hands its commit to QA, where the two boxes overlap; once QA passes it, the
-    # reviewers get it, and their findings go straight back to the builders.
-    c.arrow([((qa_x + backend_x + w) / 2, row1 + h), ((qa_x + backend_x + w) / 2, row2)])
-    c.arrow([((frontend_x + qa_x + w) / 2, row1 + h), ((frontend_x + qa_x + w) / 2, row2)])
-    c.arrow([(dev_x + dev_w, row1 + h / 2), (review_x, row1 + h / 2)])
-    c.label(dev_x + dev_w + gap / 2, row1 + h / 2 - 8, "qa passed")
-    c.arrow([(review_x, row2 + h / 2), (dev_x + dev_w, row2 + h / 2)], "dashed")
-    c.label(dev_x + dev_w + gap / 2, row2 + h / 2 - 8, "findings")
     return c
 
 
 # name: (draw, legend, where its SVGs go)
-DIAGRAMS = {"seats": (seats, [("focal", "the seat you talk to"), ("held", "stands in while the lead is down"),
-                              ("dashed", "reports back")], TEAM),
+DIAGRAMS = {"seats": (seats, [("focal", "the seat you talk to"), ("held", "stands in while the lead is down")], TEAM),
             "how-the-work-moves": (work, [("focal", "your step"), ("dashed", "back to an earlier step")], TEAM),
+            "how-a-slice-is-built": (building, [("dashed", "back to the builder")], TEAM),
             "slice-lifecycle": (lifecycle, [("focal", "the outcome you want"), ("held", "held, resumable"),
                                             ("dashed", "back to an earlier phase")], TEAM),
             "seat-start": (seat_start, [], TEAM),

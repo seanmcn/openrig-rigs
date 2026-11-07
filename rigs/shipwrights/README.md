@@ -13,7 +13,7 @@ these docs use, such as seat, slice and proof, are in the repository's [glossary
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
-  <img alt="Shipwrights' seats in five pods, with the lead (Codex) as the hub and its peer (Claude Code) standing in while it is down. Your goal goes to the lead, which hands it to the planner; the planner sends slices back; the lead hands each locked slice, and any fix, to one of two backend builders or the frontend builder, with one of three QA seats, and the builders and QA report results back. Once QA passes a commit, the lead names a review pair, one of two Claude Code reviewers and one of two Codex reviewers, whose findings go straight to the builders and verdicts to the lead. The lead hands judged slices to the release manager (Codex), which reports CI failures and each delivery." src="diagrams/seats.svg">
+  <img alt="Shipwrights' fourteen seats in five pods: the lead (Codex), which you talk to, and its peer (Claude Code), which stands in while it is down; a planner (Claude Code); two backend builders, a frontend builder and three QA seats (Claude Code); four code reviewers, two on Claude Code and two on Codex; and a release manager (Codex)." src="diagrams/seats.svg">
 </picture>
 
 | Seat | Runtime | Does |
@@ -42,7 +42,14 @@ role, so a seat you add is used without changing any guidance.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-the-work-moves-dark.svg">
-  <img alt="How the work moves: your goal goes to the lead and planner, who cut and lock it; a builder builds a commit and QA checks it, back and forth until QA passes; both reviewers then review that commit, and any findings go back to the builder and through QA again; the lead judges the proof; the release manager opens the pull requests, and a failing CI run or a rebase goes back to the builder; you merge; the release manager approves delivery and tells the lead." src="diagrams/how-the-work-moves.svg">
+  <img alt="How the work moves, in lanes for you, the lead, the planner and the release manager: your goal goes to the planner, which cuts it; the lead locks each spec and assigns a builder and a QA seat; once the slice is built and reviewed, the lead judges its proof; the release manager opens the pull requests, and a failing CI run or a conflict goes back to the lead to assign; you merge; the release manager approves delivery; the lead closes the mission." src="diagrams/how-the-work-moves.svg">
+</picture>
+
+Building and reviewing a slice, the middle of that, in detail:
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-a-slice-is-built-dark.svg">
+  <img alt="How a slice is built, in lanes for the lead, the builder, QA and the reviewers: the lead assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the lead names a review pair on two runtimes; their findings go back to the builder and through QA again; once both pass, the lead compares the reviews and judges." src="diagrams/how-a-slice-is-built.svg">
 </picture>
 
 1. The planner records your goal or issues as a mission in OpenRig's work tree (`rig scope`), with its slices and the
@@ -75,12 +82,17 @@ its peer and the release manager are long-lived, and hand over to a fresh sessio
 Waits are queue rows blocked with a wake, never polling. An OpenRig watchdog wakes the lead on a timer to check for
 builds past the slice time limit, and another wakes the peer to check that the lead's seat is up.
 
-To drop a slice, tell the lead to stop it: its queue rows and the slice are closed. To hold a slice or a mission, tell
-the lead to pause it: its rows are blocked until you resume it. Neither stops a seat's session.
+### A slice's lifecycle
+
+Each slice moves along one line of phases, and loops back to building when review finds something, CI fails or it needs
+a rebase. From any phase you can hold it or drop it, and neither stops a seat's session:
+
+- **Pause:** tell the lead to pause a slice or a mission, and its rows are blocked until you resume it.
+- **Stop:** tell the lead to stop a slice, and its queue rows and the slice are closed.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/slice-lifecycle-dark.svg">
-  <img alt="A slice's lifecycle: spec locked, building with QA until QA passes, in review, judged and published, with reviewers' findings, a failing CI run and a rebase looping back to building; from any phase it can be paused and resumed, or stopped; once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
+  <img alt="A slice's lifecycle: spec locked, building with QA until QA passes, in review by a pair, judged and published, with reviewers' findings, a failing CI run and a rebase looping back to building. Any phase can be paused, and resumed, or stopped, which closes it. Once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
 </picture>
 
 ## Settings
