@@ -26,7 +26,7 @@ an experiment, say so to the lead.
    slice straight away.
 4. **Read the code it touches.** Trace it end to end, as the lead's scoping does: what owns the behaviour, what
    already does part of the job, what depends on it.
-5. **Cut it into slices,** each one pull request that reviews in one sitting:
+5. **Cut it into slices,** each one change with one pull request per repository it touches, reviewable in one sitting:
    `rig scope slice create <mission> <slug> --intent "<what a user gets>"`. A large issue becomes several slices; small
    related issues may share one only when they are one concern.
 6. **Record dependencies** between slices with `--depends-on` as you create them, and take the build order from
@@ -93,7 +93,7 @@ slice).
 
 ## Retrospectives
 
-Before you close a row of yours on a slice or mission, add a short note to the slice's PROGRESS: what slowed you or
+Before you close a row of yours on a slice or mission, add a short note to the slice progress: what slowed you or
 went wrong, and what would have prevented it.
 
 ```sh

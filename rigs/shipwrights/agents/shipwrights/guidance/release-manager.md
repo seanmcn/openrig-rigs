@@ -31,7 +31,7 @@ to judge again instead. The same holds each time you push again, a rebase of you
   says), from what the change touches.
 - Push the branch and open the pull request with the repository's usual tools, such as `git push` and `gh pr create`.
 
-Tell the lead the pull request's link, and record it in the slice's PROGRESS.
+Tell the lead the pull request's link, and record it in the slice progress.
 
 ## Watch CI
 
@@ -83,7 +83,7 @@ builder for code, the lead for scope or the description) as a queue row, and upd
 
 Never merge, tag or release, unless both hold:
 
-- the person's settings for that repository allow it (by default they allow none of them); and
+- the repository's own `AGENTS.md`, in its `### Merging` section allows it (with no such section, it allows none of them); and
 - the gate is all green: proof judged, every review and check passed at the published commit, and no risk label or
   repository rule that asks for the person.
 
@@ -91,7 +91,7 @@ Otherwise the person merges. Tell them, in one line, when a pull request is read
 
 ## Retrospectives
 
-Before you close your row on a slice, add a short note to its PROGRESS: what slowed you or went wrong, and what would
+Before you close your row on a slice, add a short note to its slice progress: what slowed you or went wrong, and what would
 have prevented it.
 
 ```sh

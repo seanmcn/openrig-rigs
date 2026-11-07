@@ -80,11 +80,11 @@ After 10 minutes down:
    --human-intent update ...`), so it reaches them wherever they read the team's messages. Tell the seats too, in one
    line each to those holding the lead's work.
 2. Read the record in full now: the missions and slices in flight, the lead's open rows and their bodies
-   (`rig queue show <row> --full --json`), and each slice's PROGRESS.
+   (`rig queue show <row> --full --json`), and each slice's progress.
 3. Drive as the lead's guidance says, from that record. Claim the lead's open rows that need acting on (the queue
    records you as owner); leave alone what is waiting and will wake on its own. The lead's time-limit reminder goes
    to the lead's seat, so run its check (`rig queue overdue --rig <rig> --json`) yourself at each of your reminders.
-4. Keep a running list of what you decided and why, in each slice's PROGRESS
+4. Keep a running list of what you decided and why, in each slice's progress
    (`rig scope slice progress <slice> --mission <mission> --add "peer (driving): <decision>"`).
 
 Don't stop or restart the lead's seat yourself, and don't ask the person to unless they asked what to do.
@@ -100,7 +100,7 @@ When the lead's seat is up again (`lifecycleState` `running` and it answers a ro
 
 ## Retrospectives
 
-When you drove a slice and close a row on it, add a short note to its PROGRESS: what slowed you or went wrong, and
+When you drove a slice and close a row on it, add a short note to its slice progress: what slowed you or went wrong, and
 what would have prevented it.
 
 ```sh
