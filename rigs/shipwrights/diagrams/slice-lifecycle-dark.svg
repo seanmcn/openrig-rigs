@@ -1,21 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 424" width="920" height="424" role="img" aria-labelledby="slice-lifecycle-dark-title slice-lifecycle-dark-desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 456" width="920" height="456" role="img" aria-labelledby="slice-lifecycle-dark-title slice-lifecycle-dark-desc">
   <title id="slice-lifecycle-dark-title">A slice's lifecycle</title>
-  <desc id="slice-lifecycle-dark-desc">A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed, judged, and its pull requests published; findings, a failing CI run and a rebase loop back, it can be paused or stopped from any phase, and it is delivered once you merge.</desc>
+  <desc id="slice-lifecycle-dark-desc">A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed by a pair, judged and published; findings, a failing CI run and a rebase loop back to building. From any phase you can pause it and resume it, or stop it; it is delivered once you merge.</desc>
   <defs><marker id="slice-lifecycle-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="slice-lifecycle-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
   <path d="M152,128 L208,128" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
   <path d="M336,128 L392,128" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
   <path d="M520,128 L576,128" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
   <path d="M704,128 L760,128" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
   <path d="M432,104 L432,88 Q432,80 424,80 L304,80 Q296,80 296,88 L296,104" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
-  <path d="M800,104 L800,88 Q800,80 792,80 L672,80 Q664,80 664,88 L664,104" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
   <path d="M848,104 L848,48 Q848,40 840,40 L256,40 Q248,40 248,48 L248,104" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
-  <line x1="24" y1="176" x2="816" y2="176" stroke="#bfc0c0" stroke-width="1"/>
-  <line x1="24" y1="168" x2="24" y2="176" stroke="#bfc0c0" stroke-width="1"/>
-  <line x1="816" y1="168" x2="816" y2="176" stroke="#bfc0c0" stroke-width="1"/>
-  <path d="M248,176 L248,220" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
-  <path d="M296,220 L296,176" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
-  <path d="M120,176 L120,312" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
-  <path d="M856,152 L856,312" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-accent)"/>
+  <path d="M152,240 L232,240" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
+  <path d="M232,256 L152,256" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
+  <path d="M120,272 L120,344" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
+  <path d="M856,152 L856,344" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-accent)"/>
   <text x="24" y="20" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">PHASES</text>
   <rect x="24" y="104" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="88" y="125" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Spec locked</text>
@@ -25,7 +21,7 @@
   <text x="272" y="141" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">builder and QA</text>
   <rect x="392" y="104" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="456" y="125" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">In review</text>
-  <text x="456" y="141" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">r1 and r2</text>
+  <text x="456" y="141" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">a review pair</text>
   <rect x="576" y="104" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="640" y="125" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Judged</text>
   <text x="640" y="141" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">lead</text>
@@ -37,28 +33,29 @@
   <text x="548" y="118" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">PASS</text>
   <text x="732" y="118" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">PUSH</text>
   <text x="364" y="70" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">FINDINGS</text>
-  <text x="732" y="70" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">REBASE</text>
-  <text x="548" y="30" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">CI FAILS</text>
-  <text x="456" y="168" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">FROM ANY PHASE</text>
-  <text x="24" y="208" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">HELD</text>
-  <rect x="208" y="220" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#bfc0c0" stroke-width="1.2" stroke-dasharray="5,4"/>
-  <text x="272" y="241" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Paused</text>
-  <text x="272" y="257" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">rows blocked</text>
-  <text x="240" y="202" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">PAUSE</text>
-  <text x="304" y="202" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">RESUME</text>
-  <text x="24" y="300" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">OUTCOMES</text>
-  <rect x="24" y="312" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#bfc0c0" stroke-width="1.2"/>
-  <text x="88" y="333" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Stopped</text>
-  <text x="88" y="349" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">rows closed</text>
-  <text x="128" y="202" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">STOP</text>
-  <rect x="760" y="312" width="128" height="48" rx="6" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.6"/>
-  <text x="824" y="333" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f08a59" text-anchor="middle">Delivered</text>
-  <text x="824" y="349" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">delivery approved</text>
-  <text x="848" y="248" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#f08a59" text-anchor="end" letter-spacing="0.6">YOU MERGE</text>
-  <rect x="24" y="395" width="14" height="10" rx="2" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.4"/>
-  <text x="46" y="404" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">the outcome you want</text>
-  <rect x="198.0" y="395" width="14" height="10" rx="2" fill="none" stroke="#bfc0c0" stroke-dasharray="3,2"/>
-  <text x="220.0" y="404" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">held, resumable</text>
-  <line x1="341.0" y1="400" x2="357.0" y2="400" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4"/>
-  <text x="363.0" y="404" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">back to an earlier phase</text>
+  <text x="548" y="30" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">CI, REBASE</text>
+  <text x="24" y="212" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">PAUSE OR STOP</text>
+  <rect x="24" y="224" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="88" y="245" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Any phase</text>
+  <text x="88" y="261" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">of the five above</text>
+  <rect x="232" y="224" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#bfc0c0" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <text x="296" y="245" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Paused</text>
+  <text x="296" y="261" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">rows blocked</text>
+  <text x="192" y="232" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">PAUSE</text>
+  <text x="192" y="272" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">RESUME</text>
+  <text x="24" y="332" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">OUTCOMES</text>
+  <rect x="24" y="344" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#bfc0c0" stroke-width="1.2"/>
+  <text x="88" y="365" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Stopped</text>
+  <text x="88" y="381" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">rows closed</text>
+  <text x="128" y="312" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">STOP</text>
+  <rect x="760" y="344" width="128" height="48" rx="6" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.6"/>
+  <text x="824" y="365" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f08a59" text-anchor="middle">Delivered</text>
+  <text x="824" y="381" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">delivery approved</text>
+  <text x="848" y="252" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#f08a59" text-anchor="end" letter-spacing="0.6">YOU MERGE</text>
+  <rect x="24" y="427" width="14" height="10" rx="2" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.4"/>
+  <text x="46" y="436" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">the outcome you want</text>
+  <rect x="198.0" y="427" width="14" height="10" rx="2" fill="none" stroke="#bfc0c0" stroke-dasharray="3,2"/>
+  <text x="220.0" y="436" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">held, resumable</text>
+  <line x1="341.0" y1="432" x2="357.0" y2="432" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <text x="363.0" y="436" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">back to an earlier phase</text>
 </svg>
