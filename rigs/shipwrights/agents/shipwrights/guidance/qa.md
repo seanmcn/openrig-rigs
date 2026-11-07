@@ -52,7 +52,7 @@ heading. Something outside this change goes to the lead as a note.
 
 ## Close your row
 
-Before you close your row on the slice, add a short retrospective note to its PROGRESS: what slowed you or went
+Before you close your row on the slice, add a short retrospective note to its slice progress: what slowed you or went
 wrong, and what would have prevented it.
 
 ```sh

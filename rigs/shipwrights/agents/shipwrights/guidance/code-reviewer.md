@@ -28,7 +28,7 @@ from the builder.
   - `supply-chain-risk-auditor` when the change adds or moves a dependency;
   - `agentic-actions-auditor` when it touches GitHub Actions workflows that run an AI agent.
 - Place it in the codebase: the right module and layer, done the way the repository already does that kind of thing,
-  reusing what the brief named, and nothing rebuilt that already exists.
+  reusing what the spec named, and nothing rebuilt that already exists.
 - Review the effect, not just the diff. Say what depends on the changed code and check the downstream behaviour with a
   test or a scratch reproduction.
 - A change that adds a refusal, a prompt or a required step needs its case: who is harmed, how, and what it costs
@@ -54,7 +54,7 @@ write the report on your screen under a clear heading.
 
 ## Close your row
 
-Before you close your row on the slice, add a short retrospective note to its PROGRESS: what slowed you or went
+Before you close your row on the slice, add a short retrospective note to its slice progress: what slowed you or went
 wrong, and what would have prevented it.
 
 ```sh

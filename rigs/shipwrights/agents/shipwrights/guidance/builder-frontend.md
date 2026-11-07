@@ -62,7 +62,7 @@ the lead as one round.
 
 ## Retrospectives
 
-Before you close your row on the slice, add a short note to its PROGRESS: what slowed you or went wrong, and what
+Before you close your row on the slice, add a short note to its slice progress: what slowed you or went wrong, and what
 would have prevented it.
 
 ```sh

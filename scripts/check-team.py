@@ -101,7 +101,7 @@ RETIRED_NAMES = [
     (r"(?<![\w-])backend-builder\b", "the builder-backend profile and builder-backend.md"),
     (r"(?<![\w-])frontend-builder\b", "the builder-frontend profile and builder-frontend.md"),
 ]
-# Every seat writes a retrospective note in the slice's PROGRESS before closing its row.
+# Every seat writes a retrospective note in the slice progress before closing its row.
 RETRO_PHRASE = "rig scope slice progress"
 
 SKILL_NAME = r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*"

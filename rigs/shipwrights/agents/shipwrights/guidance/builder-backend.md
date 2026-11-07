@@ -23,16 +23,16 @@ own file on top.
 ## Make the change
 
 - Look before you build (the rig's culture): read the code around the change and trace it end to end before you edit,
-  reproduce a bug before you fix it (`diagnosing-bugs`), and reuse what the brief or the repository already has.
+  reproduce a bug before you fix it (`diagnosing-bugs`), and reuse what the spec or the repository already has.
 - Follow the `implement` skill for the slice, and `tdd` where the behaviour is testable: a failing test first, then
   the code. Both are marked for a person to type; open their `SKILL.md` and follow it.
-- Make the smallest change that delivers the slice's outcome, following the patterns the brief names and the way the
+- Make the smallest change that delivers the slice's outcome, following the patterns the spec names and the way the
   repository already does that kind of thing.
 - Follow the repository's conventions for versions, changelogs and commit messages.
 - Run the repository's build, lint and test commands in the worktree, keep the output, and show the behaviour the
-  brief asked for (the rig's culture: "Verify by effect").
+  spec asked for (the rig's culture: "Verify by effect").
 - Never restart the installed OpenRig daemon to try your change. It is running this rig.
-- Something you notice outside the brief goes to the lead as one note. It does not go into this change.
+- Something you notice outside the spec goes to the lead as one note. It does not go into this change.
 
 ## Review your own diff first
 
@@ -42,7 +42,7 @@ round.
 
 ## Hand it to review and QA together
 
-Commit, then hand the commit to the code reviewers and to the QA seat at the same time, with a queue item for each.
+Commit, then hand the commit to the code reviewers and to the QA seat at the same time, with a queue row for each.
 Nobody waits for anyone else. Say: the commit, the worktree path, the slice, what changed, what you ran with results,
 and what you did not run. If a Codex seat cannot reach the daemon, follow up with a `rig send` carrying those same
 essentials.
@@ -67,7 +67,7 @@ result, and what you could not run. Say when the slice is done and at which comm
 
 ## Close your row
 
-Before you close your row on the slice, add a short retrospective note to its PROGRESS: what slowed you or went
+Before you close your row on the slice, add a short retrospective note to its slice progress: what slowed you or went
 wrong, and what would have prevented it.
 
 ```sh

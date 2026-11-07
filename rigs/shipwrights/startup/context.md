@@ -1,7 +1,7 @@
 # Start (every seat on this rig)
 
-1. Run `rig whoami --json`. It names your seat and your peers' sessions. Use those names; do not guess addresses.
-   During launch a peer may not be listed yet: if one of the team's seats (the lead and its peer, the planner, the
+1. Run `rig whoami --json`. It names your seat and the other seats' sessions. Use those names; do not guess addresses.
+   During launch a seat may not be listed yet: if one of the team's seats (the lead and its peer, the planner, the
    builders, the QA seat, the two code reviewers and the release manager) is missing, check `rig ps --nodes` again a
    little later before telling anyone it is missing.
 2. Find where you work. If your working directory is this rig's own folder (it holds this rig's `rig.yaml`), the rig

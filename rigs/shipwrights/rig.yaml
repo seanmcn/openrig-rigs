@@ -1,7 +1,7 @@
 version: "0.2"
 name: shipwrights
 summary: >
-  An engineering crew built on OpenRig's Workshop: a lead who turns your goal into
+  An engineering team built on OpenRig's Workshop: a lead who turns your goal into
   missions and slices and judges the proof, a peer on the other runtime who takes over
   if the lead goes down, a planner, a backend builder and a frontend builder, a QA seat, two
   independent code reviewers on different runtimes, and a release manager who publishes
