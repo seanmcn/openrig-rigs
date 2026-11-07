@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 400" width="920" height="400" role="img" aria-labelledby="slice-lifecycle-dark-title slice-lifecycle-dark-desc">
   <title id="slice-lifecycle-dark-title">A slice's lifecycle</title>
-  <desc id="slice-lifecycle-dark-desc">A slice's spec is locked, then it is built, its proof recorded and judged, and its pull requests published; findings and rebases loop back, it can be paused or stopped from any phase, and it is delivered once you merge.</desc>
+  <desc id="slice-lifecycle-dark-desc">A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed, judged, and its pull requests published; findings and rebases loop back, it can be paused or stopped from any phase, and it is delivered once you merge.</desc>
   <defs><marker id="slice-lifecycle-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="slice-lifecycle-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
   <path d="M152,104 L208,104" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
   <path d="M336,104 L392,104" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#slice-lifecycle-dark-arrow-muted)"/>
@@ -21,10 +21,10 @@
   <text x="88" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">lead</text>
   <rect x="208" y="80" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="272" y="101" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Building</text>
-  <text x="272" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">builder</text>
+  <text x="272" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">builder and QA</text>
   <rect x="392" y="80" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="456" y="101" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Proof recorded</text>
-  <text x="456" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">QA, r1, r2</text>
+  <text x="456" y="101" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">In review</text>
+  <text x="456" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">r1 and r2</text>
   <rect x="576" y="80" width="128" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="640" y="101" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Judged</text>
   <text x="640" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">lead</text>
@@ -32,7 +32,7 @@
   <text x="824" y="101" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Published</text>
   <text x="824" y="117" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">release manager</text>
   <text x="180" y="94" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">ASSIGN</text>
-  <text x="364" y="94" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">COMMIT</text>
+  <text x="364" y="94" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">QA PASS</text>
   <text x="548" y="94" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">PASS</text>
   <text x="732" y="94" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">PUSH</text>
   <text x="364" y="46" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">FINDINGS</text>

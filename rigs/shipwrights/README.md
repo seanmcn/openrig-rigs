@@ -31,7 +31,7 @@ or builder-frontend profile.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-the-work-moves-dark.svg">
-  <img alt="How the work moves: your goal goes to the lead and planner, who cut and lock it; a builder builds a commit; QA and both reviewers record proof at once, sending findings back to the builder; the lead judges the proof; the release manager opens the pull requests; you merge; the release manager approves delivery." src="diagrams/how-the-work-moves.svg">
+  <img alt="How the work moves: your goal goes to the lead and planner, who cut and lock it; a builder builds a commit and QA checks it, back and forth until QA passes; both reviewers then review that commit, and any findings go back to the builder and through QA again; the lead judges the proof; the release manager opens the pull requests; you merge; the release manager approves delivery." src="diagrams/how-the-work-moves.svg">
 </picture>
 
 1. The planner records your goal or issues as a mission in OpenRig's work tree (`rig scope`), with its slices and the
@@ -61,7 +61,7 @@ the lead to pause it: its rows are blocked until you resume it. Neither stops a 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/slice-lifecycle-dark.svg">
-  <img alt="A slice's lifecycle: spec locked, building, proof recorded, judged and published, with findings looping back to building and a rebase back to judged; from any phase it can be paused and resumed, or stopped; once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
+  <img alt="A slice's lifecycle: spec locked, building with QA until QA passes, in review, judged and published, with reviewers' findings looping back to building and a rebase back to judged; from any phase it can be paused and resumed, or stopped; once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
 </picture>
 
 ## Settings
