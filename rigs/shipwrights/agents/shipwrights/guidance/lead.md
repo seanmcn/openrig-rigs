@@ -38,7 +38,7 @@ and never replace one that exists:
 4. Run `rig ps --nodes --rig <rig> --json --fields canonicalSessionName,hostSelfId`. It gives each seat's exact address
    and the host that serves it.
 5. Match `orch-lead` to lead, `orch-peer` to the lead's peer, `plan-planner` to planner, `dev-backend` (and any other
-   backend builder) to backend builder, `dev-frontend` to frontend builder, `check-qa` to QA, `review-r1` and
+   backend builder) to backend builder, `dev-frontend` to frontend builder, `dev-qa` to QA, `review-r1` and
    `review-r2` to code reviewer, and `release-manager` to release manager, using the actual addresses from step 4. Give each seat its own
    member entry; the example below shows four of them, and the others follow the same shape, with capabilities such as
    "taking over from the lead" (peer), "missions and slices" and "triage" (planner), "user interfaces" (frontend

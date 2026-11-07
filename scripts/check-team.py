@@ -92,7 +92,7 @@ PROFILE_GUIDANCE = {
     "release-manager": ["guidance/release-manager.md"],
 }
 # Seats that hold each profile: pod.member in rig.yaml and configurations.yaml.
-SEATS = {"dev.backend": "builder-backend", "dev.frontend": "builder-frontend"}
+SEATS = {"dev.backend": "builder-backend", "dev.frontend": "builder-frontend", "dev.qa": "qa"}
 # Names the team renamed, which no file in it may still use: (pattern, what replaced it).
 RETIRED_NAMES = [
     (r"dev[.-]build\b", "the dev.backend seat (dev-backend)"),
@@ -101,6 +101,8 @@ RETIRED_NAMES = [
     (r"(?m)^  builder:$", "the builder-backend profile"),
     (r"(?<![\w-])backend-builder\b", "the builder-backend profile and builder-backend.md"),
     (r"(?<![\w-])frontend-builder\b", "the builder-frontend profile and builder-frontend.md"),
+    # OpenRig's naming guide puts a role in its domain's pod, not a pod named for an operation.
+    (r"(?<![\w-])check[.-]qa\b", "the dev.qa seat (dev-qa)"),
 ]
 # Every seat writes a retrospective note in the slice progress before closing its row.
 RETRO_PHRASE = "rig scope slice progress"
@@ -125,7 +127,7 @@ OPENRIG_SKILLS = {
 # branches, proof types, and impeccable's own commands.
 NOT_SKILLS = {
     # the rig and its seats' sessions
-    "shipwrights", "orch-lead", "orch-peer", "plan-planner", "dev-backend", "dev-frontend", "check-qa",
+    "shipwrights", "orch-lead", "orch-peer", "plan-planner", "dev-backend", "dev-frontend", "dev-qa",
     "review-r1", "review-r2", "release-manager",
     # commands, states, tiers, branches, proof types and roster fields
     "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",

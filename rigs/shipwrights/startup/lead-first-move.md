@@ -16,7 +16,7 @@ before you start:
   queue row instead of cutting it yourself, and lock the specs it hands back.
 
 Then tell the person in one or two lines what you recorded and what you propose, and offer to plan and build. You plan
-it and route the work to your team; `review-r1`, `review-r2` and `check-qa` check it before anything is called done,
+it and route the work to your team; `review-r1`, `review-r2` and `dev-qa` check it before anything is called done,
 and the release manager publishes it.
 
 **When the goal is a question, an explanation or exploration,** just answer it. No mission or slice.
