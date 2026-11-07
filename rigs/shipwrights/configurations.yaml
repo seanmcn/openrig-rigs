@@ -12,9 +12,9 @@ seats:
   plan.planner: { runtimes: { claude-code: planner, codex: planner } }
   dev.backend: { runtimes: { claude-code: builder-backend, codex: builder-backend } }
   dev.frontend: { runtimes: { claude-code: builder-frontend, codex: builder-frontend } }
-  check.qa: { runtimes: { claude-code: qa, codex: qa } }
+  dev.qa: { runtimes: { claude-code: qa, codex: qa } }
   review.r1: { runtimes: { claude-code: code-reviewer, codex: code-reviewer } }
   review.r2: { runtimes: { codex: code-reviewer, claude-code: code-reviewer } }
   release.manager: { runtimes: { codex: release-manager, claude-code: release-manager } }
 presets:
-  recommended: { orch.lead: codex, orch.peer: claude-code, plan.planner: claude-code, dev.backend: claude-code, dev.frontend: claude-code, check.qa: claude-code, review.r1: claude-code, review.r2: codex, release.manager: codex }
+  recommended: { orch.lead: codex, orch.peer: claude-code, plan.planner: claude-code, dev.backend: claude-code, dev.frontend: claude-code, dev.qa: claude-code, review.r1: claude-code, review.r2: codex, release.manager: codex }

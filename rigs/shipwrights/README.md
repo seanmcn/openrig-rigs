@@ -18,7 +18,7 @@ these docs use, such as seat, slice and proof, are in the repository's [glossary
 | `plan-planner` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
 | `dev-backend` | Claude Code | Builds a backend slice in its own worktree, reviews its own diff and runs the repository's checks. |
 | `dev-frontend` | Claude Code | Builds on the backend builder's guidance for slices tagged UI or both: checks them in a real browser and runs impeccable's reviews and detector. |
-| `check-qa` | Claude Code | Runs the checks a slice calls for and records what each one proved. |
+| `dev-qa` | Claude Code | Runs the checks a slice calls for and records what each one proved. |
 | `review-r1` | Claude Code | Reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
 | `review-r2` | Codex | Reviews the same commit the same way, independently of `review-r1`. |
 | `release-manager` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, rebases with lease and approves each merged slice for delivery. |

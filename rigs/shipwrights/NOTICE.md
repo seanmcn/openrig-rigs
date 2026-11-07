@@ -7,7 +7,7 @@ licence is in `LICENSE`. These files are modified versions of Workshop's:
 
 | File here | Workshop's file | What changed |
 |---|---|---|
-| `rig.yaml` | `rig.yaml` | Named `shipwrights`; the builder becomes `dev.backend` with the `builder-backend` profile; QA moves to a `check` pod; adds a peer beside the lead, a `plan` pod, a frontend builder and a `release` pod; the team settings are a startup file for every seat. |
+| `rig.yaml` | `rig.yaml` | Named `shipwrights`; the builder becomes `dev.backend` with the `builder-backend` profile; adds a peer beside the lead, a `plan` pod, a frontend builder and a `release` pod; the team settings are a startup file for every seat. |
 | `bundle.yaml` | `bundle.yaml` | Minimum OpenRig 0.7.1; preconditions for a folder of several clones. |
 | `configurations.yaml` | `configurations.yaml` | No Pi runtimes; runtimes for the new seats. |
 | `CULTURE.md` | `CULTURE.md` | Adds each repository's own rules first, retrospective notes, skills a person types, publishing a judged slice through the release manager, merging only as the repository's `AGENTS.md` allows, and reporting a leaked credential. |
