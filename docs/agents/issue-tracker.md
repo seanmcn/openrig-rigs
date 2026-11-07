@@ -49,7 +49,7 @@ Create a GitHub issue. Keep the top of its body short, so a person can take it i
 
    Name the summary after what's inside, such as "Full spec" or "Full ticket". Keep the blank line after `<summary>`, or GitHub won't render the Markdown inside.
 
-The same goes for any issue a skill creates, and for an issue body a skill rewrites. A spec from `/create-spec` starts its title with `Spec:`; a ticket from `/create-tickets` is a sub-issue of its spec; anything a person could have filed takes `bug` or `enhancement`.
+The same goes for any issue a skill creates, and for an issue body a skill rewrites. A spec from `/to-spec` starts its title with `Spec:`; a ticket from `/to-tickets` is a sub-issue of its spec; anything a person could have filed takes `bug` or `enhancement`.
 
 A ticket a person carries out, labelled `ready-for-human`, has the steps themselves as its checklist: every command, value and place to click, in the order they're done, so the person can work straight down it. Copy the steps from the runbook or setup guide that holds them, and link the section they came from as background. "Follow SETUP 7a" is a pointer, not a step. In any issue, link every document you mention, to the heading when you mean one section of it.
 
@@ -57,7 +57,7 @@ A comment that carries a brief, such as triage's agent brief, takes the same sha
 
 ### A spec's layout
 
-A spec from `/create-spec`, and any spec body a skill rewrites, keeps the template's sections in the template's order, with no summary sentences above them. Problem Statement and Solution are the summary, so they stay open at the top. User Stories, Implementation Decisions and Testing Decisions are long, so each one collapses behind its own heading, which carries a count: the numbered stories, or the top-level bullets. Out of Scope and Further Notes stay open.
+A spec from `/to-spec`, and any spec body a skill rewrites, keeps the template's sections in the template's order, with no summary sentences above them. Problem Statement and Solution are the summary, so they stay open at the top. User Stories, Implementation Decisions and Testing Decisions are long, so each one collapses behind its own heading, which carries a count: the numbered stories, or the top-level bullets. Out of Scope and Further Notes stay open.
 
 ```markdown
 ## Problem Statement
@@ -105,7 +105,7 @@ Then, before changing anything, be on a branch for it. `main` only takes pull re
 
 ## Wayfinding operations
 
-Used by `/scope-epic`. The **map** is a single issue with **child** issues as tickets.
+Used by `/wayfinder`. The **map** is a single issue with **child** issues as tickets.
 
 - **Map**: a single issue titled `Map: ...`, holding the Notes / Decisions-so-far / Fog body. The map is already the short version, an index people read, so it doesn't follow the collapse rule in **publish to the issue tracker**: leave every section of it open.
 - **Child ticket**: an issue linked to the map as a GitHub sub-issue (see **Make an issue a sub-issue of a parent**). Where sub-issues aren't enabled, add the child to a task list in the map body and put `Part of #<map>` at the top of the child body. Its title starts with its kind (`Research:`/`Prototype:`/`Decision:`/`Task:`). Once claimed, the ticket is assigned to the driving dev.

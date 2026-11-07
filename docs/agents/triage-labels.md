@@ -27,15 +27,15 @@ Where pull requests are a request surface, a PR takes the same labels.
 | `bug`         | `bug`         | Something is broken                              |
 | `enhancement` | `enhancement` | New behaviour, or an improvement to what's there |
 
-Any other work (chores, refactors, docs, tooling, tickets) carries no category label. A spec `/create-spec` publishes and a scope-epic map start their title with `Spec:` or `Map:`.
+Any other work (chores, refactors, docs, tooling, tickets) carries no category label. A spec `/to-spec` publishes and a wayfinder map start their title with `Spec:` or `Map:`.
 
 ## Epic
 
-`/scope-epic` marks a map and each of its tickets with a title prefix, since there is no Epic field here: `Map:`, `Decision:`, `Task:`, `Prototype:` or `Research:`.
+`/wayfinder` marks a map and each of its tickets with a title prefix, since there is no Epic field here: `Map:`, `Decision:`, `Task:`, `Prototype:` or `Research:`.
 
 | Epic        | Meaning                                              |
 | ----------- | ---------------------------------------------------- |
-| `Map`       | A scope-epic map: the index of an effort's decisions |
+| `Map`       | A wayfinder map: the index of an effort's decisions  |
 | `Decision`  | A decision ticket, resolved in conversation          |
 | `Task`      | Work that must happen before a decision              |
 | `Prototype` | A rough artifact to react to                         |
