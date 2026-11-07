@@ -27,7 +27,7 @@ reviewers on different providers than from one, and changes the rest in four way
   progress and the proof.
 
 The runtime each seat uses is my current suggestion. I'm trying different mixes and measuring them, and the
-recommended preset will change as results come in; [`configurations.yaml`](configurations.yaml) lets you pick your own.
+recommended preset will change as results come in.
 
 The words these docs use, such as seat, slice and proof, are in the repository's [glossary](../../GLOSSARY.md).
 
@@ -50,8 +50,8 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 | `review-r2`, `review-r4` | Codex | The same, on the other runtime: the lead pairs one reviewer from each runtime for each slice, and they review independently. |
 | `release-manager` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
-These are the runtimes of the `recommended` preset; [`configurations.yaml`](configurations.yaml) lets each seat use the
-other one. Keep the lead and its peer on different runtimes, and the code reviewers on at least two.
+These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
+seat on the other one. Keep the lead and its peer on different runtimes, and the code reviewers on at least two.
 
 ### Growing the team
 
@@ -67,7 +67,7 @@ role, so a seat you add is used without changing any guidance.
   <img alt="How the work moves, in lanes for you, the lead, the planner and the release manager: your goal goes to the planner, which cuts it; the lead locks each spec and assigns a builder and a QA seat; once the slice is built and reviewed, the lead judges its proof; the release manager opens the pull requests, and a failing CI run or a conflict goes back to the lead to assign; you merge; the release manager approves delivery; the lead closes the mission." src="diagrams/how-the-work-moves.svg">
 </picture>
 
-Building and reviewing a slice, the middle of that, in detail:
+Inside "Built and reviewed", each slice goes through these steps:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-a-slice-is-built-dark.svg">
@@ -96,13 +96,13 @@ Building and reviewing a slice, the middle of that, in detail:
    seat, runtime and model. Every ten delivered slices, the lead offers you, as proposed changes to the guidance, only
    the problems that came up more than once.
 
-Builders, QA seats, code reviewers and planners start fresh for each slice: the lead relaunches each one once its
-part is done, so what lasts is the record (the spec, the slice progress and the proof), not a seat's memory. The lead,
-its peer and the release manager are long-lived, and hand over to a fresh session near a full context
-([`team-shape.md`](startup/team-shape.md)).
+The lead relaunches each builder, QA seat, code reviewer and planner once its part of a slice is done, so each starts
+the next one fresh. The lead, its peer and the release manager are long-lived, and hand over to a fresh session near a
+full context ([`team-shape.md`](startup/team-shape.md)).
 
-Waits are queue rows blocked with a wake, never polling. An OpenRig watchdog wakes the lead on a timer to check for
-builds past the slice time limit, and another wakes the peer to check that the lead's seat is up.
+A seat that has to wait blocks its queue row with a wake and stays idle until it fires. An OpenRig watchdog wakes the
+lead on a timer to check for builds past the slice time limit, and another wakes the peer to check that the lead's seat
+is up.
 
 ### A slice's lifecycle
 
@@ -192,7 +192,7 @@ and the lead's roster of the team's seats in `rosters/shipwrights.json`. Delete 
 
 ## Changing the team
 
-Edit your installed copy (`--target`), not the GitHub link, and start the team again. Two changes people make:
+Edit your installed copy (`--target`) and start the team again. Two changes people make:
 
 - **Settings:** edit `settings.md` there.
 - **Permissions:** the two lines in `rig.yaml` below.
@@ -246,7 +246,7 @@ select sandbox and approvals together").
   seat without a slice are idle much of the time. To run fewer, remove seats in an overlay
   ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one QA seat still work, but
   a review needs two code reviewers on different runtimes.
-- **The peer's takeover is a check, not an alarm.** OpenRig has no event that fires when a seat goes down, so a
+- **The peer notices a downed lead within minutes.** OpenRig has no event that fires when a seat goes down, so a
   watchdog wakes the peer every five minutes to look, and it takes over only once the lead has been down for 10
   minutes without a break ([`peer.md`](agents/shipwrights/guidance/peer.md)).
 - **Each building seat uses its own worktree** and installs the repository's dependencies there, which costs disk and
