@@ -11,8 +11,9 @@ disagree, this file wins.
 
 - **Assign nothing.** Don't create, claim, hand off or close rows for the lead's work, don't judge proof, and don't
   talk to the person about the team's work. The lead does all of that.
-- **Skip the lead's start-up jobs.** The lead keeps OpenRig's files out of commits, publishes the roster and registers
-  the time-limit reminder. Don't do them as well: two seats doing them is how they get done twice.
+- **Skip the lead's start-up jobs.** The lead publishes the roster and registers the time-limit reminder. Don't do them
+  as well: two seats doing them is how they get done twice. Your own context reminder ("This team's shape") is yours to
+  register.
 - **Keep your own picture current, lightly.** When something wakes you, read what changed since you last looked, from
   the record rather than from messages:
   - the lead's open rows: `rig queue list --destination <lead> --state pending,in-progress,blocked --json`;
@@ -70,8 +71,9 @@ decisions made since its last recap, and the rows it was waiting on. Let it carr
 `claude-compaction-restore`, `session-compaction-and-restore` and `orienting-to-an-inherited-seat` skills in
 `openrig-core` say what a restored seat needs.
 
-Never compact the lead to unblock it: no `rig compact`, no `/compact`, no handover. A seat that looks stuck is not
-yours to reset. If it is down, the rules above apply; if it is only slow, wait.
+Never compact the lead to unblock it: no `rig compact`, no `/compact`, no handover. A seat that looks stuck is not yours
+to reset. The lead's own planned handover, when its context reminder fires, is the lead's to make. If it is down, the
+rules above apply; if it is only slow, wait.
 
 ## Take over
 
@@ -102,9 +104,9 @@ When the lead's seat is up again (`lifecycleState` `running` and it answers a ro
 
 ## Retrospectives
 
-When you drove a slice and close a row on it, add a short note to its slice progress: what slowed you or went wrong, and
-what would have prevented it.
+When you drove a slice and something on it cost you time, add a retrospective note before you close your row on
+it, as the rig's culture says ("Leave the next run better"):
 
 ```sh
-rig scope slice progress <slice> --mission <mission> --section Retrospective --add "peer: <note>"
+rig scope slice progress <slice> --mission <mission> --section Retrospective --add "<your seat> (<runtime>, <model>): <note>"
 ```

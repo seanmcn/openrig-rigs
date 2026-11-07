@@ -1,0 +1,89 @@
+# This team's shape
+
+Every seat reads this. It names the team's roles, which of them can have more than one seat, and how to find a role's
+seats. Seats are found by role, never by a name you remember: the team may have grown since this file was written.
+
+| Role | Profile | Seats in the default team | Can grow |
+| --- | --- | --- | --- |
+| Lead | `lead` | 1 | No |
+| Peer | `peer` | 1, on the other runtime from the lead | No |
+| Planner | `planner` | 1 | Yes, rarely needed |
+| Backend builder | `builder-backend` | 2 | Yes |
+| Frontend builder | `builder-frontend` | 1 | Yes |
+| QA | `qa` | 3, one for each builder | Yes, with the builders |
+| Code reviewer | `code-reviewer` | 4, two on each runtime | Yes, keeping both runtimes |
+| Release manager | `release-manager` | 1 | Yes, rarely needed |
+
+## Find a role's seats
+
+```sh
+rig ps --nodes --rig <rig> --json --fields canonicalSessionName,profile,runtime
+```
+
+lists every seat with its profile and runtime. A role's seats are the ones with its profile; use the addresses it
+gives (`canonicalSessionName`).
+
+## Add a seat
+
+A new seat joins its role's pod in `rig.yaml` (`plan`, `dev` for builders and QA, `review`, `release`) as a member
+with the role's profile, with:
+
+- a `delegates_to` edge from `orch.lead`, so its stuck rows escalate to the lead;
+- a runtime for it in `configurations.yaml`;
+- for a builder, the `startup/review-pair-builder.md` start file, and for a code reviewer,
+  `startup/review-pair-reviewer.md`.
+
+Add a QA seat with each builder, so every builder can build at once. Keep code reviewers on at least two runtimes, so
+every review pair can have one of each. Then the team needs starting again.
+
+## Which seats a slice holds
+
+The lead is the only seat that assigns seats to a slice, so two slices never take the same seat.
+
+- **Free:** a seat is free when it holds no open row on another slice
+  (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
+- **Builder and QA:** when the lead hands a slice on, it names one free builder of the slice's kind and one free QA
+  seat, and sends each a row for the slice. Both hold the slice until the lead has judged it.
+- **Review pair:** when QA first records PASS on the slice, the lead names two free code reviewers on different
+  runtimes, and sends each a row for the slice. They hold it, through every fix round, until both have recorded PASS
+  at the same commit and the lead has compared their reviews.
+- **After publishing:** a failing CI run or a conflict goes to the lead, which gives the fix or the rebase to a free
+  builder of the slice's kind and a free QA seat, the same ones when they are free, and to a free review pair again
+  when the slice's own diff changes.
+- **Planner:** the lead gives each goal, slice to re-cut, survey for work and question that needs reading code to a
+  free planner.
+- **Release manager:** the lead gives each judged slice to the release manager that already holds its mission's other
+  slices, or else to the one with the fewest open rows, so one release manager sees each mission's merge order.
+
+A seat closes its row on a slice when the lead says the slice no longer needs it.
+
+## Fresh seats and long-lived seats
+
+**Builders, QA seats, code reviewers and planners start fresh for each piece of work.** Once such a seat has closed its
+rows on a slice (a planner: its row on the work it took) and holds no other claimed row, the lead relaunches it:
+
+```sh
+rig seat launch <seat> --fresh --stop --reason "<slice> done"
+```
+
+It keeps its address and gets its start steps again, but remembers nothing of the slice. So before you close your row,
+put whatever the next seat would need into the record: the slice progress, the spec or the proof. A seat never
+relaunches itself.
+
+**The lead, its peer and the release manager are long-lived:** they hold work across slices. Each registers one
+reminder on its own session when it starts, unless `rig watchdog list` already shows it:
+
+```sh
+rig watchdog register --policy context-usage-threshold --target-session <your session> --registered-by <your session> \
+  --interval-seconds 600 --threshold-percent 85 \
+  --message "Context at 85%: hand this seat over (retiring-and-inheriting-a-seat)."
+```
+
+When it fires, hand the seat to a fresh successor as OpenRig's `retiring-and-inheriting-a-seat` skill says, rather
+than waiting for compaction. The reminder covers one session, so the successor registers its own.
+
+## Earlier sessions
+
+When the record falls short, a seat's earlier sessions can still answer. `rig ask <rig> "<question>" --seat <seat>`
+searches every session the seat has had, and `rig ask <rig> "<question>" --wake <member>@<rig>@<n>` asks one past
+session directly (1 is the newest) and lets it rest again. Put what you learn into the record, so nobody asks twice.

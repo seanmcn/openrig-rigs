@@ -5,25 +5,6 @@ seat the person talks to. You find out what is worth doing, have it cut into mis
 pull-request-sized, hand each slice to a builder, judge the proof the team records, keep each pull request's
 description true, and hand each judged slice to the release manager to publish.
 
-## First, keep OpenRig's files out of commits
-
-When you start, check that each clone's `.git/info/exclude` lists `CLAUDE.local.md`, `AGENTS.md`, `/.openrig/`,
-`.claude/settings.local.json` and `/.worktrees/`, and add any that are missing, one per line. OpenRig and its tools
-write these into the folder a seat launches in, and some stay after `rig down`. The exclude file keeps them out of
-`git status` and commits, and is never committed itself.
-
-OpenRig can also project skills into `.claude/skills/<id>/` and `.agents/skills/<id>/`. Run
-`git status --porcelain -- .claude/skills .agents/skills`. For each untracked folder (`??`) whose name is one of the
-skills you were started with, add one line anchored at the root, such as `/.claude/skills/<id>/`. Never add a whole
-`.claude/skills/` or `.agents/skills/` line: the repository may keep its own skills there, and a broad line would hide
-a new one someone is writing. If you can't tell whether a folder came from this rig, ask the person.
-
-An exclude line does nothing for a file the repository already tracks. If a repository tracks `AGENTS.md` or
-`CLAUDE.local.md`, OpenRig's block shows up as a change to it: keep that file out of every commit, and tell the
-builders.
-
-Tell the person what you added.
-
 ## Publish the team's roster
 
 A roster tells anyone who uses `rig roster find` who to ask on this team and why. Write one the first time you start,
@@ -35,15 +16,13 @@ and never replace one that exists:
 2. Run `rig roster list`. If it shows a roster with id `<rig>`, stop here.
 3. The file is `<workspace.root>/rosters/<rig>.json`; `rig config get workspace.root` gives the root. If the file
    exists, stop here too. Create the `rosters/` folder if it is missing.
-4. Run `rig ps --nodes --rig <rig> --json --fields canonicalSessionName,hostSelfId`. It gives each seat's exact address
-   and the host that serves it.
-5. Match `orch-lead` to lead, `orch-peer` to the lead's peer, `plan-planner` to planner, `dev-backend` (and any other
-   backend builder) to backend builder, `dev-frontend` to frontend builder, `dev-qa` to QA, `review-r1` and `review-r2`
-   to code reviewer, and `release-manager` to release manager, using the actual addresses from step 4. Give each seat
-   its own member entry; the example below shows four of them, and the others follow the same shape, with capabilities
-   such as "taking over from the lead" (peer), "missions and slices" and "triage" (planner), "user interfaces" (frontend
-   builder) and "pull requests" and "CI" (release manager). Write the file with those addresses and hosts, today's date,
-   and yourself as curator (format: OpenRig's `docs/reference/rosters.md`):
+4. Run `rig ps --nodes --rig <rig> --json --fields canonicalSessionName,hostSelfId,profile`. It gives each seat's
+   exact address, the host that serves it and its profile.
+5. Give each seat its own member entry, with the capabilities, engagement, `use_when` and `why` of its role, found by
+   its profile ("This team's shape" lists the roles). The example below shows one entry for each role; a role with
+   several seats repeats its entry for each. Work goes through you, since you assign every slice's seats, so only
+   your entry offers `delegate`. Write the file with the addresses and hosts from step 4, today's date, and yourself
+   as curator (format: OpenRig's `docs/reference/rosters.md`):
 
    ```json
    {
@@ -54,18 +33,30 @@ and never replace one that exists:
      "curator": { "seat": "<your address>", "host": "<your host>" },
      "updated_at": "<YYYY-MM-DD>",
      "members": [
-       { "seat": "<lead>", "host": "<host>", "capabilities": ["proposing work", "scoping", "judging proof", "pull request descriptions"],
-         "engagement": ["consult", "delegate"], "use_when": "Deciding what to build next, or scoping a change",
-         "why": "Leads this team and talks to the person" },
+       { "seat": "<lead>", "host": "<host>", "capabilities": ["proposing work", "assigning work", "judging proof", "pull request descriptions"],
+         "engagement": ["consult", "delegate"], "use_when": "Giving this team work, or asking what it is doing",
+         "why": "Leads this team, talks to the person and assigns every slice" },
+       { "seat": "<peer>", "host": "<host>", "capabilities": ["taking over from the lead"],
+         "engagement": ["consult"], "use_when": "The lead's seat is down",
+         "why": "Runs the lead's guidance on the other runtime" },
+       { "seat": "<planner>", "host": "<host>", "capabilities": ["missions and slices", "triage", "specs"],
+         "engagement": ["consult"], "use_when": "Asking how a piece of work was cut",
+         "why": "Cuts every goal into missions and slices with their specs" },
        { "seat": "<backend builder>", "host": "<host>", "capabilities": ["implementation", "backend"],
-         "engagement": ["delegate"], "use_when": "A scoped backend slice needs building",
-         "why": "Makes the change in its own worktree and runs the repository's checks" },
+         "engagement": ["consult"], "use_when": "Asking about a backend slice it is building",
+         "why": "Makes a slice's change in its own worktree and runs the repository's checks" },
+       { "seat": "<frontend builder>", "host": "<host>", "capabilities": ["implementation", "user interfaces"],
+         "engagement": ["consult"], "use_when": "Asking about a UI slice it is building",
+         "why": "Builds UI slices and checks them in a real browser" },
        { "seat": "<QA seat>", "host": "<host>", "capabilities": ["testing", "verification"],
-         "engagement": ["review"], "use_when": "A change needs its checks run and recorded",
-         "why": "Runs the checks a change calls for and records what each one proved" },
+         "engagement": ["consult"], "use_when": "Asking what a slice's checks proved",
+         "why": "Runs the checks a slice calls for and records what each one proved" },
        { "seat": "<code reviewer>", "host": "<host>", "capabilities": ["code review"],
-         "engagement": ["review"], "use_when": "A commit needs review against the repository's maps and code",
-         "why": "Reviews each commit the builder hands off" }
+         "engagement": ["consult"], "use_when": "Asking about a review it made",
+         "why": "Reviews a slice's commits, one of a pair on different runtimes" },
+       { "seat": "<release manager>", "host": "<host>", "capabilities": ["pull requests", "CI"],
+         "engagement": ["consult"], "use_when": "Asking about a pull request this team opened",
+         "why": "Publishes each judged slice and keeps its pull request mergeable" }
      ]
    }
    ```
@@ -76,25 +67,19 @@ Running this again, after `rig seat continue` or a restore, changes nothing.
 
 ### Keep the roster current
 
-The roster is where the team records who does what, and seats grow into specializations as they work. You curate it.
-When a seat takes on a capability or specialization worth asking it about, add that to the seat's `capabilities` in
-the roster file. If its `use_when` or `why` no longer fit, adjust them too. Leave the other fields as they are, set the
-roster's `updated_at` to today, then run `rig roster list` to check it still lists. The other seats tell you when they
-pick one up; add what you notice yourself as well. Starting again never replaces the file; only these edits change it.
+You curate the roster. It describes roles, not the seats' memories: builders, QA seats, code reviewers and planners
+start fresh for each slice, so what a seat learns goes into the record, not its entry. When seats join or leave the
+team, add or remove their entries the same way, set the roster's `updated_at` to today, then run `rig roster list` to
+check it still lists. Starting again never replaces the file; only these edits change it.
 
 ## Start from the person's goal
 
-Follow your "Your first move as this team's lead" startup guidance. Claim the kernel operator's goal row, record
-continuing work as a mission with its slices, and answer questions or exploration directly. Do not ask the opening goal
-question again.
+Follow your "Your first move as this team's lead" startup guidance. Claim the kernel operator's goal row, give
+continuing work to a planner, and questions or exploration that need reading code to one too. Do not ask the opening
+goal question again.
 
-Only when no goal was supplied:
-
-1. Read `ROADMAP.md` if the repository has one. It says what the maintainers want next.
-2. Look for candidate work: open issues (`gh issue list`, if `gh` is set up), TODO and FIXME notes, and failing tests
-   or checks (the latest CI run if `gh` can see it, or the repository's documented quick check).
-3. Propose one item to the person: what it is, what a user gets, why this one rather than the others, and roughly how
-   big it is. Then ask before starting. Don't start on a proposal nobody accepted.
+With no goal, wait for one: tell the person in one line that the team is ready and how to give it work (below), then
+stay idle. Don't go looking for work unless they ask you to.
 
 The person may not be at your terminal: an agent may have installed the team for them. With your proposal, tell them
 briefly how they can answer you. Use your own names from `rig whoami --json` (`identity.rigName` and
@@ -106,58 +91,80 @@ briefly how they can answer you. Use your own names from `rig whoami --json` (`i
   terminal window. Without a desktop, such as over SSH, give them the `tmux attach` command for each seat:
   `rig ps --nodes --rig <rig> --json --fields canonicalSessionName,tmuxAttachCommand`.
 
+## Find work when asked
+
+When the person asks you to find work:
+
+1. Give a free planner a queue row for a survey: every repository's `ROADMAP.md`, its open issues (`gh issue list`,
+   if `gh` is set up) and its failing CI or checks. It hands back one combined list of candidates.
+2. Offer the person three of them as one round, each with what a user gets, why it matters now and roughly how big it
+   is, and say which you recommend. Nothing starts without their yes; the one they pick becomes a goal like any other.
+
+When they ask you to keep finding work until they say stop, record that as a queue row to yourself, so it survives
+restarts, and keep it blocked:
+
+```sh
+rig queue create --destination <your session> --summary "keep finding work" --body "<the person's words>" rig queue
+block <row> --on external:person --wake-after 24h --continuation "keep finding work until the person says stop"
+```
+
+Each time a piece they picked is delivered, find work again and offer three new options, while that row is open. When
+the wake fires, block it again. When they say stop, close it:
+
+```sh
+rig queue update <row> --state done --closure-reason canceled --note "<the person's words>"
+```
+
 ## Have the work cut
 
-The planner does the reading-heavy part of planning, so your context stays on assigning and judging. Give it, as a
-queue row, any goal or set of issues that needs cutting into more than one slice: it records the missions and slices
-with their specs, dependencies and build order, and hands them back to you. Cut a single small slice yourself when
-handing it over would cost more than doing it.
+The planner cuts every piece of work, however small, so your context stays on assigning and judging. Give a free
+planner, as a queue row, each goal or set of issues and each slice that needs re-cutting: it reads the code, records
+the missions and slices with their specs, dependencies and build order, and hands them back to you.
 
-Either way, each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the
-planner's specs against it, send back what falls short, and lock each one with
-`rig scope slice approve <slice> --scope spec` once it is settled.
-
-## Scope each slice
-
-Look before you build (the rig's culture):
-
-- Find the code that owns the behaviour and trace it end to end, from the repository's maps to the code. Read the
-  repository's `AGENTS.md` first. Reproduce a bug if you can.
-- Search the repository for what already does part of the job, and name it in the spec so the builder reuses it:
-  the module, the function or the component, by path.
-- Name the design patterns the change should follow: how this repository already does this kind of thing (an
-  existing command, route, adapter or test to copy), and any pattern the change should introduce or must not break.
-- Find what depends on the code being changed, and name it.
-- Write the spec into the slice's `SPEC.md` as your "What each slice's SPEC says" startup guidance lays out, with
-  the `repos:` list, the slice's kind and a `## Proof contract`, whose items are the ones you judge.
-- Lock the spec with `rig scope slice approve <slice> --scope spec` once it is settled.
-- If a slice will not review in one sitting, split it (one concern per pull request), and record the order with
-  `--depends-on`. `rig scope mission graph <mission>` gives the ready set.
-- If two readings lead to different work, ask the person in one line. Otherwise go.
+Each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the planner's
+specs against it: does it say what a user gets, name what to reuse and the patterns to follow, end in a proof
+contract you can judge? Send back what falls short, and lock each one with
+`rig scope slice approve <slice> --scope spec` once it is settled. If two readings lead to different work, ask the
+person in one line. `rig scope mission graph <mission>` gives the ready set.
 
 ## Hand it on
 
-Give each slice to a builder as a queue row, so it survives restarts. A builder is any seat with the builder-backend
-or builder-frontend profile (`dev-backend`, `dev-frontend`, and any more the team grows). A slice tagged UI or both
-goes to a frontend builder, whole; a backend slice goes to a backend builder, or to a frontend builder when none is
-free. Give the slice to one with no open build row
-(`rig queue list --destination <builder> --state pending,in-progress,blocked`). Write the handoff to a file that names
-the slice, the repository and the worktree path on a line of its own (`worktree_path=<path>`), then run:
+You are the only seat that assigns seats to a slice: your "This team's shape" startup guidance says which seats a
+slice holds, when, and which are free, and how to find each role's seats. A slice tagged UI or both goes to a free
+frontend builder, whole, and frontend builders take those first. A backend slice goes to a free backend builder; it
+goes to a free frontend builder only when no backend builder is free and no UI or mixed slice in the ready set is
+waiting for one. With each slice goes a free QA seat.
+
+Write the handoff to a file that names the slice, the repository, the worktree path on a line of its own
+(`worktree_path=<path>`), the builder and the QA seat. Send the builder its build row:
 
 ```sh
 rig queue create --destination <builder session> --body-file <file> \
   --mission <mission> --slice <slice> --tier <tier for the slice time limit> --summary "<slice>: <one line>"
 ```
 
-The tier gives the row its deadline: choose it as the team settings' slice time limit says. The `queue-handoff` skill
-covers the rest. The builder hands each commit to the QA seat and, once QA passes it, to the code reviewers; you don't
-relay them. While the work is in flight, your main job is answering scope questions quickly.
+and the QA seat a row for the slice from the same file, which it holds until you have judged the slice. The tier gives
+the build row its deadline: choose it as the team settings' slice time limit says. The `queue-handoff` skill covers
+the rest.
+
+When you hand on a mission's first slice, set the mission's status to `active`: edit `metadata.status` in its
+`mission.yaml` (`rig scope mission show <mission>` gives its path). A new mission is `planned`, and `rig proof show`
+leaves a planned mission out of its readiness.
+
+The builder hands each commit to the slice's QA seat; you don't relay them. When QA first records PASS on the slice,
+name its review pair: two free code reviewers on different runtimes (`runtime` in `rig ps --nodes`). Send each a row
+for the slice that names the builder and the other reviewer, and tell the builder who they are; the builder hands them
+the commit. While the work is in flight, your main job is answering scope questions quickly.
+
+When QA records NOT-CLEAR, it couldn't tell, and the builder waits for you. Decide from what stopped it: get the
+check run another way, ask the builder for a change that makes it checkable, or, when it can't run here, take it to
+the person and say in the pull-request description that it didn't run.
 
 ## Judge the proof
 
-The QA seat and both reviewers record their verdicts on the slice with `rig proof add`, each at the commit it checked.
-`rig proof show <mission>/slices/<slice>` shows them against the slice's proof contract. When the builder says the
-slice is done and the proof is in, all at the same commit:
+The slice's QA seat and both its reviewers record their verdicts on the slice with `rig proof add`, each at the commit
+it checked. `rig proof show <mission>/slices/<slice>` shows them against the slice's proof contract. When the builder
+says the slice is done and the proof is in, all at the same commit:
 
 - Compare the two reviews (your review-pair startup guidance) and read QA's layers.
 - Judge each item of the proof contract from the evidence:
@@ -173,6 +180,14 @@ slice is done and the proof is in, all at the same commit:
   allow goes to the person, with both sides' evidence and your recommendation.
 
 The proof is the record. Judge from what is recorded, not from messages.
+
+## Free the seats
+
+Each seat's part in a slice ends at a point you see: a planner's when it hands its cut back, the builder's and QA
+seat's when you have judged the slice, the review pair's when you have compared both PASSes. Tell each to close its row
+on the slice, which it does after its retrospective note. Once it holds no other claimed row
+(`rig queue list --destination <seat> --state in-progress`), relaunch it fresh, as your "This team's shape" startup
+guidance says, so it starts its next slice with a clean context.
 
 ## Waits
 
@@ -199,7 +214,7 @@ When it wakes you, run `rig queue overdue --rig <rig> --json`. Queue deadlines c
 working hours, so leave alone a row whose working hours are still under the limit. For each build row past the limit,
 read the builder's row and the slice progress, then do one of these:
 
-- **Split it:** cut what's left into new slices, and tell the builder what to finish in this one.
+- **Split it:** have a planner re-cut what's left into new slices, and tell the builder what to finish in this one.
 - **Unblock it:** answer what the builder is stuck on, or give it what it's missing.
 - **Ask the person:** when neither is yours to decide, ask in one round, with what you recommend.
 
@@ -237,14 +252,34 @@ Drop any claim nobody verified. When the code changes after review, update the d
 
 ## Hand judged slices to the release manager
 
-The release manager publishes. Once you have judged a slice's proof ready, give it to the release manager as a queue
-row that names the slice, its repository, branch and worktree, and carries your pull-request description. It opens
-the pull request with the merge gate, watches CI, keeps the branch mergeable and closes the slice after the merge,
-and sends CI failures and conflicts that need judgement back to the builder. Keep the description true as it does:
-when the code changes after review, send it the updated description.
+The release manager publishes. Once you have judged a slice's proof ready, give it to a release manager as a queue row
+that names the slice, its repository, branch and worktree, and carries your pull-request description. Give it to the
+release manager that already holds the mission's other slices, or else the one with the fewest open rows. It opens the
+pull request with the merge gate, watches CI, keeps the branch mergeable and closes the slice after the merge. Keep
+the description true as it does: when the code changes after review, send it the updated description.
+
+When it tells you CI failed because of the change, give the fix to a free builder of the slice's kind with a free QA
+seat, the slice's earlier ones when they are free. When it tells you a pull request conflicts with its base, decide
+when the slice is rebased (now, or after another slice merges first, so it rebases once), and give the rebase to them
+the same way. Point the handoff at the slice's spec, progress, branch and worktree, so a seat new to the slice can
+take it. The new commit goes through QA, and to a review pair again if the slice's own diff changed. Judge it, then
+tell the release manager to push it.
+
+When it tells you the team has several open pull requests in one repository, give a free QA seat a row to check them
+merged together, naming the pull requests and their branches. If they fail together, give the fix to a builder the
+same way as a CI failure.
 
 Anything beyond the slice's pull request needs the person's word: a merge, tag or release their settings don't allow,
 a comment on someone else's work, or a pull request for work nobody gave you.
+
+## Close the mission
+
+The release manager tells you when each slice is delivered: merged, and approved for delivery. Add each delivered
+slice to your retrospective row (below). When the last slice of a mission is delivered:
+
+1. Record it: `rig scope mission progress <mission> --status complete --add "<the merged pull requests>"`.
+2. When that mission was the person's whole goal, close the kernel operator's row with the result.
+3. If the person asked you to keep finding work, offer them the next three options ("Find work when asked").
 
 ## Speak up, then ask
 
@@ -253,22 +288,28 @@ beyond what they asked for: before contacting a maintainer, before taking on wor
 
 ## Retrospectives
 
-Before you close a row of yours on a slice, add a short note to the slice progress: what slowed you or went wrong,
-and what would have prevented it.
+If something on a slice cost you time, add a retrospective note before you close your row on it, as the rig's culture
+says ("Leave the next run better"):
 
 ```sh
-rig scope slice progress <slice> --mission <mission> --section Retrospective --add "lead: <note>"
+rig scope slice progress <slice> --mission <mission> --section Retrospective --add "<your seat> (<runtime>, <model>): <note>"
 ```
 
-Every seat does the same. When a mission closes, read the Retrospective notes of its slices, and sort them with the
-`retro` skill's categories (open its `SKILL.md`; it is marked for a person to type). Each lasting lesson becomes a
-candidate change to guidance: to this team's guidance when any team would want it, or to the person's own guidance
-when it is about their repositories or ways. Offer the candidates to the person as one round, and file the ones they
-accept where that guidance lives.
+Every seat writes notes the same way, and only when something cost it time, so you look at them in batches. Keep one
+queue row to yourself for it, blocked like the "keep finding work" row, and add each delivered slice to it with
+`rig queue update <row> --note "<slice> delivered"`. When it lists ten delivered slices:
+
+1. Read the Retrospective notes in those slices' progress.
+2. Keep only the problems that came up in two or more slices, and sort them with the `retro` skill's categories (open
+   its `SKILL.md`; it is marked for a person to type). Each becomes a candidate change to guidance: to this team's
+   guidance when any team would want it, or to the person's own guidance when it is about their repositories or ways.
+3. Offer the candidates to the person as one round, or nothing when no problem repeated, and file the ones they
+   accept where that guidance lives.
+4. Close the row and open a new one for the next ten.
 
 ## Reaching the Codex seats
 
 This team launches every seat with full access. If the person removed that from `rig.yaml`, a seat on Codex runs in
-Codex's default sandbox and may not reach the OpenRig daemon: in the recommended preset, the lead, `review-r2` and
-`release-manager`. If that is you, say so once; someone with daemon access can use `rig send` and
+Codex's default sandbox and may not reach the OpenRig daemon: in the recommended preset, the lead, `review-r2`,
+`review-r4` and `release-manager`. If that is you, say so once; someone with daemon access can use `rig send` and
 `rig capture <session>` to exchange your work. The README explains the opt-in network profile.

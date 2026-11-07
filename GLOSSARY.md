@@ -61,14 +61,29 @@ The lead **locks** it before the slice is built.
 _Avoid_: brief; approve (for locking a spec)
 
 **Kind**:
-What a slice changes: UI, backend or both. It decides which builder takes the slice; a slice of both kinds stays with
-one frontend builder.
+What a slice changes: UI, backend or both. It decides which builder takes the slice. One builder builds each slice, so
+a slice of both kinds goes to one frontend builder; the planner cuts both kinds of work as two slices when it can.
 _Avoid_: type, area
 
 **Proof**:
-What a seat records about a slice at one commit, mostly QA and each reviewer, with a verdict: PASS, BLOCKING,
-CONCERNING or NOT-CLEAR. A builder's screenshots and the release manager's checks after a rebase are proof too.
+What a seat records about a slice at one commit, mostly QA and each reviewer, with a verdict. A builder's screenshots
+are proof too.
 _Avoid_: evidence
+
+**Verdict**:
+The word a proof ends in. **PASS**: it showed what the slice promised. **BLOCKING**: it must change before the slice
+can go on. **CONCERNING**: it passes, but something should change, or be argued. **NOT-CLEAR**: the seat couldn't tell,
+and the lead decides.
+
+**Fresh seat**:
+A builder, QA seat, code reviewer or planner, which the lead relaunches with a new session after each piece of work:
+it keeps its address and remembers nothing of earlier slices. The lead, its peer and the release manager are
+**long-lived** instead, and hand over to a fresh successor near a full context.
+_Avoid_: reset, recycled seat
+
+**Review pair**:
+The two code reviewers the lead names for a slice, on different runtimes, who review the same commits independently.
+_Avoid_: reviewer pair, review team
 
 **Proof contract**:
 The part of a slice's spec that says what proof the slice needs before it can be judged.
@@ -80,6 +95,11 @@ The lead's decision on a slice's proof at one commit, made again after any chang
 The top of a slice's pull request: whether it can merge, its review and test status at the published commit, how hard
 it is to undo, and its blast radius.
 _Avoid_: gate (alone)
+
+**Delivered**:
+A slice's last state: its pull requests are merged and the release manager has approved it for delivery. A mission
+closes when its last slice is delivered.
+_Avoid_: done, shipped
 
 **Slice progress**:
 A slice's running notes in OpenRig's work tree, where each seat adds its retrospective.
@@ -95,12 +115,17 @@ _Avoid_: operator (alone), installer
 One unit of work handed to a seat on OpenRig's queue; it is claimed, blocked or closed.
 _Avoid_: queue item, ticket
 
+**Orchestrator**:
+The seat a seat's stuck or unclaimed queue rows escalate to: the source of its `delegates_to` edge in `rig.yaml`. In
+Shipwrights it is the lead, for every seat but the lead and its peer.
+_Avoid_: parent, manager
+
 **Handoff**:
 The body of a queue row that hands work on: what the work is, where it lives and what the receiving seat needs.
 _Avoid_: handoff (for the row itself; say "queue row")
 
 **Roster**:
-A team's published list of its seats, what each is good at and when to ask it, which anyone finds with
+A team's published list of its seats, each with what its role does and when to ask it, which anyone finds with
 `rig roster find`. The lead curates it.
 _Avoid_: directory
 

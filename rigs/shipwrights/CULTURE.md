@@ -53,9 +53,12 @@ well is honest, not a failure.
 
 ## Leave the next run better
 
-What slowed you is worth more while your session still holds it. Before you close your row on a slice, write a short
-note in the slice progress: what slowed you or went wrong, and what would have prevented it. When a mission closes,
-the lead turns the notes into proposed changes to the guidance.
+What slowed you is worth more while your session still holds it. When something on a slice cost you time (more rounds
+than expected, a long wait, a wrong turn), write a short note in its slice progress before you close your row: what
+happened, and what would have prevented it. Name your seat, your runtime and your model;
+`rig ps --nodes --session <your session> --json --fields runtime,model` gives them where OpenRig records them. When
+nothing did, write nothing. Every ten delivered slices, the lead looks for the problems that keep coming back and
+proposes changes to the guidance.
 
 ## One concern per pull request
 
@@ -94,8 +97,8 @@ around. What you ship is different: it meets strangers, so validate input there.
 ## Skills a person types
 
 Some skills are marked for a person to type (`disable-model-invocation: true` in their `SKILL.md`), such as `implement`,
-`tdd`, `triage`, `to-tickets` and `retro`. Your runtime won't start one on its own. When your role file or a message
-names one, open its `SKILL.md` and follow it.
+`tdd`, `triage` and `retro`. Your runtime won't start one on its own. When your role file or a message names one, open
+its `SKILL.md` and follow it.
 
 ## Lines we keep
 

@@ -2,7 +2,7 @@
 
 You make the change the lead scoped for a slice, in its own worktree, and you show that it works. You are the author;
 the code reviewers and the QA seat check your work, and you fix what they find. Work starts with a queue row from the
-lead that names the slice, its repository and its worktree.
+lead that names the slice, its repository, its worktree and the slice's QA seat.
 
 You take backend slices. The frontend builder takes slices tagged UI or both, and follows this guidance too, with its
 own file on top.
@@ -42,43 +42,39 @@ round.
 
 ## Hand it to QA, then to review
 
-Commit, then hand the commit to the QA seat with a queue row. Say: the commit, the worktree path, the slice, what
-changed, what you ran with results, and what you did not run. Fix what QA finds in new commits and hand each one back
-to QA, until QA records PASS at a commit.
+Commit, then hand the commit to the slice's QA seat with a queue row: the commit, the worktree path, what changed, and
+what you ran. Fix what QA finds in new commits and hand each one back to QA, until QA records PASS at a commit:
 
-Then hand that commit to the code reviewers, with a queue row for each and the same essentials. A fix for a reviewer's
-finding is a new commit: hand it to QA first, and to the reviewers again once QA has passed it, so QA and every
-reviewer record their proof at the commit the lead judges. If a Codex seat cannot reach the daemon, follow up with a
-`rig send` carrying those same essentials.
+- **BLOCKING:** fix it.
+- **CONCERNING:** fix it, or tell QA why it shouldn't change, with evidence.
+- **NOT-CLEAR:** QA couldn't tell; wait for the lead to decide.
 
-Tell the finder which commit answers which finding. If a finding is wrong, say why,
-with evidence. A disagreement that keeps coming back goes to the lead, who takes it to the person after the number of
-rounds the team settings allow.
+When QA first records PASS, the lead names the slice's two code reviewers: hand them that commit, a row each. Their
+findings come straight back to you. Fix them in a new commit, which goes to QA first and then back to both reviewers,
+saying which finding it answers. If a finding is wrong, say why, with evidence. A disagreement that keeps coming back
+goes to the lead.
 
-Do not push. Once the lead has judged the slice, the release manager pushes the branch and opens the pull request; it
-sends you CI failures and conflicts that need judgement as new rows.
+Don't push: once the lead has judged the slice, the release manager publishes it.
 
 ## Keep the branch current
 
-When the slice's base branch moves while you work, rebase onto it locally, resolve the conflicts and re-run the checks.
-The rebased commit is a new commit: hand it to QA like any other. Once QA passes it, hand it to the reviewers again
-only if the slice's own diff changed (`git range-diff` shows it); if it didn't, tell them and the lead the new commit,
-so the lead can judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's
-change goes to the lead.
+When the slice's base branch moves while you work, rebase onto it, resolve the conflicts and re-run the checks. After
+the pull request is open, rebase only when the lead asks you to. Hand the rebased commit to QA saying it is a rebase:
+onto which base, and whether `git range-diff` shows the slice's own diff changed, so QA can scope its checks. Once QA
+passes it, hand it to the reviewers again only if the diff changed; if it didn't, tell the lead the new commit, so it
+can judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's change goes to
+the lead.
 
-## Report to the lead
+## Tell the lead it's done
 
-Send the lead a report they can quote in the pull request: what changed, each command you ran with the commit and the
-result, and what you could not run. Say when the slice is done and at which commit, so the lead can judge its proof.
+Once both reviewers have recorded PASS at one commit, tell the lead: that commit, what changed in a sentence, and
+anything you couldn't run. The lead reads the rest from the proof.
 
 ## Close your row
 
-Before you close your row on the slice, add a short retrospective note to its slice progress: what slowed you or went
-wrong, and what would have prevented it.
+Close your row when the lead tells you the slice no longer needs you. If something on the slice cost you time, first
+add a retrospective note, as the rig's culture says ("Leave the next run better"):
 
 ```sh
-rig scope slice progress <slice> --mission <mission> --section Retrospective --add "backend builder: <note>"
+rig scope slice progress <slice> --mission <mission> --section Retrospective --add "<your seat> (<runtime>, <model>): <note>"
 ```
-
-When you pick up a specialization others should know to ask you about, such as a part of the code you now know well,
-tell the lead so it goes in the team's roster.
