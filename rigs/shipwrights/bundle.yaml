@@ -1,0 +1,19 @@
+# Read by OpenRig when it builds this rig into a bundle.
+#
+# GitHub-link builds carry both minimums. Local-folder builds must pass --min-cli-version
+# and --min-daemon-version to carry them into the archive. The team uses rig scope, rig
+# proof, typed external: queue blocks and rosters, all present in OpenRig 0.7.1.
+compatibility:
+  min_cli_version: "0.7.1"
+  min_daemon_version: "0.7.1"
+
+# preconditions: what to know and do before installing, shown before install. OpenRig shows
+# them; it doesn't run or check them.
+preconditions:
+  - name: "Install and run the rig as your normal user, not root: Claude Code refuses to bypass permissions as root or under sudo."
+  - name: "Open a shell where the seats will work: the root of your clone of the repository, or a folder that holds clones of several repositories, each set up the way its README says. Run the install from that shell with --cwd ."
+  - name: "Keep OpenRig's files out of your commits: in each clone, add CLAUDE.local.md, AGENTS.md, /.openrig/, .claude/settings.local.json and /.worktrees/ to .git/info/exclude (the README has the command). The lead adds any that are missing when it starts."
+  - name: "Optionally add OpenRig's public context pack, so the seats load it at start."
+    commands:
+      - rig context add --git https://github.com/mvschwarz/openrig-world
+  - name: "This team declares broad access and non-interruptive launches: Claude bypasses permissions and Codex runs unsandboxed and never asks."
