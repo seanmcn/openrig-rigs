@@ -40,14 +40,18 @@ Before you hand a commit on, review your diff against the slice's base with the 
 it finds that is yours to fix. The reviewers run the full review; this catches the obvious before it costs them a
 round.
 
-## Hand it to review and QA together
+## Hand it to QA, then to review
 
-Commit, then hand the commit to the code reviewers and to the QA seat at the same time, with a queue row for each.
-Nobody waits for anyone else. Say: the commit, the worktree path, the slice, what changed, what you ran with results,
-and what you did not run. If a Codex seat cannot reach the daemon, follow up with a `rig send` carrying those same
-essentials.
+Commit, then hand the commit to the QA seat with a queue row. Say: the commit, the worktree path, the slice, what
+changed, what you ran with results, and what you did not run. Fix what QA finds in new commits and hand each one back
+to QA, until QA records PASS at a commit.
 
-Fix findings in new commits and tell the finder which commit answers which finding. If a finding is wrong, say why,
+Then hand that commit to the code reviewers, with a queue row for each and the same essentials. A fix for a reviewer's
+finding is a new commit: hand it to QA first, and to the reviewers again once QA has passed it, so QA and every
+reviewer record their proof at the commit the lead judges. If a Codex seat cannot reach the daemon, follow up with a
+`rig send` carrying those same essentials.
+
+Tell the finder which commit answers which finding. If a finding is wrong, say why,
 with evidence. A disagreement that keeps coming back goes to the lead, who takes it to the person after the number of
 rounds the team settings allow.
 
