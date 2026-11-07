@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 328" width="720" height="328" role="img" aria-labelledby="team-to-rig-dark-title team-to-rig-dark-desc">
+  <title id="team-to-rig-dark-title">From a team to a running rig</title>
+  <desc id="team-to-rig-dark-desc">A team's rig.yaml, agent.yaml, start files and settings go into rig bundle install, which starts the rig's seats; its skills.md goes into install-skills.sh, which installs the skills the seats read.</desc>
+  <defs><marker id="team-to-rig-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="team-to-rig-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
+  <rect x="24" y="40" width="200" height="280" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <path d="M208,88 L240,88 Q248,88 248,96 L248,132 Q248,140 256,140 L296,140" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-muted)"/>
+  <path d="M208,152 L296,152" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-muted)"/>
+  <path d="M208,216 L240,216 Q248,216 248,208 L248,172 Q248,164 256,164 L296,164" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-muted)"/>
+  <path d="M208,280 L296,280" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-muted)"/>
+  <path d="M464,152 L528,152" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-accent)"/>
+  <path d="M464,280 L528,280" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-muted)"/>
+  <path d="M612,256 L612,176" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#team-to-rig-dark-arrow-muted)"/>
+  <text x="24" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">rigs/&lt;team&gt;/</text>
+  <text x="380" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">YOU RUN</text>
+  <text x="612" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">YOUR MACHINE</text>
+  <rect x="40" y="64" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="124" y="85" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">rig.yaml</text>
+  <text x="124" y="101" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">pods, seats, runtimes</text>
+  <rect x="40" y="128" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="124" y="149" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">agent.yaml</text>
+  <text x="124" y="165" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">profiles, guidance</text>
+  <rect x="40" y="192" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="124" y="213" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Start files</text>
+  <text x="124" y="229" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">culture, settings</text>
+  <rect x="40" y="256" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="124" y="277" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">skills.md</text>
+  <text x="124" y="293" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">skills it names</text>
+  <rect x="296" y="128" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="380" y="149" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">rig bundle install</text>
+  <text x="380" y="165" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">--target, --cwd</text>
+  <rect x="296" y="256" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="380" y="277" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">install-skills.sh</text>
+  <text x="380" y="293" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">at user level</text>
+  <rect x="528" y="128" width="168" height="48" rx="6" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.6"/>
+  <text x="612" y="149" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f08a59" text-anchor="middle">Running rig</text>
+  <text x="612" y="165" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">a session per seat</text>
+  <rect x="528" y="256" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="612" y="277" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Your skills</text>
+  <text x="612" y="293" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">~/.claude, ~/.codex</text>
+  <text x="620" y="219" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">SEATS READ</text>
+</svg>

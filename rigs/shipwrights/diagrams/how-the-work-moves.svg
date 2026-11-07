@@ -16,7 +16,7 @@
   <path d="M160,640 L784,640 Q792,640 792,648 L792,696" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#how-the-work-moves-arrow-muted)"/>
   <path d="M416,264 L416,296" fill="none" stroke="#4f5d75" stroke-width="1.4" marker-end="url(#how-the-work-moves-arrow-muted)"/>
   <path d="M464,296 L464,264" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#how-the-work-moves-arrow-muted)"/>
-  <path d="M648,376 L648,248 Q648,240 640,240 L512,240" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#how-the-work-moves-arrow-muted)"/>
+  <path d="M640,376 L640,248 Q640,240 632,240 L512,240" fill="none" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#how-the-work-moves-arrow-muted)"/>
   <text x="88" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#5a6580" text-anchor="middle" letter-spacing="1">YOU</text>
   <text x="264" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#5a6580" text-anchor="middle" letter-spacing="1">LEAD &amp; PLANNER</text>
   <text x="440" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#5a6580" text-anchor="middle" letter-spacing="1">BUILDER &amp; QA</text>
@@ -51,9 +51,9 @@
   <text x="792" y="733" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#5a6580" text-anchor="middle">the slice is done</text>
   <text x="472" y="283" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4f5d75" text-anchor="start" letter-spacing="0.6">FAILS</text>
   <text x="576" y="310" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4f5d75" text-anchor="middle" letter-spacing="0.6">PASSES</text>
-  <text x="656" y="311" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4f5d75" text-anchor="start" letter-spacing="0.6">FINDINGS</text>
-  <rect x="0" y="779" width="14" height="10" rx="2" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.4"/>
-  <text x="22" y="788" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#5a6580">your step</text>
-  <line x1="105.80000000000001" y1="784" x2="121.80000000000001" y2="784" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4"/>
-  <text x="127.80000000000001" y="788" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#5a6580">back to an earlier step</text>
+  <text x="648" y="311" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#4f5d75" text-anchor="start" letter-spacing="0.6">FINDINGS</text>
+  <rect x="16" y="779" width="14" height="10" rx="2" fill="rgba(191,69,32,0.08)" stroke="#bf4520" stroke-width="1.4"/>
+  <text x="38" y="788" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#5a6580">your step</text>
+  <line x1="121.80000000000001" y1="784" x2="137.8" y2="784" stroke="#4f5d75" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <text x="143.8" y="788" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#5a6580">back to an earlier step</text>
 </svg>

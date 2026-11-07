@@ -61,7 +61,7 @@ the lead to pause it: its rows are blocked until you resume it. Neither stops a 
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/slice-lifecycle-dark.svg">
-  <img alt="A slice's lifecycle: spec locked, building with QA until QA passes, in review, judged and published, with reviewers' findings looping back to building and a rebase back to judged; from any phase it can be paused and resumed, or stopped; once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
+  <img alt="A slice's lifecycle: spec locked, building with QA until QA passes, in review, judged and published, with reviewers' findings and a failing CI run looping back to building and a rebase back to judged; from any phase it can be paused and resumed, or stopped; once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
 </picture>
 
 ## Settings
@@ -157,6 +157,11 @@ pinned to a commit (OpenRig resolves agent specs only from disk), then in your o
 - point the profiles' skill IDs at your own skills where you swap one;
 - add or replace startup files for your own rules, and keep the role files as they are, so this team's improvements
   keep reaching you.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/seat-start-dark.svg">
+  <img alt="What a seat starts with: every seat gets the culture, the start steps, the settings and the skills; each profile adds its role guidance, and each seat its own start files. In an overlay, the settings are your copy, any skill can be swapped for yours, the role guidance stays as it is, and you add start files for your own rules." src="diagrams/seat-start.svg">
+</picture>
 
 ## Permissions
 
