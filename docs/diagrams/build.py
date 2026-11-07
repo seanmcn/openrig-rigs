@@ -14,7 +14,8 @@ from pathlib import Path
 from xml.sax.saxutils import escape
 
 ROOT = Path(__file__).resolve().parents[2]
-OUT = ROOT / "rigs" / "shipwrights" / "diagrams"
+TEAM = ROOT / "rigs" / "shipwrights" / "diagrams"
+REPO = ROOT / "docs" / "diagrams"
 
 SANS = "Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif"
 MONO = "'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace"
@@ -41,8 +42,14 @@ class Canvas:
     def __init__(self, t: Tokens, slug: str, width: int, height: int, title: str, desc: str):
         self.t, self.slug, self.width, self.height = t, slug, width, height
         self.title, self.desc = title, desc
+        self.legend_x = 0  # where the legend strip starts, in line with the content's left edge
         self.back: list[str] = []  # connectors and lines, drawn before nodes
         self.front: list[str] = []
+
+    def rect(self, x: int, y: int, w: int, h: int, stroke: str | None = None, rx: int = 0) -> None:
+        """An unfilled outline, behind everything else: a zone or a band of a layer stack."""
+        self.back.insert(0, f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{rx}" fill="none" '
+                            f'stroke="{stroke or self.t.rule}" stroke-width="1"/>')
 
     # Nodes ---------------------------------------------------------------------------------------------------------
     def node(self, x: int, y: int, w: int, h: int, name: str, sub: str = "", kind: str = "step") -> None:
@@ -95,7 +102,7 @@ class Canvas:
     def svg(self, legend: list[tuple[str, str]]) -> str:
         t = self.t
         y = self.height - 20
-        x = 0
+        x = self.legend_x
         items = []
         for kind, text in legend:
             if kind == "focal":
@@ -165,6 +172,7 @@ def work(t: Tokens, slug: str) -> Canvas:
                "A slice goes from your goal through the lead, a builder and QA until QA passes, then two reviewers, "
                "the lead's judgement and the release manager, to your merge and its delivery; reviewers' findings "
                "go back to the builder and through QA again.")
+    c.legend_x = (LANE_W - NODE_W) // 2
     for k, lane in enumerate(LANES):
         c.eyebrow(k * LANE_W + LANE_W / 2, 28, lane)
         if k:
@@ -197,9 +205,9 @@ def work(t: Tokens, slug: str) -> Canvas:
     c.label(bcx + 32, (by + NODE_H + qy) / 2 + 3, "fails", anchor="start")
     c.label(3 * LANE_W + 48, qy + NODE_H / 2 - 10, "passes")
 
-    # Reviewers' findings go back to the builder, and so through QA again.
+    # Reviewers' findings go back to the builder, and so through QA again. The label stays clear of the next lane's rule.
     rx, ry = box(4)
-    fx = rx + NODE_W / 2 + 32
+    fx = rx + NODE_W / 2 + 24
     c.arrow([(fx, ry), (fx, by + NODE_H / 2), (bx + NODE_W, by + NODE_H / 2)], "dashed")
     c.label(fx + 8, (by + NODE_H / 2 + ry) / 2 + 3, "findings", anchor="start")
     return c
@@ -211,11 +219,12 @@ PW, GAP = 128, 56
 
 
 def lifecycle(t: Tokens, slug: str) -> Canvas:
-    c = Canvas(t, slug, 920, 400, "A slice's lifecycle",
+    c = Canvas(t, slug, 920, 424, "A slice's lifecycle",
                "A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed, judged, and "
-               "its pull requests published; findings and rebases loop back, it can be paused or stopped from any phase, and it is "
-               "delivered once you merge.")
-    rail_y = 80
+               "its pull requests published; findings, a failing CI run and a rebase loop back, it can be paused or "
+               "stopped from any phase, and it is delivered once you merge.")
+    c.legend_x = 24
+    rail_y = 104
     xs = [24 + i * (PW + GAP) for i in range(5)]
     phases = [("Spec locked", "lead"), ("Building", "builder and QA"), ("In review", "r1 and r2"),
               ("Judged", "lead"), ("Published", "release manager")]
@@ -228,21 +237,25 @@ def lifecycle(t: Tokens, slug: str) -> Canvas:
         c.arrow([(xs[i] + PW, cy), (xs[i + 1], cy)])
         c.label(xs[i] + PW + GAP / 2, cy - 10, word)
 
-    # Loops back, above the rail.
+    # Loops back, above the rail: two short ones, and CI's long one over both, each on its own attach points.
     top = rail_y - 24
     for later, earlier, word in ((2, 1, "findings"), (4, 3, "rebase")):
         sx, ex = xs[later] + 40, xs[earlier] + 88
         c.arrow([(sx, rail_y), (sx, top), (ex, top), (ex, rail_y)], "dashed")
         c.label((sx + ex) / 2, top - 10, word)
+    high = top - 40
+    sx, ex = xs[4] + 88, xs[1] + 40
+    c.arrow([(sx, rail_y), (sx, high), (ex, high), (ex, rail_y)], "dashed")
+    c.label((sx + ex) / 2, high - 10, "ci fails")
 
     # From any phase: a bracket under the rail that pause and stop leave from.
-    bracket_y, bracket_end = 152, xs[4] + 56
+    bracket_y, bracket_end = rail_y + 72, xs[4] + 56
     c.line(24, bracket_y, bracket_end, bracket_y, t.muted)
     c.line(24, bracket_y - 8, 24, bracket_y, t.muted)
     c.line(bracket_end, bracket_y - 8, bracket_end, bracket_y, t.muted)
     c.label(xs[2] + PW / 2, bracket_y - 8, "from any phase")
 
-    held_y = 196
+    held_y = bracket_y + 44
     c.eyebrow(24, held_y - 12, "Held", anchor="start")
     px = xs[1]
     c.node(px, held_y, PW, NODE_H, "Paused", "rows blocked", "held")
@@ -251,7 +264,7 @@ def lifecycle(t: Tokens, slug: str) -> Canvas:
     c.arrow([(px + 88, held_y), (px + 88, bracket_y)], "dashed")
     c.label(px + 96, bracket_y + 26, "resume", anchor="start")
 
-    out_y = 288
+    out_y = held_y + 92
     c.eyebrow(24, out_y - 12, "Outcomes", anchor="start")
     sx = xs[0] + 96
     c.node(xs[0], out_y, PW, NODE_H, "Stopped", "rows closed", "end")
@@ -265,19 +278,106 @@ def lifecycle(t: Tokens, slug: str) -> Canvas:
     return c
 
 
-DIAGRAMS = {"how-the-work-moves": (work, [("focal", "your step"), ("dashed", "back to an earlier step")]),
+# From a team folder to a running rig: what a person runs, and what each step reads and makes. -----------------------
+
+def team_to_rig(t: Tokens, slug: str) -> Canvas:
+    c = Canvas(t, slug, 720, 328, "From a team to a running rig",
+               "A team's rig.yaml, agent.yaml, start files and settings go into rig bundle install, which starts the "
+               "rig's seats; its skills.md goes into install-skills.sh, which installs the skills the seats read.")
+    w, h = 168, 48
+    left, mid, right = 40, 296, 528
+    rows = [64, 128, 192, 256]
+    c.rect(24, 40, 200, 280, rx=8)
+    c.text(24, 28, "rigs/<team>/", MONO, 10, t.soft, anchor="start", spacing=1)  # a path keeps its case
+    c.eyebrow(mid + w / 2, 28, "You run")
+    c.eyebrow(right + w / 2, 28, "Your machine")
+
+    team = [("rig.yaml", "pods, seats, runtimes"), ("agent.yaml", "profiles, guidance"),
+            ("Start files", "culture, settings"), ("skills.md", "skills it names")]
+    for y, (name, sub) in zip(rows, team):
+        c.node(left, y, w, h, name, sub)
+
+    install_y, skills_y = rows[1], rows[3]
+    c.node(mid, install_y, w, h, "rig bundle install", "--target, --cwd")
+    c.node(mid, skills_y, w, h, "install-skills.sh", "at user level")
+    c.node(right, install_y, w, h, "Running rig", "a session per seat", "focal")
+    c.node(right, skills_y, w, h, "Your skills", "~/.claude, ~/.codex")
+
+    # Three of the team's files fan into the install, each at its own point on its left edge.
+    elbow = left + w + 40
+    for y, port in zip(rows[:3], (install_y + 12, install_y + 24, install_y + 36)):
+        cy = y + h / 2
+        c.arrow([(left + w, cy), (elbow, cy), (elbow, port), (mid, port)] if cy != port else [(left + w, cy), (mid, cy)])
+    c.arrow([(left + w, skills_y + h / 2), (mid, skills_y + h / 2)])
+    c.arrow([(mid + w, install_y + h / 2), (right, install_y + h / 2)], "accent")
+    c.arrow([(mid + w, skills_y + h / 2), (right, skills_y + h / 2)])
+    sx = right + w / 2
+    c.arrow([(sx, skills_y), (sx, install_y + h)])
+    c.label(sx + 8, (install_y + h + skills_y) / 2 + 3, "seats read", anchor="start")
+    return c
+
+
+# What a seat starts with, from what every seat shares to what only it gets. ----------------------------------------
+
+def seat_start(t: Tokens, slug: str) -> Canvas:
+    c = Canvas(t, slug, 760, 416, "What a seat starts with",
+               "Every seat starts with the team's culture, start steps, settings and skills, then its profile's role "
+               "guidance and its own start files; an overlay replaces the settings, swaps skills and adds start files.")
+    sx, sw, top, rh = 136, 432, 48, 56
+    layers = [  # (scope, name, files, what an overlay does)
+        ("every seat", "Culture", "CULTURE.md", ""),
+        ("every seat", "Start steps", "startup/context.md", ""),
+        ("every seat", "Settings", "settings.md", "your copy"),
+        ("every seat", "Skills", "openrig-core, user-level", "swap any for yours"),
+        ("per profile", "Role guidance", "guidance/<role>.md", "keep as it is"),
+        ("per seat", "Its own start files", "startup/review-pair-*.md", "add your own rules"),
+    ]
+    c.eyebrow(24, 28, "Scope", anchor="start")
+    c.eyebrow(sx + 20, 28, "Layer", anchor="start")
+    c.eyebrow(sx + sw - 20, 28, "From", anchor="end")
+    c.eyebrow(sx + sw + 24, 28, "In an overlay", anchor="start")
+    c.rect(sx, top, sw, rh * len(layers), t.muted, rx=6)
+    for i, (_, name, files, overlay) in enumerate(layers):
+        y = top + i * rh
+        if i:
+            c.line(sx, y, sx + sw, y)
+        c.text(sx + 20, y + rh / 2 + 4.5, name, SANS, 13, t.ink, weight=600, anchor="start")
+        c.text(sx + sw - 20, y + rh / 2 + 4, files, MONO, 10, t.soft, anchor="end")
+        if overlay:
+            c.label(sx + sw + 24, y + rh / 2 + 3, overlay, anchor="start")
+
+    # A bracket per scope on the left, so the scope narrows down the stack.
+    i = 0
+    for scope in ("every seat", "per profile", "per seat"):
+        n = sum(1 for layer in layers if layer[0] == scope)
+        y0, y1 = top + i * rh + 8, top + (i + n) * rh - 8
+        bx = sx - 16
+        c.line(bx, y0, bx, y1, t.muted)
+        c.line(bx, y0, bx + 6, y0, t.muted)
+        c.line(bx, y1, bx + 6, y1, t.muted)
+        c.label(bx - 8, (y0 + y1) / 2 + 3, scope, anchor="end")
+        i += n
+    c.arrow([(28, top + 8), (28, top + rh * len(layers) - 8)])
+    c.label(24, top + rh * len(layers) + 20, "narrower", anchor="start")
+    return c
+
+
+# name: (draw, legend, where its SVGs go)
+DIAGRAMS = {"how-the-work-moves": (work, [("focal", "your step"), ("dashed", "back to an earlier step")], TEAM),
             "slice-lifecycle": (lifecycle, [("focal", "the outcome you want"), ("held", "held, resumable"),
-                                            ("dashed", "back to an earlier phase")])}
+                                            ("dashed", "back to an earlier phase")], TEAM),
+            "seat-start": (seat_start, [], TEAM),
+            "team-to-rig": (team_to_rig, [], REPO)}
 
 
 def main() -> None:
-    OUT.mkdir(parents=True, exist_ok=True)
-    for name, (draw, legend) in DIAGRAMS.items():
+    for name, (draw, legend, out) in DIAGRAMS.items():
+        out.mkdir(parents=True, exist_ok=True)
         for suffix, tokens in (("", LIGHT), ("-dark", DARK)):
             slug = name + suffix
             canvas = draw(tokens, slug)
-            (OUT / f"{slug}.svg").write_text(canvas.svg(legend))
-            print(f"wrote {(OUT / f'{slug}.svg').relative_to(ROOT)}")
+            (out / f"{slug}.svg").write_text(canvas.svg(legend))
+            print(f"wrote {(out / f'{slug}.svg').relative_to(ROOT)}")
 
 
 if __name__ == "__main__":
