@@ -1,0 +1,218 @@
+version: "0.2"
+name: shipwrights
+summary: >
+  An engineering crew built on OpenRig's Workshop: a lead who turns your goal into
+  missions and slices and judges the proof, a peer on the other runtime who takes over
+  if the lead goes down, a planner, a backend builder and a frontend builder, a QA seat, two
+  independent code reviewers on different runtimes, and a release manager who publishes
+  and keeps each pull request mergeable. Launch it with --cwd in a clone of your
+  repository, or in a folder that holds several clones.
+
+culture_file: CULTURE.md
+
+docs:
+  - path: README.md
+
+# Start steps shared by every seat; each seat's role file comes from its profile.
+startup:
+  files:
+    - path: startup/context.md
+      delivery_hint: send_text
+      required: true
+    # The team settings. Replace this file to change a setting; every seat reads it at
+    # start and at refocus.
+    - path: settings.md
+      delivery_hint: send_text
+      required: true
+  # Each seat proves it received its start steps and can reach OpenRig.
+  # `rig ps --nodes` shows ORIENTED: verified, or missing until it does.
+  actions:
+    - type: startup_proof
+      value: authenticated
+      idempotent: true
+
+# OpenRig writes its instruction blocks into each seat's working directory. Claude Code
+# seats get them in CLAUDE.local.md, so they stay out of a project's own CLAUDE.md. Codex
+# seats always use AGENTS.md. The README says how to keep both out of your pull requests.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+
+# Every seat launches with permission prompts off. The README's "Permissions" section says
+# what that means and how to go back to OpenRig's default posture.
+permission_policy: builtin:yolo
+non_interruptive: true
+
+# More builders join the dev pod as members with the builder-backend or builder-frontend profile.
+pods:
+  - id: orch
+    label: Orchestration
+    summary: Turns your goal into missions and slices, assigns them and judges their proof. The peer takes over if the lead goes down.
+    members:
+      - id: lead
+        agent_ref: "local:agents/shipwrights"
+        profile: lead
+        runtime: codex
+        cwd: "."
+        startup:
+          files:
+            - path: startup/lead-first-move.md
+              delivery_hint: send_text
+              required: true
+            - path: startup/review-pair-lead.md
+              delivery_hint: send_text
+              required: true
+      # The lead's guidance on the other runtime. It drives only while the lead is down.
+      - id: peer
+        agent_ref: "local:agents/shipwrights"
+        profile: peer
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-lead.md
+              delivery_hint: send_text
+              required: true
+    edges:
+      - kind: can_observe
+        from: peer
+        to: lead
+
+  - id: plan
+    label: Planning
+    summary: Cuts goals and issues into missions and slices with specs, dependencies and a build order.
+    members:
+      - id: planner
+        agent_ref: "local:agents/shipwrights"
+        profile: planner
+        runtime: claude-code
+        cwd: "."
+    edges: []
+
+  - id: dev
+    label: Development
+    summary: Builds each slice in its own worktree.
+    members:
+      - id: backend
+        agent_ref: "local:agents/shipwrights"
+        profile: builder-backend
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-builder.md
+              delivery_hint: send_text
+              required: true
+      # Takes slices tagged UI or both.
+      - id: frontend
+        agent_ref: "local:agents/shipwrights"
+        profile: builder-frontend
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-builder.md
+              delivery_hint: send_text
+              required: true
+    edges: []
+
+  - id: check
+    label: Checking
+    summary: Runs the checks each slice calls for and records what they proved.
+    members:
+      - id: qa
+        agent_ref: "local:agents/shipwrights"
+        profile: qa
+        runtime: claude-code
+        cwd: "."
+    edges: []
+
+  # Two independent reviewers of the same commit, one per runtime.
+  - id: review
+    label: Review
+    summary: Two reviewers check the same commit independently; the lead compares their findings.
+    members:
+      - id: r1
+        agent_ref: "local:agents/shipwrights"
+        profile: code-reviewer
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-reviewer.md
+              delivery_hint: send_text
+              required: true
+      - id: r2
+        agent_ref: "local:agents/shipwrights"
+        profile: code-reviewer
+        runtime: codex
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-reviewer.md
+              delivery_hint: send_text
+              required: true
+    edges: []
+
+  - id: release
+    label: Release
+    summary: Publishes each judged slice's pull request, watches CI and keeps it mergeable until it is merged.
+    members:
+      - id: manager
+        agent_ref: "local:agents/shipwrights"
+        profile: release-manager
+        runtime: codex
+        cwd: "."
+    edges: []
+
+edges:
+  - kind: delegates_to
+    from: orch.lead
+    to: plan.planner
+  - kind: delegates_to
+    from: orch.lead
+    to: dev.backend
+  - kind: delegates_to
+    from: orch.lead
+    to: dev.frontend
+  - kind: delegates_to
+    from: orch.lead
+    to: release.manager
+  - kind: delegates_to
+    from: dev.backend
+    to: check.qa
+  - kind: delegates_to
+    from: dev.backend
+    to: review.r1
+  - kind: delegates_to
+    from: dev.backend
+    to: review.r2
+  - kind: delegates_to
+    from: dev.frontend
+    to: check.qa
+  - kind: delegates_to
+    from: dev.frontend
+    to: review.r1
+  - kind: delegates_to
+    from: dev.frontend
+    to: review.r2
+  - kind: delegates_to
+    from: release.manager
+    to: dev.backend
+  - kind: delegates_to
+    from: release.manager
+    to: dev.frontend
+  - kind: can_observe
+    from: orch.lead
+    to: check.qa
+  - kind: can_observe
+    from: orch.lead
+    to: review.r1
+  - kind: can_observe
+    from: orch.lead
+    to: review.r2
+  - kind: can_observe
+    from: orch.peer
+    to: plan.planner
+  - kind: can_observe
+    from: orch.peer
+    to: release.manager

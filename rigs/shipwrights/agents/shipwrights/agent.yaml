@@ -1,0 +1,162 @@
+name: shipwrights
+version: "1.0"
+description: >
+  A seat on the shipwrights rig, which works in a clone of a repository, or in a folder
+  that holds several clones. The rig member's profile picks the role: lead, peer, planner,
+  builder-backend, builder-frontend, qa, code-reviewer or release-manager. (An OpenRig profile
+  selects resources and startup files; it is not a Codex permission profile.)
+
+# Claude Code and Codex seats select OpenRig's own openrig-core plugin from the daemon's
+# OpenRig home, so they get the OpenRig skills (and the plugin's hooks) that match the
+# person's installed OpenRig. The only skill the team ships is Workshop's
+# using-the-tui-together.
+#
+# The other skills the guidance names are not shipped: the person installs them at user
+# level (~/.claude/skills and ~/.codex/skills), where every seat finds them, or supplies
+# their own under the same names. ../../skills.md lists them, and ../../install-skills.sh
+# installs them.
+
+resources:
+  skills:
+    - { id: using-the-tui-together, path: skills/using-the-tui-together }
+  plugins:
+    # OpenRig's own plugin, as the daemon seeded it into its OpenRig home.
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+  runtime_resources:
+    # Turns on activity reporting for Claude Code seats. Codex seats skip it.
+    - id: claude-activity-hooks
+      path: runtime/claude-activity-hooks.json
+      runtime: claude-code
+      type: claude_activity_hooks
+
+# Every profile selects only what OpenRig provides. The skills each seat uses beyond these
+# are installed at user level; ../../skills.md says which seat uses which.
+profiles:
+  lead:
+    summary: Turns the person's goal into scoped slices, assigns them, judges their proof and keeps the PR description true.
+    preferences:
+      runtime: codex
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/lead.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  peer:
+    summary: Runs the lead's guidance on the other runtime, follows the lead's work, and drives only while the lead's seat is down.
+    preferences:
+      runtime: claude-code
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/lead.md
+          delivery_hint: send_text
+          required: true
+        - path: guidance/peer.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  planner:
+    summary: Turns goals and issues into missions and slices with specs, dependencies and a build order.
+    preferences:
+      runtime: claude-code
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/planner.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  builder-backend:
+    summary: Takes backend slices. Makes the change in its own worktree, reviews its own diff and proves it by effect.
+    preferences:
+      runtime: claude-code
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/builder-backend.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  builder-frontend:
+    summary: Builds on the backend builder's guidance. It takes UI slices end to end, checks them in a real browser and runs impeccable's reviews and detector.
+    preferences:
+      runtime: claude-code
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/builder-backend.md
+          delivery_hint: send_text
+          required: true
+        - path: guidance/builder-frontend.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  qa:
+    summary: Runs the test layers the change calls for and records what each one proved.
+    preferences:
+      runtime: claude-code
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/qa.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  code-reviewer:
+    summary: Reviews the handed-off commit with the named review skills and runs the tests that bear on it.
+    preferences:
+      runtime: claude-code
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/code-reviewer.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  release-manager:
+    summary: Publishes each judged slice's pull request with its gate, watches CI and keeps the pull request mergeable until it is merged.
+    preferences:
+      runtime: codex
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/release-manager.md
+          delivery_hint: send_text
+          required: true
+      actions: []
