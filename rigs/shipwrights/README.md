@@ -1,15 +1,37 @@
 # Shipwrights
 
-An engineering team for [OpenRig](https://github.com/mvschwarz/openrig), built on OpenRig's
-[Workshop](https://github.com/mvschwarz/openrig-world/tree/d544888b4c9973164e7986d7e0344a7ceca89a8c/rigs/workshop-review-pair)
-team. You bring a goal. The planner cuts it into a mission of slices, each one change with one pull request in every
-repository it touches. The lead hands the slices to the builders and judges the proof that QA and two independent
-reviewers record, and the release manager publishes each pull request and keeps it mergeable. You decide what is
-merged.
+An engineering team for [OpenRig](https://github.com/mvschwarz/openrig). You give it a goal, and it comes back with
+pull requests that have been planned, built, tested and reviewed, for you to merge. It works in a clone of one
+repository, or in a folder that holds clones of several, and follows each repository's own `AGENTS.md` there.
 
-It works in a clone of one repository, or in a folder that holds clones of several: the seats read each repository's
-own `AGENTS.md` before they start a slice there, and run every command from inside the slice's worktree. The words
-these docs use, such as seat, slice and proof, are in the repository's [glossary](../../GLOSSARY.md).
+## Why Shipwrights rather than Workshop
+
+Shipwrights starts from OpenRig's
+[Workshop](https://github.com/mvschwarz/openrig-world/tree/d544888b4c9973164e7986d7e0344a7ceca89a8c/rigs/workshop-review-pair)
+team: a lead, one builder, a QA seat, and two code reviewers on different runtimes who review each commit without
+seeing each other's findings. Shipwrights keeps that review pair, because I've had much better results from two
+reviewers on different providers than from one, and changes the rest in four ways:
+
+- **Code review with several skills.** Each review runs `code-review`, `ponytail-review` and `differential-review`, and
+  adds Trail of Bits' checks when a change touches dependencies, APIs or CI workflows.
+- **Built on Matt Pocock's skills.** Planning, building and testing follow his
+  [engineering skills](https://github.com/mattpocock/skills) (`triage`, `wayfinder`, `implement`, `tdd`,
+  `diagnosing-bugs` and others), with `impeccable` for UI work. [`skills.md`](skills.md) lists every skill and where
+  it comes from.
+- **More than one stream of work.** Two backend builders and a frontend builder, each with its own QA seat, and two
+  review pairs let two or three slices move at once. You could run copies of the team on more machines to go further,
+  but nothing yet stops two copies taking the same work: a way to claim work across copies is next.
+- **A seat for every step.** A planner cuts each goal into slices, QA checks every commit before review, a release
+  manager publishes and keeps each pull request mergeable, and a peer on the other runtime stands in if the lead goes
+  down. Workers start fresh for each slice, so what carries over between slices is the record: the spec, the slice
+  progress and the proof.
+
+The runtime each seat uses is my current suggestion. I'm trying different mixes and measuring them, and the
+recommended preset will change as results come in; [`configurations.yaml`](configurations.yaml) lets you pick your own.
+
+The words these docs use, such as seat, slice and proof, are in the repository's [glossary](../../GLOSSARY.md).
+
+## The seats
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
