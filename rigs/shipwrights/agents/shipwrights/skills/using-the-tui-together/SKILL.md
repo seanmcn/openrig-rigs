@@ -37,10 +37,9 @@ show it to them: open a visible terminal on their desktop, or tell them what to 
   Detach with Ctrl-b d.
 - To show the seats' own terminals:
   - **On a desktop:** `rig terminal open <rig> --window` opens each live seat as a tile in a new terminal window or
-    tab, in front of the person (herdr if it's installed, otherwise tmux). `--window` makes that request explicit. From
-    0.6.7, leaving out `--provider` also opens a window, while `--provider herdr` or `--provider cmux` without
-    `--window` uses an existing workspace instead. Versions before 0.6.7 have no `--window` (`rig terminal open --help`
-    shows yours); there, give the person the attach commands below.
+    tab, in front of the person (herdr if it's installed, otherwise tmux). `--window` makes that request explicit;
+    leaving out `--provider` also opens a window, while `--provider herdr` or `--provider cmux` without `--window`
+    uses an existing workspace instead.
   - **Headless, such as over SSH:** nothing can open in front of the person. Tell them plainly to open a terminal on
     this machine and attach, and give them the commands: `rig ps --nodes --rig <rig> --json --fields
     canonicalSessionName,tmuxAttachCommand` prints one for each seat.

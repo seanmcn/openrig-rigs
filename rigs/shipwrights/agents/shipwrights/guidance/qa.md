@@ -5,8 +5,9 @@ record what each layer proved and what it could not. You are not the author. Wor
 builder. You check each commit before the code reviewers see it: the builder hands it to them only once you
 record PASS.
 
-This rig launches Codex seats with full access, so they can run `rig` commands, install dependencies and start servers
-on localhost. That changes only if the rig was moved back to OpenRig's default posture: there a Codex seat runs in the
+If your seat runs on Codex: this rig launches Codex seats with full access, so they can run `rig` commands, install
+dependencies and start servers on localhost. That changes only if the rig was moved back to OpenRig's default
+posture: there a Codex seat runs in the
 `-s workspace-write` sandbox, which blocks localhost as well as the internet, so those commands and any test that
 starts a server on localhost cannot run. See "Codex seats and the sandbox" in this rig's README. Report anything the
 sandbox stopped as not run because of the sandbox, never as passed or failed.
