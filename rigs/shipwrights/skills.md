@@ -4,8 +4,8 @@ The team's guidance names skills by name, such as "follow the `implement` skill"
 install them at user level, where every seat finds them, or supply your own versions under the same names. Claude
 Code seats read skills from `~/.claude/skills`, and Codex seats from `~/.codex/skills`.
 
-OpenRig provides the rest: its `openrig-core` plugin and its skills, and Workshop's `using-the-tui-together`, which
-this team ships.
+The rest come with the team: OpenRig provides its `openrig-core` plugin and its skills, and the team ships
+Workshop's `using-the-tui-together`.
 
 ## Install them
 
@@ -26,7 +26,7 @@ Code and Codex.
 
 ## The skills
 
-**Required** skills are named in a step of the guidance; a seat without one can't do that step as written.
+**Required** skills are named in a step of the guidance, `CULTURE.md` included, since every seat reads it; a seat without one can't do that step as written.
 **Optional** ones help the seats listed but no step names them. **Seats** are the profiles in
 `agents/shipwrights/agent.yaml`; `all` is every seat. The commit is the one this team was last checked with; a
 newer one usually works. This table is the only list: the install script and `scripts/check-team.py` both read it.
@@ -41,7 +41,7 @@ newer one usually works. This table is the only list: the install script and `sc
 | `to-tickets` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/to-tickets` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |
 | `wayfinder` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/wayfinder` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |
 | `implement` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/implement` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend | required |
-| `tdd` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/tdd` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend, qa | required |
+| `tdd` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/tdd` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend | required |
 | `diagnosing-bugs` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/diagnosing-bugs` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend, qa | required |
 | `code-review` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/code-review` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | code-reviewer | required |
 | `differential-review` | [trailofbits/skills](https://github.com/trailofbits/skills) | `plugins/differential-review/skills/differential-review` | `e4dd0bb5b15535f7c5a0834187dffba6ac37e4ff` | CC-BY-SA-4.0 | code-reviewer | required |
