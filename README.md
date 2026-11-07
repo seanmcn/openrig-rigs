@@ -1,21 +1,19 @@
 # openrig-rigs
 
-Teams for [OpenRig](https://github.com/mvschwarz/openrig), each a folder under `rigs/` that installs as a bundle.
+Teams for [OpenRig](https://github.com/mvschwarz/openrig), each a folder under `rigs/` that installs as a bundle. The
+words these docs use, such as team, rig, seat and slice, are in the [glossary](GLOSSARY.md).
 
 | Team | What it is |
 |---|---|
-| [`rigs/shipwrights`](rigs/shipwrights) | An engineering crew built on OpenRig's Workshop: a lead, a builder, QA and two independent reviewers who take a goal to judged, mergeable pull requests. |
+| [`rigs/shipwrights`](rigs/shipwrights) | An engineering team built on OpenRig's Workshop: nine seats, from a lead and a planner through backend and frontend builders, QA and two independent reviewers to a release manager, who take a goal to judged, mergeable pull requests. |
 
-Install a team from its GitHub link at a full commit ID; each team's README has the commands.
+Each team's README says how to install it.
 
 ## Working on a team
 
 A team ships no third-party skills. Its `skills.md` lists the skills its guidance names, each with its source, a
 suggested commit and its licence, and its `install-skills.sh` installs them at user level for Claude Code and Codex.
 
-- `scripts/check-team.py rigs/<team>` checks the team: its settings, that every skill its guidance names is in
-  `skills.md` with a source, commit and licence, that `install-skills.sh` reads that table, that its profiles select
-  only skills inside the team folder, the rules its role guidance relies on, and `rig bundle check` when `rig` is
-  installed. Set
-  `TEAM_BLOCKLIST` to a comma-separated list of words the team must never contain, such as names from the setup it was
-  first built for.
+`scripts/check-team.py rigs/<team>` checks a team against what its README promises; the script's docstring lists every
+check. Set `TEAM_BLOCKLIST` to a comma-separated list of words the team must never contain, such as names from the
+setup it was first built for.
