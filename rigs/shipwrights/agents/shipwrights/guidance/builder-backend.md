@@ -60,9 +60,11 @@ sends you CI failures and conflicts that need judgement as new rows.
 
 ## Keep the branch current
 
-When the slice's base branch moves while you work, rebase onto it locally, resolve the conflicts, re-run the checks,
-and tell the reviewers, QA and the lead what changed and at which commit. A conflict that needs a judgement about
-someone else's change goes to the lead.
+When the slice's base branch moves while you work, rebase onto it locally, resolve the conflicts and re-run the checks.
+The rebased commit is a new commit: hand it to QA like any other. Once QA passes it, hand it to the reviewers again
+only if the slice's own diff changed (`git range-diff` shows it); if it didn't, tell them and the lead the new commit,
+so the lead can judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's
+change goes to the lead.
 
 ## Report to the lead
 
