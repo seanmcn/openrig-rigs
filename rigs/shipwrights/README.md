@@ -36,7 +36,7 @@ or builder-frontend profile.
 
 1. The planner records your goal or issues as a mission in OpenRig's work tree (`rig scope`), with its slices and the
    dependencies between them. Each slice's `SPEC.md` lists the repositories it touches in merge order and ends with a
-   proof contract ([`planner.md`](agents/shipwrights/guidance/planner.md)). The lead locks each spec.
+   proof contract ([`slice-spec.md`](startup/slice-spec.md)). The lead locks each spec.
 2. The lead hands each slice to a builder as a queue row: slices tagged UI or both to the frontend builder, backend
    slices to the backend builder ([`lead.md`](agents/shipwrights/guidance/lead.md), "Hand it on").
 3. The builder hands each commit to QA, and they go back and forth until QA passes one. Then both reviewers review

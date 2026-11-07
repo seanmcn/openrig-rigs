@@ -113,7 +113,7 @@ queue row, any goal or set of issues that needs cutting into more than one slice
 with their specs, dependencies and build order, and hands them back to you. Cut a single small slice yourself when
 handing it over would cost more than doing it.
 
-Either way, each slice's SPEC meets the standard below before you lock it. Review the planner's specs against it,
+Either way, each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the planner's specs against it,
 send back what falls short, and lock each one with `rig scope slice approve <slice> --scope spec` once it is settled.
 
 ## Scope each slice
@@ -127,10 +127,8 @@ Look before you build (the rig's culture):
 - Name the design patterns the change should follow: how this repository already does this kind of thing (an
   existing command, route, adapter or test to copy), and any pattern the change should introduce or must not break.
 - Find what depends on the code being changed, and name it.
-- Write the spec into the slice's `SPEC.md`: what a user gets (before and after), done when (something observable),
-  out of scope, what to reuse, the patterns to follow, what depends on the change, which checks apply (the
-  repository's test docs), and open questions. End it with a `## Proof contract` section: one checkbox per thing that
-  must be shown before the slice is ready. These are the items you judge.
+- Write the spec into the slice's `SPEC.md` as your "What each slice's SPEC says" startup guidance lays out, with
+  the `repos:` list, the slice's kind and a `## Proof contract`, whose items are the ones you judge.
 - Lock the spec with `rig scope slice approve <slice> --scope spec` once it is settled.
 - If a slice will not review in one sitting, split it (one concern per pull request), and record the order with
   `--depends-on`. `rig scope mission graph <mission>` gives the ready set.

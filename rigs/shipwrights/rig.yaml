@@ -61,6 +61,9 @@ pods:
             - path: startup/review-pair-lead.md
               delivery_hint: send_text
               required: true
+            - path: startup/slice-spec.md
+              delivery_hint: send_text
+              required: true
       # The lead's guidance on the other runtime. It drives only while the lead is down.
       - id: peer
         agent_ref: "local:agents/shipwrights"
@@ -70,6 +73,9 @@ pods:
         startup:
           files:
             - path: startup/review-pair-lead.md
+              delivery_hint: send_text
+              required: true
+            - path: startup/slice-spec.md
               delivery_hint: send_text
               required: true
     edges:
@@ -86,6 +92,11 @@ pods:
         profile: planner
         runtime: claude-code
         cwd: "."
+        startup:
+          files:
+            - path: startup/slice-spec.md
+              delivery_hint: send_text
+              required: true
     edges: []
 
   - id: dev
