@@ -42,7 +42,7 @@ SETTINGS = {
     "Slice time limit": "4 working hours",
 }
 
-# (guidance file, phrase it must contain, why)
+# (guidance file, or startup/<file>, phrase it must contain, why)
 GUIDANCE_RULES = [
     ("lead.md", "rig watchdog", "the slice time limit wakes the lead through a watchdog"),
     ("lead.md", "## Stop and pause", "stop and pause hold work without stopping sessions"),
@@ -50,8 +50,9 @@ GUIDANCE_RULES = [
     ("lead.md", "--subject commit:<sha>", "the lead judges proof at the commit it checked"),
     ("lead.md", "Never judge without a commit", "a judgement always names a commit"),
     ("lead.md", "judge the slice again", "a rebase that changes the code needs a new judgement"),
-    ("planner.md", "`repos:`", "each slice's SPEC.md frontmatter lists the repositories it touches"),
-    ("planner.md", "in merge order", "the repositories are listed in the order their pull requests merge"),
+    ("startup/slice-spec.md", "`repos:`", "each slice's SPEC.md frontmatter lists the repositories it touches"),
+    ("startup/slice-spec.md", "in merge order", "the repositories are listed in the order their pull requests merge"),
+    ("startup/slice-spec.md", "## Proof contract", "each spec ends in the proof contract the lead judges"),
     ("release-manager.md", "judged at the commit you are about to push", "only proof judged at the pushed commit publishes"),
     ("builder-backend.md", "AGENTS.md", "a slice starts by reading the repository's AGENTS.md"),
     ("builder-backend.md", "inside the worktree", "commands run from inside the worktree"),
@@ -67,7 +68,9 @@ GUIDANCE_RULES = [
     ("planner.md", "wayfinder", "large work with open questions is charted with wayfinder"),
     ("planner.md", "rig scope mission graph", "the build order comes from the mission graph"),
     ("planner.md", "Confirm each triage result with the person", "the planner honours the triage setting"),
-    ("planner.md", "UI, backend or both", "each slice is tagged UI, backend or both"),
+    ("startup/slice-spec.md", "UI, backend or both", "each slice is tagged UI, backend or both"),
+    ("lead.md", "\"What each slice's SPEC says\"", "the lead holds specs to the one shared standard"),
+    ("planner.md", "\"What each slice's SPEC says\"", "the planner writes specs to the one shared standard"),
     ("builder-frontend.md", "builder-backend.md", "the frontend builder runs the backend builder's guidance too"),
     ("builder-frontend.md", "Never use `impeccable live`", "the frontend builder never uses live mode"),
     ("builder-frontend.md", "impeccable detect", "the frontend builder runs the detector itself"),
@@ -335,11 +338,17 @@ def check_guidance(team, problems):
     guidance = {
         path.name: " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("agents/*/guidance/*.md")
     }
+    # Start files carry rules too, but no retrospective of their own, so they join only the rule checks.
+    started = {
+        f"startup/{path.name}": " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("startup/*.md")
+    }
     for name, phrase, why in GUIDANCE_RULES:
-        if name not in guidance:
-            fail(problems, f"guidance/{name} is missing")
-        elif phrase not in guidance[name]:
-            fail(problems, f"guidance/{name} lacks {phrase!r}: {why}")
+        text = started.get(name, guidance.get(name))
+        where = name if name in started else f"guidance/{name}"
+        if text is None:
+            fail(problems, f"{where} is missing")
+        elif phrase not in text:
+            fail(problems, f"{where} lacks {phrase!r}: {why}")
     for name, phrase, why in FORBIDDEN_RULES:
         if phrase in guidance.get(name, ""):
             fail(problems, f"guidance/{name} still has {phrase!r}: {why}")

@@ -24,6 +24,6 @@ licence is in `LICENSE`. These files are modified versions of Workshop's:
 | `agents/shipwrights/runtime/claude-activity-hooks.json` | `agents/workshop/runtime/claude-activity-hooks.json` | Unchanged. |
 | `README.md` | `README.md` | Rewritten for this team. |
 
-`skills.md`, `install-skills.sh` and `settings.md` are this team's own. The team ships no third-party skills:
+`skills.md`, `install-skills.sh`, `settings.md` and `startup/slice-spec.md` are this team's own. The team ships no third-party skills:
 `skills.md` names the ones its guidance uses, with each one's source and licence, and `install-skills.sh` fetches
 them from their sources onto the person's machine.

@@ -34,33 +34,9 @@ an experiment, say so to the lead.
 
 ## What each slice's SPEC says
 
-Write it into the slice's `SPEC.md`, so a builder can take it without questions.
-
-Start the file's frontmatter with a `repos:` list naming every repository the slice touches, in merge order: the one
-whose pull request must merge first comes first. A slice in one repository lists that one. The release manager opens
-one pull request per entry and states that order in each.
-
-```yaml
----
-repos:
-  - <repository that merges first>
-  - <repository that merges after it>
----
-```
-
-The body covers:
-
-- **What a user gets:** before and after, in a sentence or two, with the issue linked.
-- **Done when:** something observable a person or a check can see.
-- **Out of scope:** what this slice deliberately leaves alone.
-- **What to reuse:** existing code, by path, and the patterns this repository already uses for this kind of change.
-- **Depends on:** the slices or outside changes it needs first, and what depends on it.
-- **Kind:** UI, backend or both. A slice tagged UI or both goes to a frontend builder; one tagged both stays with that
-  one builder, backend included, rather than being split.
-- **Checks:** which of the repository's checks apply.
-- **Open questions:** what you couldn't settle.
-- **Proof contract:** a `## Proof contract` section at the end, one checkbox per thing that must be shown before the
-  slice is ready.
+Write it into the slice's `SPEC.md` as your "What each slice's SPEC says" startup guidance lays out: a `repos:` list
+in merge order, then what a user gets, done when, out of scope, what to reuse, patterns to follow, what it depends on,
+its kind (UI, backend or both), the checks, open questions and a `## Proof contract`.
 
 Then hand the slices to the lead. The lead reviews each SPEC, and locks it with
 `rig scope slice approve <slice> --scope spec` once it is settled. You don't lock specs yourself. When the lead asks
