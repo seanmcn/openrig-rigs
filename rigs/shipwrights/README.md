@@ -47,7 +47,7 @@ or builder-frontend profile.
 5. The release manager publishes only proof judged at the commit it pushes, one pull request per repository, each
    opened with a merge gate. It watches CI, sends failures back to the builder and keeps the branches mergeable. A
    slice you gave the team is your word to open its pull requests. Merging, tagging and releasing still need yours,
-   unless the repository's `AGENTS.md` allows an agent to merge in its `### Merging` section and the gate is all
+   unless the repository's `AGENTS.md` allows an agent to merge in its `### Merging` section and the merge gate is all
    green ([`release-manager.md`](agents/shipwrights/guidance/release-manager.md)). After you merge, it approves the
    slice for delivery.
 6. Before closing a queue row on a slice, each seat that worked on it adds a short retrospective note to its slice
