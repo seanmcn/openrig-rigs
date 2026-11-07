@@ -29,6 +29,11 @@ or builder-frontend profile.
 
 ## How the work moves
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-the-work-moves-dark.svg">
+  <img alt="How the work moves: your goal goes to the lead and planner, who cut and lock it; a builder builds a commit; QA and both reviewers record proof at once, sending findings back to the builder; the lead judges the proof; the release manager opens the pull requests; you merge; the release manager approves delivery." src="diagrams/how-the-work-moves.svg">
+</picture>
+
 1. The planner records your goal or issues as a mission in OpenRig's work tree (`rig scope`), with its slices and the
    dependencies between them. Each slice's `SPEC.md` lists the repositories it touches in merge order and ends with a
    proof contract ([`planner.md`](agents/shipwrights/guidance/planner.md)). The lead locks each spec.
@@ -51,6 +56,11 @@ builds past the slice time limit, and another wakes the peer to check that the l
 
 To drop a slice, tell the lead to stop it: its queue rows and the slice are closed. To hold a slice or a mission, tell
 the lead to pause it: its rows are blocked until you resume it. Neither stops a seat's session.
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/slice-lifecycle-dark.svg">
+  <img alt="A slice's lifecycle: spec locked, building, proof recorded, judged and published, with findings looping back to building and a rebase back to judged; from any phase it can be paused and resumed, or stopped; once you merge, it is delivered." src="diagrams/slice-lifecycle.svg">
+</picture>
 
 ## Settings
 
