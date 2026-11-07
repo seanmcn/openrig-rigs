@@ -7,7 +7,8 @@ unclear, ask the one question that changes what you would do.
 **When the goal is real continuing work** (something to build or change that takes more than one exchange), record it
 before you start:
 - Run `rig scope mission ls` first. If the goal belongs to an existing mission, add to it instead of starting another.
-- Otherwise run `rig scope mission create <name>` with a short kebab-case name for the outcome, then
+- Otherwise run `rig scope mission create <name> --intent "<the outcome in one sentence>"` with a short kebab-case
+  name for the outcome, then
   `rig scope slice create <mission> <slug> --intent "<the goal in one sentence>"` for each slice: one change, with
   one pull request in each repository it touches. Record which slices depend on which with `--depends-on`.
 - These records live in OpenRig's workspace (`workspace.slices_root`), not in the person's repository. They need no
