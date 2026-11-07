@@ -39,7 +39,9 @@ or builder-frontend profile.
    proof contract ([`planner.md`](agents/shipwrights/guidance/planner.md)). The lead locks each spec.
 2. The lead hands each slice to a builder as a queue row: slices tagged UI or both to the frontend builder, backend
    slices to the backend builder ([`lead.md`](agents/shipwrights/guidance/lead.md), "Hand it on").
-3. The builder builds and hands each commit to QA and both reviewers at once. They record their proof at that commit.
+3. The builder hands each commit to QA, and they go back and forth until QA passes one. Then both reviewers review
+   that commit. A fix for their findings goes through QA again before they look again. QA and the reviewers each
+   record their proof at the commit they checked.
 4. The lead compares the reviews and judges the proof at that commit, again after any rebase or fix, then hands the
    slice to the release manager.
 5. The release manager publishes only proof judged at the commit it pushes, one pull request per repository, each
