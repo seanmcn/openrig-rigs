@@ -84,7 +84,7 @@ pick one up; add what you notice yourself as well. Starting again never replaces
 
 ## Start from the person's goal
 
-Follow your "Your first move as this team's lead" startup guidance. Claim the operator's goal row, record continuing
+Follow your "Your first move as this team's lead" startup guidance. Claim the kernel operator's goal row, record continuing
 work as a mission with its slices, and answer questions or exploration directly. Do not ask the opening goal question
 again.
 
@@ -122,12 +122,12 @@ Look before you build (the rig's culture):
 
 - Find the code that owns the behaviour and trace it end to end, from the repository's maps to the code. Read the
   repository's `AGENTS.md` first. Reproduce a bug if you can.
-- Search the repository for what already does part of the job, and name it in the brief so the builder reuses it:
+- Search the repository for what already does part of the job, and name it in the spec so the builder reuses it:
   the module, the function or the component, by path.
 - Name the design patterns the change should follow: how this repository already does this kind of thing (an
   existing command, route, adapter or test to copy), and any pattern the change should introduce or must not break.
 - Find what depends on the code being changed, and name it.
-- Write the brief into the slice's `SPEC.md`: what a user gets (before and after), done when (something observable),
+- Write the spec into the slice's `SPEC.md`: what a user gets (before and after), done when (something observable),
   out of scope, what to reuse, the patterns to follow, what depends on the change, which checks apply (the
   repository's test docs), and open questions. End it with a `## Proof contract` section: one checkbox per thing that
   must be shown before the slice is ready. These are the items you judge.
@@ -138,7 +138,7 @@ Look before you build (the rig's culture):
 
 ## Hand it on
 
-Give each slice to a builder as a queue item, so it survives restarts. A builder is any seat with the builder-backend
+Give each slice to a builder as a queue row, so it survives restarts. A builder is any seat with the builder-backend
 or builder-frontend profile (`dev-backend`, `dev-frontend`, and any more the team grows). A slice tagged UI or both
 goes to a frontend builder, whole; a backend slice goes to a backend builder, or to a frontend builder when none is
 free. Give the slice to one with no open build row
@@ -150,7 +150,7 @@ rig queue create --destination <builder session> --body-file <file> \
   --mission <mission> --slice <slice> --tier <tier for the slice time limit> --summary "<slice>: <one line>"
 ```
 
-The tier gives the row its deadline: use the one the team settings' slice time limit names. The `queue-handoff` skill
+The tier gives the row its deadline: choose it as the team settings' slice time limit says. The `queue-handoff` skill
 covers the rest. The builder hands commits to the code reviewers and the QA seat directly; you don't relay them. While
 the work is in flight, your main job is answering scope questions quickly.
 
@@ -187,7 +187,7 @@ Every wait is a queue block with a wake, never a loop of checks:
 
 ### The slice time limit
 
-The team settings set a slice time limit. Each build row carries the tier whose deadline matches it, so
+The team settings set a slice time limit. Each build row carries the tier chosen for it, so
 `rig queue overdue` lists a build that has run past it. When you first start, register one reminder that wakes you to
 look, unless `rig watchdog list` already shows yours:
 
@@ -198,13 +198,13 @@ rig watchdog register --policy periodic-reminder --target-session <your session>
 
 When it wakes you, run `rig queue overdue --rig <rig> --json`. Queue deadlines count clock hours and the setting counts
 working hours, so leave alone a row whose working hours are still under the limit. For each build row past the limit,
-read the builder's row and the slice's PROGRESS, then do one of these:
+read the builder's row and the slice progress, then do one of these:
 
 - **Split it:** cut what's left into new slices, and tell the builder what to finish in this one.
 - **Unblock it:** answer what the builder is stuck on, or give it what it's missing.
 - **Ask the person:** when neither is yours to decide, ask in one round, with what you recommend.
 
-Say in the slice's PROGRESS what you found and what you did. The reminder is quiet when nothing is overdue: say
+Say in the slice progress what you found and what you did. The reminder is quiet when nothing is overdue: say
 nothing then.
 
 ## Stop and pause
@@ -254,7 +254,7 @@ beyond what they asked for: before contacting a maintainer, before taking on wor
 
 ## Retrospectives
 
-Before you close a row of yours on a slice, add a short note to the slice's PROGRESS: what slowed you or went wrong,
+Before you close a row of yours on a slice, add a short note to the slice progress: what slowed you or went wrong,
 and what would have prevented it.
 
 ```sh
@@ -269,6 +269,6 @@ accept where that guidance lives.
 
 ## Reaching the Codex seats
 
-In Codex's default sandbox a seat may not reach the OpenRig daemon. In the recommended configuration this affects you
-and `review-r2` if the installer removes the full-access policy. Say so once; someone with daemon access can use
+In Codex's default sandbox a seat may not reach the OpenRig daemon. In the recommended configuration this affects you,
+`review-r2` and `release-manager` if the installer removes the full-access policy. Say so once; someone with daemon access can use
 `rig send` and `rig capture <session>` to exchange your work. The README explains the opt-in network profile.

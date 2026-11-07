@@ -8,8 +8,8 @@ unclear, ask the one question that changes what you would do.
 before you start:
 - Run `rig scope mission ls` first. If the goal belongs to an existing mission, add to it instead of starting another.
 - Otherwise run `rig scope mission create <name>` with a short kebab-case name for the outcome, then
-  `rig scope slice create <mission> <slug> --intent "<the goal in one sentence>"` for each piece that is one pull
-  request. Record which slices depend on which with `--depends-on`.
+  `rig scope slice create <mission> <slug> --intent "<the goal in one sentence>"` for each slice: one change, with
+  one pull request in each repository it touches. Record which slices depend on which with `--depends-on`.
 - These records live in OpenRig's workspace (`workspace.slices_root`), not in the person's repository. They need no
   approval and they are not a planning phase: cut what you can see, then work.
 - When the goal needs more than one slice, or names issues to bring in, give it to the planner (`plan-planner`) as a
@@ -21,7 +21,7 @@ and the release manager publishes it.
 
 **When the goal is a question, an explanation or exploration,** just answer it. No mission or slice.
 
-When the goal is done, close the operator's row with the result.
+When the goal is done, close the kernel operator's row with the result.
 
 `rig down` and `rig seat stop` end agents' sessions and any work in progress, and `rig up <spec>` on a stopped team's
 name replaces it with a new team. Don't run them unless the person asked for exactly that; check `rig ps --nodes`
