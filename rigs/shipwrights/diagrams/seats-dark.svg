@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 436" width="980" height="436" role="img" aria-labelledby="seats-dark-title seats-dark-desc">
+  <title id="seats-dark-title">Shipwrights' seats</title>
+  <desc id="seats-dark-desc">The lead, with its peer on the other runtime, hands goals to the planner, slices to the builders and judged slices to the release manager; the builders hand each commit to QA, then to two reviewers on different runtimes.</desc>
+  <defs><marker id="seats-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="seats-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
+  <rect x="374" y="60" width="368" height="80" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="788" y="212" width="168" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="596" y="212" width="168" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="216" y="212" width="316" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="24" y="212" width="168" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <path d="M458,8 L458,76" fill="none" stroke="#f08a59" stroke-width="1.4" marker-end="url(#seats-dark-arrow-accent)"/>
+  <path d="M590,100 L526,100" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <path d="M422,124 L422,164 Q422,172 414,172 L116,172 Q108,172 108,180 L108,228" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <path d="M458,124 L458,176 Q458,184 450,184 L382,184 Q374,184 374,192 L374,212" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <path d="M494,124 L494,164 Q494,172 502,172 L864,172 Q872,172 872,180 L872,228" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <path d="M337,276 L337,308" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <path d="M411,276 L411,308" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <path d="M532,252 L596,252" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#seats-dark-arrow-muted)"/>
+  <text x="24" y="204" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">PLAN</text>
+  <text x="216" y="204" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">DEV</text>
+  <text x="596" y="204" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">REVIEW</text>
+  <text x="788" y="204" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">RELEASE</text>
+  <rect x="40" y="228" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="108" y="249" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Planner</text>
+  <text x="108" y="265" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
+  <rect x="232" y="228" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="300" y="249" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Backend builder</text>
+  <text x="300" y="265" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
+  <rect x="380" y="228" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="448" y="249" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Frontend builder</text>
+  <text x="448" y="265" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
+  <rect x="306" y="308" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="374" y="329" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">QA</text>
+  <text x="374" y="345" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
+  <rect x="612" y="228" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="680" y="249" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Reviewer r1</text>
+  <text x="680" y="265" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
+  <rect x="612" y="308" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="680" y="329" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Reviewer r2</text>
+  <text x="680" y="345" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Codex</text>
+  <rect x="804" y="228" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="872" y="249" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Release manager</text>
+  <text x="872" y="265" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Codex</text>
+  <text x="374" y="52" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">ORCH</text>
+  <rect x="390" y="76" width="136" height="48" rx="6" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.6"/>
+  <text x="458" y="97" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f08a59" text-anchor="middle">Lead</text>
+  <text x="458" y="113" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Codex</text>
+  <rect x="590" y="76" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="658" y="97" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Peer</text>
+  <text x="658" y="113" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
+  <text x="466" y="36" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#f08a59" text-anchor="start" letter-spacing="0.6">YOUR GOAL</text>
+  <text x="558" y="92" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">FOLLOWS</text>
+  <text x="265" y="164" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">GOALS</text>
+  <text x="382" y="200" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">SLICES</text>
+  <text x="683" y="164" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">JUDGED SLICES</text>
+  <text x="564" y="244" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="middle" letter-spacing="0.6">QA PASSED</text>
+  <rect x="24" y="407" width="14" height="10" rx="2" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.4"/>
+  <text x="46" y="416" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">the seat you talk to</text>
+  <line x1="198.0" y1="412" x2="214.0" y2="412" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4"/>
+  <text x="220.0" y="416" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">follows, and takes over if it's down</text>
+</svg>

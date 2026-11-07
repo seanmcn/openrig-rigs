@@ -11,6 +11,11 @@ It works in a clone of one repository, or in a folder that holds clones of sever
 own `AGENTS.md` before they start a slice there, and run every command from inside the slice's worktree. The words
 these docs use, such as seat, slice and proof, are in the repository's [glossary](../../GLOSSARY.md).
 
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
+  <img alt="Shipwrights' seats in five pods: your goal goes to the lead (Codex), which its peer (Claude Code) follows; the lead hands goals to the planner, slices to the backend and frontend builders, and judged slices to the release manager (Codex); the builders hand each commit to QA, then, once QA passes it, to reviewers r1 (Claude Code) and r2 (Codex)." src="diagrams/seats.svg">
+</picture>
+
 | Seat | Runtime | Does |
 |---|---|---|
 | `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs, hands them on, judges their proof and owns each PR description. Talk to this seat. |
