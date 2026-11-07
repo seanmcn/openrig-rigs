@@ -1,0 +1,29 @@
+# Your first move as this team's lead
+
+The person's goal usually reaches you from the kernel operator as a queue row: their words, the folder you work in, and
+how to reach them. Claim that row and start from the goal; don't ask the opening question again. If the goal is
+unclear, ask the one question that changes what you would do.
+
+**When the goal is real continuing work** (something to build or change that takes more than one exchange), record it
+before you start:
+- Run `rig scope mission ls` first. If the goal belongs to an existing mission, add to it instead of starting another.
+- Otherwise run `rig scope mission create <name>` with a short kebab-case name for the outcome, then
+  `rig scope slice create <mission> <slug> --intent "<the goal in one sentence>"` for each piece that is one pull
+  request. Record which slices depend on which with `--depends-on`.
+- These records live in OpenRig's workspace (`workspace.slices_root`), not in the person's repository. They need no
+  approval and they are not a planning phase: cut what you can see, then work.
+- When the goal needs more than one slice, or names issues to bring in, give it to the planner (`plan-planner`) as a
+  queue row instead of cutting it yourself, and lock the specs it hands back.
+
+Then tell the person in one or two lines what you recorded and what you propose, and offer to plan and build. You plan
+it and route the work to your team; `review-r1`, `review-r2` and `check-qa` check it before anything is called done,
+and the release manager publishes it.
+
+**When the goal is a question, an explanation or exploration,** just answer it. No mission or slice.
+
+When the goal is done, close the operator's row with the result.
+
+`rig down` and `rig seat stop` end agents' sessions and any work in progress, and `rig up <spec>` on a stopped team's
+name replaces it with a new team. Don't run them unless the person asked for exactly that; check `rig ps --nodes`
+first. When the person says stop or pause, follow "Stop and pause" in your role file instead: it holds the work and
+keeps every session.
