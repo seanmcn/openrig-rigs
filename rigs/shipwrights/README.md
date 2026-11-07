@@ -13,7 +13,7 @@ these docs use, such as seat, slice and proof, are in the repository's [glossary
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
-  <img alt="Shipwrights' seats in five pods: your goal goes to the lead (Codex), which its peer (Claude Code) follows; the lead hands goals to the planner, slices to the backend and frontend builders, and judged slices to the release manager (Codex); the builders hand each commit to QA, then, once QA passes it, to reviewers r1 (Claude Code) and r2 (Codex)." src="diagrams/seats.svg">
+  <img alt="Shipwrights' seats in five pods, with the lead (Codex) as the hub and its peer (Claude Code) standing in while it is down. Your goal goes to the lead, which hands it to the planner; the planner sends slices back; the lead hands each locked slice to a builder, and the builders and QA report results back. The builders hand each commit to QA, then once QA passes it to reviewers r1 (Claude Code) and r2 (Codex), whose findings go straight to the builders and verdicts to the lead. The lead hands judged slices to the release manager (Codex), which reports the pull request and its delivery." src="diagrams/seats.svg">
 </picture>
 
 | Seat | Runtime | Does |
