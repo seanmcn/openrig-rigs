@@ -23,7 +23,7 @@ A seat's name, written `orch-lead`. In `rig.yaml` and `--seat` flags it is `orch
 it is `orch-lead@shipwrights` (seat id at rig).
 
 **Pod**:
-A group of seats with one job in a rig, such as `dev` for the builders or `review` for the review pair.
+A group of seats with one job in a rig, such as `dev` for the builders and QA or `review` for the review pair.
 
 **Profile**:
 A seat's role in a team's `agent.yaml`: which guidance, skills and startup files a seat gets.
