@@ -60,8 +60,14 @@ A slice's `SPEC.md`: what a user gets, when it's done, what's out of scope, what
 The lead **locks** it before the slice is built.
 _Avoid_: brief; approve (for locking a spec)
 
+**Kind**:
+What a slice changes: UI, backend or both. It decides which builder takes the slice; a slice of both kinds stays with
+one frontend builder.
+_Avoid_: type, area
+
 **Proof**:
-What QA and each reviewer record about a slice at one commit. Each record carries a verdict: pass or fail.
+What a seat records about a slice at one commit, mostly QA and each reviewer, with a verdict: PASS, BLOCKING,
+CONCERNING or NOT-CLEAR. A builder's screenshots and the release manager's checks after a rebase are proof too.
 _Avoid_: evidence
 
 **Proof contract**:
@@ -87,7 +93,16 @@ _Avoid_: operator (alone), installer
 
 **Queue row**:
 One unit of work handed to a seat on OpenRig's queue; it is claimed, blocked or closed.
-_Avoid_: queue item, handoff, ticket
+_Avoid_: queue item, ticket
+
+**Handoff**:
+The body of a queue row that hands work on: what the work is, where it lives and what the receiving seat needs.
+_Avoid_: handoff (for the row itself; say "queue row")
+
+**Roster**:
+A team's published list of its seats, what each is good at and when to ask it, which anyone finds with
+`rig roster find`. The lead curates it.
+_Avoid_: directory
 
 **Tier**:
 A queue row's deadline class: `routine` is 4 hours and `deep` is 24.

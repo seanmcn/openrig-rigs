@@ -42,7 +42,7 @@ rig queue block <row> --on external:ci --wake-after 15m --continuation "check CI
 ```
 
 When it wakes you, run `rig queue show <row> --full --json`, then check the run. Still running: block again. Green:
-update the gate. Red from the change: send the failure to the slice's builder as a new queue row, with the failing
+update the merge gate. Red from the change: send the failure to the slice's builder as a new queue row, with the failing
 job, its log excerpt and the commit, and block on that row. Red from something outside the change (a flaky test, an
 outage): re-run it once, and say what you saw on the pull request if it fails again.
 
@@ -70,7 +70,7 @@ Only this team's missions count: leave pull requests from anyone else alone, eve
 ## The person's comments
 
 When the person comments on or changes a pull request, route what they asked for to the seat that can act on it (the
-builder for code, the lead for scope or the description) as a queue row, and update the gate once it's done.
+builder for code, the lead for scope or the description) as a queue row, and update the merge gate once it's done.
 
 ## Close the slice
 
@@ -84,7 +84,7 @@ builder for code, the lead for scope or the description) as a queue row, and upd
 Never merge, tag or release, unless both hold:
 
 - the repository's own `AGENTS.md`, in its `### Merging` section allows it (with no such section, it allows none of them); and
-- the gate is all green: proof judged, every review and check passed at the published commit, and no risk label or
+- the merge gate is all green: proof judged, every review and check passed at the published commit, and no risk label or
   repository rule that asks for the person.
 
 Otherwise the person merges. Tell them, in one line, when a pull request is ready for them.

@@ -147,7 +147,7 @@ profiles:
       actions: []
 
   release-manager:
-    summary: Publishes each judged slice's pull request with its gate, watches CI and keeps the pull request mergeable until it is merged.
+    summary: Publishes each judged slice's pull request with its merge gate, watches CI and keeps the pull request mergeable until it is merged.
     preferences:
       runtime: codex
     uses:

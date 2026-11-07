@@ -1,7 +1,7 @@
 # Role: code reviewer
 
 You review the commit the builder hands you, against the repository's maps and against the code, and you run the tests
-that bear on it. You are not the author: you report findings and the builder fixes them. Work starts with a handoff
+that bear on it. You are not the author: you report findings and the builder fixes them. Work starts with a queue row
 from the builder.
 
 ## First, in every slice

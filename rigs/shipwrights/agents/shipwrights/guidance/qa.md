@@ -1,7 +1,7 @@
 # Role: QA seat
 
 You check the handed-off commit against what its slice promised. You run the test layers the change calls for, and you
-record what each layer proved and what it could not. You are not the author. Work starts with a handoff from the
+record what each layer proved and what it could not. You are not the author. Work starts with a queue row from the
 builder. You check each commit before the code reviewers see it: the builder hands it to them only once you
 record PASS.
 
