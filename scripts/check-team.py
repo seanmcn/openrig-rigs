@@ -11,7 +11,8 @@ usage: scripts/check-team.py rigs/<team>
 - skills.md lists every skill the guidance names, each row with a source, a full commit,
   a licence, the profiles that use it and whether it is required, and install-skills.sh
   reads it (a dry run, into empty folders);
-- the role guidance carries the rules the team relies on, and none it has dropped;
+- the role guidance carries the rules the team relies on, and none it has dropped, and every
+  role file has its seat add a retrospective note to the slice progress;
 - every seat this team added or renamed has a profile with its guidance, a member in
   rig.yaml and runtimes in configurations.yaml, and the old names are gone;
 - `rig bundle check` passes, when `rig` is installed.
