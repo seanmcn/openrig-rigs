@@ -362,8 +362,75 @@ def seat_start(t: Tokens, slug: str) -> Canvas:
     return c
 
 
+# The team's seats: its five pods, each seat's runtime, and who hands work to whom. -------------------------------
+
+def seats(t: Tokens, slug: str) -> Canvas:
+    w, h, pad, gap = 136, 48, 16, 64
+    zone_y, zone_h, row1, row2 = 212, 160, 228, 308
+    side = w + 2 * pad  # a pod of one column
+
+    # The bottom row of pods, left to right in the order work reaches them.
+    plan_x = 24
+    dev_x = plan_x + side + 24
+    dev_w = 2 * w + 12 + 2 * pad
+    review_x = dev_x + dev_w + gap
+    release_x = review_x + side + 24
+    width = release_x + side + 24
+    c = Canvas(t, slug, width, 436, "Shipwrights' seats",
+               "The lead, with its peer on the other runtime, hands goals to the planner, slices to the builders and "
+               "judged slices to the release manager; the builders hand each commit to QA, then to two reviewers on "
+               "different runtimes.")
+    c.legend_x = 24
+    for name, x, zw in (("plan", plan_x, side), ("dev", dev_x, dev_w), ("review", review_x, side),
+                        ("release", release_x, side)):
+        c.rect(x, zone_y, zw, zone_h, rx=8)
+        c.eyebrow(x, zone_y - 8, name, anchor="start")
+    backend_x, frontend_x = dev_x + pad, dev_x + pad + w + 12
+    qa_x = dev_x + (dev_w - w) // 2
+    c.node(plan_x + pad, row1, w, h, "Planner", "Claude Code")
+    c.node(backend_x, row1, w, h, "Backend builder", "Claude Code")
+    c.node(frontend_x, row1, w, h, "Frontend builder", "Claude Code")
+    c.node(qa_x, row2, w, h, "QA", "Claude Code")
+    c.node(review_x + pad, row1, w, h, "Reviewer r1", "Claude Code")
+    c.node(review_x + pad, row2, w, h, "Reviewer r2", "Codex")
+    c.node(release_x + pad, row1, w, h, "Release manager", "Codex")
+
+    # The orch pod on top: the lead, which you talk to, and its peer on the other runtime.
+    lead_x, orch_y = dev_x + dev_w // 2 + 16, 76
+    peer_x = lead_x + w + gap
+    c.rect(lead_x - pad, orch_y - pad, 2 * w + gap + 2 * pad, h + 2 * pad, rx=8)
+    c.eyebrow(lead_x - pad, orch_y - pad - 8, "orch", anchor="start")
+    c.node(lead_x, orch_y, w, h, "Lead", "Codex", "focal")
+    c.node(peer_x, orch_y, w, h, "Peer", "Claude Code")
+    lcx = lead_x + w / 2
+    c.arrow([(lcx, 8), (lcx, orch_y)], "accent")
+    c.label(lcx + 8, 36, "your goal", anchor="start", accent=True)
+    c.arrow([(peer_x, orch_y + h / 2), (lead_x + w, orch_y + h / 2)], "dashed")
+    c.label((peer_x + lead_x + w) / 2, orch_y + h / 2 - 8, "follows")
+
+    # The lead's handoffs fan out of its bottom edge, each from its own point.
+    bottom = orch_y + h
+    planner_cx, dev_cx, release_cx = plan_x + side / 2, dev_x + dev_w / 2, release_x + side / 2
+    c.arrow([(lcx - 36, bottom), (lcx - 36, 172), (planner_cx, 172), (planner_cx, row1)])
+    c.label((planner_cx + lcx - 36) / 2, 164, "goals")
+    c.arrow([(lcx, bottom), (lcx, 184), (dev_cx, 184), (dev_cx, zone_y)])
+    c.label(dev_cx + 8, 200, "slices", anchor="start")
+    c.arrow([(lcx + 36, bottom), (lcx + 36, 172), (release_cx, 172), (release_cx, row1)])
+    c.label((lcx + 36 + release_cx) / 2, 164, "judged slices")
+
+    # Each builder hands its commit to QA, where the two boxes overlap, and the pod hands it to the reviewers once QA
+    # passes it.
+    c.arrow([((qa_x + backend_x + w) / 2, row1 + h), ((qa_x + backend_x + w) / 2, row2)])
+    c.arrow([((frontend_x + qa_x + w) / 2, row1 + h), ((frontend_x + qa_x + w) / 2, row2)])
+    c.arrow([(dev_x + dev_w, row1 + h / 2), (review_x, row1 + h / 2)])
+    c.label(dev_x + dev_w + gap / 2, row1 + h / 2 - 8, "qa passed")
+    return c
+
+
 # name: (draw, legend, where its SVGs go)
-DIAGRAMS = {"how-the-work-moves": (work, [("focal", "your step"), ("dashed", "back to an earlier step")], TEAM),
+DIAGRAMS = {"seats": (seats, [("focal", "the seat you talk to"), ("dashed", "follows, and takes over if it's down")],
+                      TEAM),
+            "how-the-work-moves": (work, [("focal", "your step"), ("dashed", "back to an earlier step")], TEAM),
             "slice-lifecycle": (lifecycle, [("focal", "the outcome you want"), ("held", "held, resumable"),
                                             ("dashed", "back to an earlier phase")], TEAM),
             "seat-start": (seat_start, [], TEAM),
