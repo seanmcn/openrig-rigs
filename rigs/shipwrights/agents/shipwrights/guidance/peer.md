@@ -17,9 +17,11 @@ disagree, this file wins.
   the record rather than from messages:
   - the lead's open rows: `rig queue list --destination <lead> --state pending,in-progress,blocked --json`;
   - the rows it sent: `rig queue list --source <lead> --state pending,in-progress,blocked --json`;
-  - what is held and escalated: `rig view show held --rig <rig> --json` and `rig view show escalations --rig <rig> --json`;
-  - what waits on the person: `rig queue list --destination <person>@external --state pending,in-progress,blocked --json`
-    (`rig gateway default` names the person);
+  - what is held and escalated: `rig view show held --rig <rig> --json` and
+    `rig view show escalations --rig <rig> --json`;
+  - what waits on the person:
+    `rig queue list --destination <person>@external --state pending,in-progress,blocked --json` (`rig gateway default`
+    names the person);
   - the missions in flight: `rig scope mission ls`, and a mission's `rig scope mission graph <mission>`.
 
   Keep only what you would need to drive: open slices and who holds them, decisions since the last recap, and rows

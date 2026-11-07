@@ -62,7 +62,8 @@ Type into the command bar the way the person would, with one line before each st
 Two things that trip people up:
 - **Section labels:** the explorer labels two sections differently from their commands. `:needs` shows as FEED and
   `:scopes` as PROJECTS; `:feed` and `:projects` don't work.
-- **Agent names:** `agent` and `spec-of` take the dotted id (`orch.lead`), not the session name (`orch-lead@shipwrights`).
+- **Agent names:** `agent` and `spec-of` take the dotted id (`orch.lead`), not the session name
+  (`orch-lead@shipwrights`).
 
 From outside the TUI's pane, send the same keys with `tmux send-keys -t <pane> ':needs' Enter`, or use the TUI's
 control socket: `$OPENRIG_TUI_SOCKET`, or `$OPENRIG_HOME/run/tui-<id>.sock` (`tui-kernel.sock` for the shared TUI).

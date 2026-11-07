@@ -38,12 +38,12 @@ and never replace one that exists:
 4. Run `rig ps --nodes --rig <rig> --json --fields canonicalSessionName,hostSelfId`. It gives each seat's exact address
    and the host that serves it.
 5. Match `orch-lead` to lead, `orch-peer` to the lead's peer, `plan-planner` to planner, `dev-backend` (and any other
-   backend builder) to backend builder, `dev-frontend` to frontend builder, `dev-qa` to QA, `review-r1` and
-   `review-r2` to code reviewer, and `release-manager` to release manager, using the actual addresses from step 4. Give each seat its own
-   member entry; the example below shows four of them, and the others follow the same shape, with capabilities such as
-   "taking over from the lead" (peer), "missions and slices" and "triage" (planner), "user interfaces" (frontend
-   builder) and "pull requests" and "CI" (release manager). Write the file with those addresses and hosts, today's date, and
-   yourself as curator (format: OpenRig's `docs/reference/rosters.md`):
+   backend builder) to backend builder, `dev-frontend` to frontend builder, `dev-qa` to QA, `review-r1` and `review-r2`
+   to code reviewer, and `release-manager` to release manager, using the actual addresses from step 4. Give each seat
+   its own member entry; the example below shows four of them, and the others follow the same shape, with capabilities
+   such as "taking over from the lead" (peer), "missions and slices" and "triage" (planner), "user interfaces" (frontend
+   builder) and "pull requests" and "CI" (release manager). Write the file with those addresses and hosts, today's date,
+   and yourself as curator (format: OpenRig's `docs/reference/rosters.md`):
 
    ```json
    {
@@ -84,9 +84,9 @@ pick one up; add what you notice yourself as well. Starting again never replaces
 
 ## Start from the person's goal
 
-Follow your "Your first move as this team's lead" startup guidance. Claim the kernel operator's goal row, record continuing
-work as a mission with its slices, and answer questions or exploration directly. Do not ask the opening goal question
-again.
+Follow your "Your first move as this team's lead" startup guidance. Claim the kernel operator's goal row, record
+continuing work as a mission with its slices, and answer questions or exploration directly. Do not ask the opening goal
+question again.
 
 Only when no goal was supplied:
 
@@ -113,8 +113,9 @@ queue row, any goal or set of issues that needs cutting into more than one slice
 with their specs, dependencies and build order, and hands them back to you. Cut a single small slice yourself when
 handing it over would cost more than doing it.
 
-Either way, each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the planner's specs against it,
-send back what falls short, and lock each one with `rig scope slice approve <slice> --scope spec` once it is settled.
+Either way, each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the
+planner's specs against it, send back what falls short, and lock each one with
+`rig scope slice approve <slice> --scope spec` once it is settled.
 
 ## Scope each slice
 
@@ -149,8 +150,8 @@ rig queue create --destination <builder session> --body-file <file> \
 ```
 
 The tier gives the row its deadline: choose it as the team settings' slice time limit says. The `queue-handoff` skill
-covers the rest. The builder hands each commit to the QA seat and, once QA passes it, to the code reviewers; you don't relay them. While
-the work is in flight, your main job is answering scope questions quickly.
+covers the rest. The builder hands each commit to the QA seat and, once QA passes it, to the code reviewers; you don't
+relay them. While the work is in flight, your main job is answering scope questions quickly.
 
 ## Judge the proof
 

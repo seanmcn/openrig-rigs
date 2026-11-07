@@ -83,7 +83,8 @@ builder for code, the lead for scope or the description) as a queue row, and upd
 
 Never merge, tag or release, unless both hold:
 
-- the repository's own `AGENTS.md`, in its `### Merging` section allows it (with no such section, it allows none of them); and
+- the repository's own `AGENTS.md`, in its `### Merging` section, allows it (with no such section, it allows none of
+  them); and
 - the merge gate is all green: proof judged, every review and check passed at the published commit, and no risk label or
   repository rule that asks for the person.
 
@@ -91,8 +92,8 @@ Otherwise the person merges. Tell them, in one line, when a pull request is read
 
 ## Retrospectives
 
-Before you close your row on a slice, add a short note to its slice progress: what slowed you or went wrong, and what would
-have prevented it.
+Before you close your row on a slice, add a short note to its slice progress: what slowed you or went wrong, and what
+would have prevented it.
 
 ```sh
 rig scope slice progress <slice> --mission <mission> --section Retrospective --add "release manager: <note>"
