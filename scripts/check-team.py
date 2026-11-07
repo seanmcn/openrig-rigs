@@ -15,6 +15,8 @@ usage: scripts/check-team.py rigs/<team>
   role file has its seat add a retrospective note to the slice progress;
 - every seat this team added or renamed has a profile with its guidance, a member in
   rig.yaml and runtimes in configurations.yaml, and the old names are gone;
+- the lead is the only delegates_to parent of every seat but itself and its peer in rig.yaml,
+  so every stuck queue row escalates to it;
 - `rig bundle check` passes, when `rig` is installed.
 
 A skill the guidance "names" is any lower-case name in backticks in the guidance, the
@@ -393,6 +395,46 @@ def check_seats(team, problems):
                 fail(problems, f"{path}:{line}: {match.group(0)!r} was renamed to {replacement}")
 
 
+LEAD = "orch.lead"
+# The peer stands in when the lead is down, so its rows mustn't escalate to the lead: with no delegates_to parent,
+# OpenRig sends them to its operator instead.
+PEER = "orch.peer"
+
+
+def check_delegation(team, problems):
+    """The lead is every other seat's only delegates_to parent, so every stuck queue row escalates to it.
+
+    OpenRig makes the source of a seat's delegates_to edge its orchestrator, and picks the latest-launched one when
+    there are several, so a second source would quietly take the lead's place.
+    """
+    path = team / "rig.yaml"
+    if not path.is_file():
+        return
+    seats, parents, pod = [], {}, None
+    lines = path.read_text(encoding="utf-8").splitlines()
+    for i, line in enumerate(lines):
+        if m := re.match(r"^  - id: ([\w-]+)$", line):
+            pod = m.group(1)
+        elif line == "edges:":
+            pod = None
+        elif (m := re.match(r"^      - id: ([\w-]+)$", line)) and pod:
+            seats.append(f"{pod}.{m.group(1)}")
+        elif re.match(r"^\s*- kind: delegates_to$", line):
+            source = re.search(r"from: (\S+)", lines[i + 1]).group(1)
+            target = re.search(r"to: (\S+)", lines[i + 2]).group(1)
+            if pod:
+                source, target = f"{pod}.{source}", f"{pod}.{target}"
+            parents.setdefault(target, []).append(source)
+    for seat in seats:
+        got = parents.get(seat, [])
+        if seat in (LEAD, PEER):
+            if got:
+                fail(problems, f"rig.yaml: {', '.join(got)} delegates to {seat}, which nothing should")
+        elif got != [LEAD]:
+            fail(problems, f"rig.yaml: {seat}'s delegates_to parents are {got or 'none'}; it needs {LEAD} alone, "
+                           "so its stuck rows escalate to the lead")
+
+
 def check_bundle(team, problems):
     rig = shutil.which("rig")
     if rig is None:
@@ -415,6 +457,7 @@ def main():
     check_skills(team, problems)
     check_guidance(team, problems)
     check_seats(team, problems)
+    check_delegation(team, problems)
     check_bundle(team, problems)
     for problem in problems:
         print(problem, file=sys.stderr)

@@ -42,7 +42,8 @@ managed_blocks:
 permission_policy: builtin:yolo
 non_interruptive: true
 
-# More builders join the dev pod as members with the builder-backend or builder-frontend profile.
+# More builders join the dev pod as members with the builder-backend or builder-frontend profile, each with a
+# delegates_to edge from orch.lead (see the edges at the end).
 pods:
   - id: orch
     label: Orchestration
@@ -129,13 +130,14 @@ pods:
         profile: qa
         runtime: claude-code
         cwd: "."
+    # The builders hand QA each commit, but the lead is QA's orchestrator (below), so QA only observes them.
     edges:
-      - kind: delegates_to
-        from: backend
-        to: qa
-      - kind: delegates_to
-        from: frontend
-        to: qa
+      - kind: can_observe
+        from: qa
+        to: backend
+      - kind: can_observe
+        from: qa
+        to: frontend
 
   # Two independent reviewers of the same commit, one per runtime.
   - id: review
@@ -175,6 +177,10 @@ pods:
         cwd: "."
     edges: []
 
+# OpenRig makes the source of a seat's delegates_to edge its orchestrator: the seat its stuck or unclaimed queue rows
+# escalate to, taking the latest-launched source when there are several. So the lead is the only delegates_to source,
+# every seat reports back to it, and the handoffs between the other seats are can_observe and collaborates_with,
+# which OpenRig only draws.
 edges:
   - kind: delegates_to
     from: orch.lead
@@ -187,34 +193,35 @@ edges:
     to: dev.frontend
   - kind: delegates_to
     from: orch.lead
+    to: dev.qa
+  - kind: delegates_to
+    from: orch.lead
+    to: review.r1
+  - kind: delegates_to
+    from: orch.lead
+    to: review.r2
+  - kind: delegates_to
+    from: orch.lead
     to: release.manager
-  - kind: delegates_to
-    from: dev.backend
-    to: review.r1
-  - kind: delegates_to
-    from: dev.backend
-    to: review.r2
-  - kind: delegates_to
-    from: dev.frontend
-    to: review.r1
-  - kind: delegates_to
-    from: dev.frontend
-    to: review.r2
-  - kind: delegates_to
-    from: release.manager
+  # The reviewers review the builders' commits; the release manager sends them CI failures and conflicts.
+  - kind: can_observe
+    from: review.r1
     to: dev.backend
-  - kind: delegates_to
-    from: release.manager
+  - kind: can_observe
+    from: review.r1
     to: dev.frontend
   - kind: can_observe
-    from: orch.lead
-    to: dev.qa
+    from: review.r2
+    to: dev.backend
   - kind: can_observe
-    from: orch.lead
-    to: review.r1
-  - kind: can_observe
-    from: orch.lead
-    to: review.r2
+    from: review.r2
+    to: dev.frontend
+  - kind: collaborates_with
+    from: release.manager
+    to: dev.backend
+  - kind: collaborates_with
+    from: release.manager
+    to: dev.frontend
   - kind: can_observe
     from: orch.peer
     to: plan.planner
