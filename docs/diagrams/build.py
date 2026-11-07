@@ -143,54 +143,65 @@ def _sign(v: float) -> int:
 
 # How the work moves: one lane per role, time running down. ----------------------------------------------------------
 
-LANE_W, NODE_W, NODE_H, ROW = 176, 144, 48, 72
-LANES = ["You", "Lead & planner", "Builder", "QA & reviewers", "Release manager"]
+LANE_W, NODE_W, NODE_H, ROW = 176, 144, 48, 80
+LANES = ["You", "Lead & planner", "Builder & QA", "Reviewers", "Release manager"]
 
 
 def work(t: Tokens, slug: str) -> Canvas:
-    c = Canvas(t, slug, LANE_W * len(LANES), 672, "How the work moves",
-               "A slice goes from your goal through the lead, a builder, QA and two reviewers, the lead's judgement "
-               "and the release manager, to your merge and its delivery; reviewers' findings go back to the builder.")
-    bottom = 56 + 7 * ROW + NODE_H + 16
+    steps = [  # (lane, name, sublabel, kind), one per row
+        (0, "Your goal", "an issue or a request", "step"),
+        (1, "Cut and lock", "mission, slices, specs", "step"),
+        (2, "Build", "commit in a worktree", "step"),
+        (2, "QA checks", "at that commit", "step"),
+        (3, "Review", "r1 and r2, apart", "step"),
+        (1, "Judge proof", "at that commit", "step"),
+        (4, "Open pull requests", "with the merge gate", "step"),
+        (0, "Merge", "your decision", "focal"),
+        (4, "Approve delivery", "the slice is done", "step"),
+    ]
+    rows = len(steps)
+    bottom = 56 + (rows - 1) * ROW + NODE_H + 16
+    c = Canvas(t, slug, LANE_W * len(LANES), bottom + 48, "How the work moves",
+               "A slice goes from your goal through the lead, a builder and QA until QA passes, then two reviewers, "
+               "the lead's judgement and the release manager, to your merge and its delivery; reviewers' findings "
+               "go back to the builder and through QA again.")
     for k, lane in enumerate(LANES):
         c.eyebrow(k * LANE_W + LANE_W / 2, 28, lane)
         if k:
             c.line(k * LANE_W, 12, k * LANE_W, bottom)
     c.line(0, 40, LANE_W * len(LANES), 40)
 
-    def box(lane: int, row: int) -> tuple[int, int]:
-        return lane * LANE_W + (LANE_W - NODE_W) // 2, 56 + row * ROW
+    def box(row: int) -> tuple[int, int]:
+        return steps[row][0] * LANE_W + (LANE_W - NODE_W) // 2, 56 + row * ROW
 
-    steps = [  # (lane, name, sublabel, kind), one per row
-        (0, "Your goal", "an issue or a request", "step"),
-        (1, "Cut and lock", "mission, slices, specs", "step"),
-        (2, "Build", "commit in a worktree", "step"),
-        (3, "Record proof", "QA, r1, r2 at once", "step"),
-        (1, "Judge proof", "at that commit", "step"),
-        (4, "Open pull requests", "with the merge gate", "step"),
-        (0, "Merge", "your decision", "focal"),
-        (4, "Approve delivery", "the slice is done", "step"),
-    ]
-    for row, (lane, name, sub, kind) in enumerate(steps):
-        x, y = box(lane, row)
+    for row, (_, name, sub, kind) in enumerate(steps):
+        x, y = box(row)
         c.node(x, y, NODE_W, NODE_H, name, sub, kind)
 
-    # Each step hands to the next: out of the side facing the next lane, across, then down into its top.
-    for row in range(len(steps) - 1):
-        lane, nxt = steps[row][0], steps[row + 1][0]
-        x, y = box(lane, row)
-        nx, ny = box(nxt, row + 1)
+    def handoff(row: int) -> None:
+        """Out of the side facing the next step's lane, across, then down into its top."""
+        (x, y), (nx, ny) = box(row), box(row + 1)
         cy, ncx = y + NODE_H / 2, nx + NODE_W / 2
-        start = x + NODE_W if nxt > lane else x
+        start = x + NODE_W if steps[row + 1][0] > steps[row][0] else x
         kind = "accent" if steps[row + 1][3] == "focal" else "muted"
         c.arrow([(start, cy), (ncx, cy), (ncx, ny)], kind)
 
-    # Findings go back from the proof to the builder, below the forward handoff.
-    bx, by = box(2, 2)
-    qx, qy = box(3, 3)
-    back_y = by + NODE_H / 2 + 16
-    c.arrow([(qx + NODE_W / 2 - 32, qy), (qx + NODE_W / 2 - 32, back_y), (bx + NODE_W, back_y)], "dashed")
-    c.label((bx + NODE_W + qx + NODE_W / 2 - 32) / 2, back_y + 18, "findings")
+    for row in (0, 1, 3, 4, 5, 6, 7):
+        handoff(row)
+
+    # Build and QA, one lane: down to QA, and back up when it fails.
+    (bx, by), (qx, qy) = box(2), box(3)
+    bcx = bx + NODE_W / 2
+    c.arrow([(bcx - 24, by + NODE_H), (bcx - 24, qy)])
+    c.arrow([(bcx + 24, qy), (bcx + 24, by + NODE_H)], "dashed")
+    c.label(bcx + 32, (by + NODE_H + qy) / 2 + 3, "fails", anchor="start")
+    c.label(3 * LANE_W + 48, qy + NODE_H / 2 - 10, "passes")
+
+    # Reviewers' findings go back to the builder, and so through QA again.
+    rx, ry = box(4)
+    fx = rx + NODE_W / 2 + 32
+    c.arrow([(fx, ry), (fx, by + NODE_H / 2), (bx + NODE_W, by + NODE_H / 2)], "dashed")
+    c.label(fx + 8, (by + NODE_H / 2 + ry) / 2 + 3, "findings", anchor="start")
     return c
 
 
@@ -201,19 +212,19 @@ PW, GAP = 128, 56
 
 def lifecycle(t: Tokens, slug: str) -> Canvas:
     c = Canvas(t, slug, 920, 400, "A slice's lifecycle",
-               "A slice's spec is locked, then it is built, its proof recorded and judged, and its pull requests "
-               "published; findings and rebases loop back, it can be paused or stopped from any phase, and it is "
+               "A slice's spec is locked, then it is built and checked by QA until QA passes, reviewed, judged, and "
+               "its pull requests published; findings and rebases loop back, it can be paused or stopped from any phase, and it is "
                "delivered once you merge.")
     rail_y = 80
     xs = [24 + i * (PW + GAP) for i in range(5)]
-    phases = [("Spec locked", "lead"), ("Building", "builder"), ("Proof recorded", "QA, r1, r2"),
+    phases = [("Spec locked", "lead"), ("Building", "builder and QA"), ("In review", "r1 and r2"),
               ("Judged", "lead"), ("Published", "release manager")]
     c.eyebrow(24, 20, "Phases", anchor="start")
     for x, (name, sub) in zip(xs, phases):
         c.node(x, rail_y, PW, NODE_H, name, sub)
 
     cy = rail_y + NODE_H / 2
-    for i, word in enumerate(["assign", "commit", "pass", "push"]):
+    for i, word in enumerate(["assign", "qa pass", "pass", "push"]):
         c.arrow([(xs[i] + PW, cy), (xs[i + 1], cy)])
         c.label(xs[i] + PW + GAP / 2, cy - 10, word)
 
