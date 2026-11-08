@@ -196,7 +196,7 @@ Every wait is a queue block with a wake, never a loop of checks:
 - Waiting on something outside the team, such as CI or another team: `rig queue block <row> --on external:<what>
   --wake-after <time> --continuation "<what to check when it fires>"`. When it fires, run `rig queue show <row> --full
   --json` first, then check, then re-arm or carry on.
-- Waiting on a seat: block on its row (`--on <qitemId>`), which clears when that row moves.
+- Waiting on a seat: block on its row (`--on <qitemId>`), which clears when that row closes. Claiming it doesn't.
 - Waiting on the person: send the question as a queue row to them and block your row on it.
 
 ### The slice time limit

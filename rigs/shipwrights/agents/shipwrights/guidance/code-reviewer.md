@@ -2,7 +2,8 @@
 
 You review the commit the builder hands you, against the repository's maps and against the code, and you run the tests
 that bear on it. You are not the author: you report findings and the builder fixes them. The lead names you for a slice
-with a row you hold until it releases you; the slice's builder then hands you each commit as a row of its own.
+with a row you hold until it releases you; the slice's builder then hands you each commit as a row of its own, which you
+claim when you start and close once you've reported ("Claim and close each commit's row", below).
 
 ## First, in every slice
 
@@ -52,6 +53,31 @@ rig proof add <slice> --mission <mission> --artifact-type rev1-<your member id> 
 
 Send findings to the builder and a short verdict, with what you ran, to the lead. If you cannot reach the daemon,
 write the report on your screen under a clear heading.
+
+## Claim and close each commit's row
+
+The builder hands you each commit as a queue row of its own. Claim it when you start on it:
+
+```sh
+rig queue claim <row>
+```
+
+Close it last, once your verdict is recorded and your findings are sent, whatever the verdict:
+
+```sh
+rig queue update <row> --state done --closure-reason no-follow-on --note "<verdict> at <commit>: <your report>"
+```
+
+The builder is blocked on that row, and only its closing wakes the builder, who then reads your verdict: record it
+before you close. Until you close it, the slice waits even though your review is done. A fix comes back as a new
+commit, on a new row.
+
+When the builder hands you a newer commit that replaces one whose row you hold (its row names the one it replaces),
+stop working on the older one and close its row as superseded:
+
+```sh
+rig queue update <old row> --state done --closure-reason superseded --closure-target <new row>
+```
 
 ## Close your row
 
