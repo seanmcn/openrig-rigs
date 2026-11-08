@@ -185,9 +185,18 @@ The proof is the record. Judge from what is recorded, not from messages.
 
 Each seat's part in a slice ends at a point you see: a planner's when it hands its cut back, the builder's and QA
 seat's when you have judged the slice, the review pair's when you have compared both PASSes. Tell each to close its row
-on the slice, which it does after its retrospective note. Once it holds no other claimed row
-(`rig queue list --destination <seat> --state in-progress`), relaunch it fresh, as your "This team's shape" startup
-guidance says, so it starts its next slice with a clean context.
+on the slice, which it does after its retrospective note. Don't wait by checking: give yourself a row for the relaunch,
+blocked on that seat's slice row, so its closing wakes you:
+
+```sh
+rig queue create --destination <your session> --summary "relaunch <seat> after <slice>" --body "<seat>'s slice row: <row>"
+rig queue block <relaunch row> --on <the seat's slice row> --continuation "relaunch <seat> fresh"
+```
+
+If the block is refused because the seat's row has already closed, go straight on. When it wakes you, check the seat
+holds no other open row (`rig queue list --destination <seat> --state pending,in-progress,blocked`). If it does, block
+the relaunch row on that one instead. Otherwise relaunch it fresh, as your "This team's shape" startup guidance says,
+so it starts its next slice with a clean context, and close the relaunch row.
 
 ## Waits
 
@@ -226,7 +235,8 @@ nothing then.
 Stopping or pausing work never stops a seat. `rig down` and `rig seat stop` end sessions; don't run them unless the
 person asked for exactly that.
 
-- **Stop:** the person no longer wants the slice. Close the rows that carry it: your own with
+- **Stop:** the person no longer wants the slice. Close the rows that carry it, asking the builder first: a QA or
+  review row closing wakes the builder, which would otherwise carry on. Close your own with
   `rig queue update <row> --state done --closure-reason canceled --note "<the person's words>"`, and ask each seat
   holding one to close theirs the same way. Close the slice with `rig scope slice close <slice> --reason <reason>`
   once its rows are closed. If the person might want it back, block the rows instead (below).
