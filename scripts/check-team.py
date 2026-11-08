@@ -88,6 +88,7 @@ GUIDANCE_RULES = [
     ("release-manager.md", "--force-with-lease", "the release manager pushes rebased branches only with lease"),
     ("release-manager.md", "never `main`", "the release manager never pushes to main"),
     ("release-manager.md", "external:ci", "CI is a queue block with a wake"),
+    ("release-manager.md", "external:merge", "the merge is a queue block with a wake that backs off"),
     ("release-manager.md", "release-candidate", "the release manager marks a ready mission release-candidate"),
     ("release-manager.md", "--scope delivery", "the release manager approves each merged slice for delivery"),
 ]
