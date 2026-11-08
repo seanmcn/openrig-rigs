@@ -49,10 +49,25 @@ what you ran. Fix what QA finds in new commits and hand each one back to QA, unt
 - **CONCERNING:** fix it, or tell QA why it shouldn't change, with evidence.
 - **NOT-CLEAR:** QA couldn't tell; wait for the lead to decide.
 
+When a new commit replaces one whose row is still open, such as after a rebase, say in the new row which row it
+replaces, and its seat closes the old one.
+
 When QA first records PASS, the lead names the slice's two code reviewers: hand them that commit, a row each. Their
 findings come straight back to you. Fix them in a new commit, which goes to QA first and then back to both reviewers,
 saying which finding it answers. If a finding is wrong, say why, with evidence. A disagreement that keeps coming back
 goes to the lead.
+
+After each handoff, block your row on a commit row you handed out that's still open, so its closing wakes you. The
+timer is a backstop in case its seat forgets to close it:
+
+```sh
+rig queue block <your row> --on <an open commit row> --wake-after 1h --continuation "check the QA and review rows for <commit>"
+```
+
+Each time you wake, check every commit row you handed out with `rig queue show <row>`. Block again on any that's still
+open, and carry on once all are closed. If a block is refused because the row has already closed, that one is done, so
+move to the next. If the timer wakes you while a row is still open, check `rig proof show` for that seat's proof at
+the commit: if it's recorded, ask the seat to close its row; if not, it's still working, so block again.
 
 Don't push: once the lead has judged the slice, the release manager publishes it.
 
