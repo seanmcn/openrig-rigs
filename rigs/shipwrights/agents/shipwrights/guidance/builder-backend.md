@@ -67,7 +67,8 @@ rig queue block <your row> --on <an open commit row> --wake-after 1h --continuat
 Each time you wake, check every commit row you handed out with `rig queue show <row>`. Block again on any that's still
 open, and carry on once all are closed. If a block is refused because the row has already closed, that one is done, so
 move to the next. If the timer wakes you while a row is still open, check `rig proof show` for that seat's proof at
-the commit: if it's recorded, ask the seat to close its row; if not, it's still working, so block again.
+the commit: if it's recorded, ask the seat to close its row; if not, it's still working, so block again. A row closed
+as canceled means the lead stopped the slice: don't carry on, ask the lead.
 
 Don't push: once the lead has judged the slice, the release manager publishes it.
 
