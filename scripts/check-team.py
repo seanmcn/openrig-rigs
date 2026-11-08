@@ -88,6 +88,7 @@ GUIDANCE_RULES = [
     ("release-manager.md", "--force-with-lease", "the release manager pushes rebased branches only with lease"),
     ("release-manager.md", "never `main`", "the release manager never pushes to main"),
     ("release-manager.md", "external:ci", "CI is a queue block with a wake"),
+    ("release-manager.md", "gh run list", "the CI wait comes from the workflow's recent run times"),
     ("release-manager.md", "external:merge", "the merge is a queue block with a wake that backs off"),
     ("release-manager.md", "release-candidate", "the release manager marks a ready mission release-candidate"),
     ("release-manager.md", "--scope delivery", "the release manager approves each merged slice for delivery"),
@@ -96,6 +97,7 @@ GUIDANCE_RULES = [
 # (guidance file, phrase it must not contain, why)
 FORBIDDEN_RULES = [
     ("lead.md", "Push the builder's branch", "the release manager publishes, not the lead"),
+    ("release-manager.md", "external:ci --wake-after 15m", "the CI wait comes from recent run times, not a fixed 15 minutes"),
 ]
 
 # Profiles this team added or renamed from Workshop's, and the guidance files each must deliver.
