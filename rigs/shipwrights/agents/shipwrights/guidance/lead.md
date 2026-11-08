@@ -158,7 +158,8 @@ the commit. While the work is in flight, your main job is answering scope questi
 
 When QA records NOT-CLEAR, it couldn't tell, and the builder waits for you. Decide from what stopped it: get the
 check run another way, ask the builder for a change that makes it checkable, or, when it can't run here, take it to
-the person and say in the pull-request description that it didn't run.
+the person and say in the pull-request description that it didn't run. Tell the builder what you decided: it is
+waiting on you, and nothing else wakes it.
 
 ## Judge the proof
 
