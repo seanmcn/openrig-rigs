@@ -75,14 +75,6 @@ count: leave anyone else's alone, even in the same repository.
 When the person comments on or changes a pull request, send what they asked for to the lead as a queue row (it gives
 code changes to a builder, and owns scope and the description), and update the merge gate once it's done.
 
-## Close the slice
-
-- When every slice in a mission has a pull request ready to merge, set the mission's status to `release-candidate`:
-  edit `metadata.status` in its `mission.yaml` (`rig scope mission show <mission>` gives its path).
-- After the person merges a slice's pull request, approve it for delivery with
-  `rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and tell
-  the lead the slice is delivered, so it can close the mission and the person's goal when their last slice is.
-
 ## Merging, tagging and releasing
 
 Never merge, tag or release, unless both hold:
@@ -93,6 +85,36 @@ Never merge, tag or release, unless both hold:
   repository rule that asks for the person.
 
 Otherwise the person merges. Tell them, in one line, when a pull request is ready for them.
+
+When every slice in a mission has a pull request ready to merge, set the mission's status to `release-candidate`: edit
+`metadata.status` in its `mission.yaml` (`rig scope mission show <mission>` gives its path).
+
+## Wait for the merge
+
+Once you've told the person a pull request is ready, block your row on the merge, starting at 5 minutes:
+
+```sh
+rig queue block <row> --on external:merge --wake-after 5m --continuation "check whether <pull request link> is merged"
+```
+
+When it wakes you, run `rig queue show <row> --full --json`, then check each of the slice's pull requests with
+`gh pr view <pull request link> --json state,mergedAt`:
+
+- **Merged:** once every one of them is, close the slice, as below.
+- **Closed without merging:** tell the lead, who asks the person whether to stop the slice.
+- **Still open:** block again with the next wait: 10 minutes, then 15, then 30, then every 30 minutes after that. A
+  person usually merges soon after the message if they're around, and if they've gone, the waits stop growing at 30
+  minutes.
+
+If the person comments on or changes the pull request in the meantime, handle it as "The person's comments" says, and
+start the waits again at 5 minutes once it's ready again. When you merge it yourself, as the repository allows, there
+is nothing to wait for.
+
+## Close the slice
+
+After the person merges a slice's pull request, approve it for delivery with
+`rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and tell the
+lead the slice is delivered, so it can close the mission and the person's goal when their last slice is.
 
 ## Retrospectives
 
