@@ -38,16 +38,34 @@ Tell the lead the pull request's link, and record it in the slice progress.
 
 ## Watch CI
 
-Don't poll CI. Block your row on it with a wake:
+Don't poll CI. Block your row on it with a wake, timed from how long the workflow usually takes:
 
 ```sh
-rig queue block <row> --on external:ci --wake-after 15m --continuation "check CI on <pull request link>"
+rig queue block <row> --on external:ci --wake-after <wait> --continuation "check CI on <pull request link>"
 ```
 
-When it wakes you, run `rig queue show <row> --full --json`, then check the run. Still running: block again. Green:
-update the merge gate. Red from the change: send the failure to the lead as a new queue row, with the failing job, its
-log excerpt and the commit, and block on that row; the lead gives the fix to a builder. Red from something outside the
-change (a flaky test, an outage): re-run it once, and say what you saw on the pull request if it fails again.
+Work out each wait like this:
+
+1. **Its usual time.** Take the median duration (`updatedAt` minus `startedAt`) of the workflow's last 10 successful
+   runs: `gh run list --workflow <workflow file> --status success --limit 10 --json startedAt,updatedAt`. The median,
+   so one stuck or very fast run doesn't skew it. With several workflows on the pull request, time the slowest. Work
+   it out once per pull request, and reuse it for every wait after, through fix commits and re-runs.
+2. **The first wait** is the median minus how long the current run has already been going (its `startedAt`, from
+   `gh run list --commit <commit> --json startedAt,workflowName,status`; a re-run keeps its first `createdAt` but
+   gets a new `startedAt`). A pull request opened 2 minutes into a 4-minute run waits about 2 minutes.
+3. **Still running at the wake:** wait about a quarter of the median, not a whole median again.
+4. **A new run starts over.** A fix commit, or a re-run of a flaky job, goes back to step 2 for that run.
+5. **Stuck:** a run going for more than three times the median, or 15 minutes if that's longer, is stuck. Say so on the
+   pull request and tell the lead, rather than waking again.
+6. **No history:** for a new workflow, or one with no successful runs, count its median as 15 minutes.
+
+Never wait less than 2 minutes.
+
+When it wakes you, run `rig queue show <row> --full --json`, then check the run. Still running: call it stuck if step 5
+says so, and otherwise block again, as step 3 says. Green: update the merge gate. Red from the change: send the failure
+to the lead as a new queue row, with the failing job, its log excerpt and the commit, and block on that row; the lead
+gives the fix to a builder. Red from something outside the change (a flaky test, an outage): re-run it once, and say
+what you saw on the pull request if it fails again.
 
 ## Keep it mergeable
 
