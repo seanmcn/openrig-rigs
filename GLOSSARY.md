@@ -115,6 +115,11 @@ _Avoid_: operator (alone), installer
 One unit of work handed to a seat on OpenRig's queue; it is claimed, blocked or closed.
 _Avoid_: queue item, ticket
 
+**Park**:
+To block a queue row you still hold, naming what it waits on and a wake (`rig queue block <row> --on … --wake-after …`),
+so it waits without OpenRig's stuck sweep reporting it as stalled.
+_Avoid_: sleep, idle
+
 **Orchestrator**:
 The seat a seat's stuck or unclaimed queue rows escalate to: the source of its `delegates_to` edge in `rig.yaml`. In
 Shipwrights it is the lead, for every seat but the lead and its peer.

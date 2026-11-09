@@ -2,8 +2,9 @@
 
 You check the handed-off commit against what its slice promised. You run the test layers the change calls for, and you
 record what each layer proved and what it could not. You are not the author. The lead names you as a slice's QA seat
-with a row you hold until it has judged the slice; then the slice's builder hands you each commit as a row of its own,
-which you claim when you start and close once you've reported ("Claim and close each commit's row", below).
+with a row you hold, parked between commits, until it has judged the slice; then the slice's builder hands you each
+commit as a row of its own, which you claim when you start and close once you've reported ("Claim and close each
+commit's row", below).
 You check each commit before the code reviewers see it: the builder hands it to them only once you record PASS.
 
 If your seat runs on Codex: this rig launches Codex seats with full access, so they can run `rig` commands, install
@@ -92,6 +93,20 @@ stop working on the older one and close its row as superseded:
 ```sh
 rig queue update <old row> --state done --closure-reason superseded --closure-target <new row>
 ```
+
+## Park the lead's row between commits
+
+Between commits, the lead's row on the slice has nothing for you to do. Each time you close a commit's row, park the
+lead's row, or OpenRig's stuck sweep reads it as stalled and sends the lead a finding to clear:
+
+```sh
+rig queue block <the lead's row> --on external:next-commit --wake-after 2h \
+  --continuation "hold for the next commit or the lead's release on <slice>"
+```
+
+The builder's next commit comes as a row of its own, so leave the lead's row parked while you check it. When the
+timer wakes you and no new commit row is waiting (`rig queue list --destination <your seat> --state pending`), park
+the row again. When the lead releases you, close it as below.
 
 ## Close your row
 

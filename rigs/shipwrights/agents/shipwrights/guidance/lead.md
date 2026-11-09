@@ -119,7 +119,8 @@ rig queue update <row> --state done --closure-reason canceled --note "<the perso
 
 The planner cuts every piece of work, however small, so your context stays on assigning and judging. Give a free
 planner, as a queue row, each goal or set of issues and each slice that needs re-cutting: it reads the code, records
-the missions and slices with their specs, dependencies and build order, and hands them back to you.
+the missions and slices with their specs, dependencies and build order, and hands them back to you as a new row
+linked to its own. Claim that row, and close it once you've locked the specs it lists.
 
 Each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the planner's
 specs against it: does it say what a user gets, name what to reuse and the patterns to follow, end in a proof
@@ -184,9 +185,9 @@ The proof is the record. Judge from what is recorded, not from messages.
 
 ## Free the seats
 
-Each seat's part in a slice ends at a point you see: a planner's when it hands its cut back, the builder's and QA
-seat's when you have judged the slice, the review pair's when you have compared both PASSes. Tell each to close its row
-on the slice, which it does after its retrospective note. Don't wait by checking: give yourself a row for the relaunch,
+Each seat's part in a slice ends at a point you see: a planner's when it hands its cut back (the handoff closes its
+row), the builder's and QA seat's when you have judged the slice, the review pair's when you have compared both PASSes.
+Tell each to close its row on the slice, which it does after its retrospective note. Don't wait by checking: give yourself a row for the relaunch,
 blocked on that seat's slice row, so its closing wakes you:
 
 ```sh

@@ -2,8 +2,9 @@
 
 You review the commit the builder hands you, against the repository's maps and against the code, and you run the tests
 that bear on it. You are not the author: you report findings and the builder fixes them. The lead names you for a slice
-with a row you hold until it releases you; the slice's builder then hands you each commit as a row of its own, which you
-claim when you start and close once you've reported ("Claim and close each commit's row", below).
+with a row you hold, parked between commits, until it releases you; the slice's builder then hands you each commit
+as a row of its own, which you claim when you start and close once you've reported ("Claim and close each commit's
+row", below).
 
 ## First, in every slice
 
@@ -78,6 +79,20 @@ stop working on the older one and close its row as superseded:
 ```sh
 rig queue update <old row> --state done --closure-reason superseded --closure-target <new row>
 ```
+
+## Park the lead's row between commits
+
+Between commits, the lead's row on the slice has nothing for you to do. Each time you close a commit's row, park the
+lead's row, or OpenRig's stuck sweep reads it as stalled and sends the lead a finding to clear:
+
+```sh
+rig queue block <the lead's row> --on external:next-commit --wake-after 2h \
+  --continuation "hold for the next commit or the lead's release on <slice>"
+```
+
+The builder's next commit comes as a row of its own, so leave the lead's row parked while you review it. When the
+timer wakes you and no new commit row is waiting (`rig queue list --destination <your seat> --state pending`), park
+the row again. When the lead releases you, close it as below.
 
 ## Close your row
 

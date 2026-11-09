@@ -81,6 +81,20 @@ passes it, hand it to the reviewers again only if the diff changed; if it didn't
 can judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's change goes to
 the lead.
 
+The lead asks for a rebase with a row of its own. Once you've handed the rebased commit to QA, block the lead's rebase
+row on QA's row, as after any handoff:
+
+```sh
+rig queue block <the lead's rebase row> --on <QA's row> --wake-after 1h --continuation "check QA's row for the rebased <commit>"
+```
+
+Once QA has passed it and you've handed it on (to the reviewers if the diff changed, otherwise to the lead), close the
+rebase row:
+
+```sh
+rig queue update <the lead's rebase row> --state done --closure-reason no-follow-on --note "rebased onto <base> at <commit>"
+```
+
 ## Tell the lead it's done
 
 Once both reviewers have recorded PASS at one commit, tell the lead: that commit, what changed in a sentence, and
