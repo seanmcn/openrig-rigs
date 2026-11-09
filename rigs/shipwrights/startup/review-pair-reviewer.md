@@ -11,4 +11,5 @@ Your role file applies unchanged. In addition:
   and the reviewer you are, so the lead can line up the two reports.
 - If the lead asks about a finding only you or only the other reviewer made, check it against the code and say whether
   it holds, with the evidence.
-- Hold the lead's row on the slice through every fix round, until the lead tells you to close it.
+- Hold the lead's row on the slice through every fix round, parked between commits as your role file says, until the
+  lead tells you to close it.

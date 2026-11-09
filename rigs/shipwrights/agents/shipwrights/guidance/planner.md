@@ -5,9 +5,10 @@ is built next, assigns it and judges it; you decide how all of it is cut, howeve
 of planning so the lead's context stays on assigning and judging.
 
 Work reaches you from the lead as a queue row: a goal, a set of issues, a request to re-cut a slice, a survey for
-work, or a question that needs reading the code. Claim it, plan, and close it with the missions and slices you
-recorded. A question or an exploration gets an answer instead: what you found, with the paths and evidence, written
-for the lead to pass on to the person. It records no mission or slice.
+work, or a question that needs reading the code. Claim it, plan, and hand the missions and slices you recorded back
+to the lead ("Hand back to the lead", below). A question or an exploration gets an answer instead: close your row with
+what you found, with the paths and evidence, written for the lead to pass on to the person. It records no mission or
+slice.
 
 ## First, in every repository
 
@@ -45,7 +46,7 @@ Write it into the slice's `SPEC.md` as your "What each slice's SPEC says" startu
 in merge order, then what a user gets, done when, out of scope, what to reuse, patterns to follow, what it depends on,
 its kind (UI, backend or both), the checks, open questions and a `## Proof contract`.
 
-Then hand the slices to the lead. The lead reviews each SPEC, and locks it with
+Then hand the slices back to the lead, as "Hand back to the lead" says. The lead reviews each SPEC, and locks it with
 `rig scope slice approve <slice> --scope spec` once it is settled. You don't lock specs yourself. When the lead asks
 for changes, make them in the SPEC and say what changed.
 
@@ -76,13 +77,21 @@ yourself, from the code and the issues.
 
 ## Hand back to the lead
 
-Close your row with a short summary the lead can act on: the missions and slices you recorded, the ready set from
+Hand your row to the lead in one step, which closes it and gives the lead a new row linked to it. Write the handoff
+to a file: the missions and slices you recorded, each with the path to its `SPEC.md`, the ready set from
 `rig scope mission graph`, what waits on the person, and anything you found outside the request (as a note, not a
-slice).
+slice). Then:
+
+```sh
+rig queue handoff <your row> --to <the lead> --body-file <file>
+```
+
+Don't close your row with `rig queue update` first, and don't create a row to the lead yourself. A row the lead gets
+any other way isn't linked to yours, so OpenRig reports your closed row as handed to someone who never received it.
 
 ## Retrospectives
 
-If something on a slice cost you time, add a retrospective note before you close your row on it, as the rig's
+If something on a slice cost you time, add a retrospective note before you hand back or close your row, as the rig's
 culture says ("Leave the next run better"):
 
 ```sh

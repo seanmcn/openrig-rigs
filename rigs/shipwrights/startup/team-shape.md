@@ -43,10 +43,11 @@ The lead is the only seat that assigns seats to a slice, so two slices never tak
 - **Free:** a seat is free when it holds no open row on another slice
   (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
 - **Builder and QA:** when the lead hands a slice on, it names one free builder of the slice's kind and one free QA
-  seat, and sends each a row for the slice. Both hold the slice until the lead has judged it.
+  seat, and sends each a row for the slice. Both hold the slice until the lead has judged it, QA parking its row
+  between commits.
 - **Review pair:** when QA first records PASS on the slice, the lead names two free code reviewers on different
-  runtimes, and sends each a row for the slice. They hold it, through every fix round, until both have recorded PASS
-  at the same commit and the lead has compared their reviews.
+  runtimes, and sends each a row for the slice. They hold it, parked between commits, through every fix round, until
+  both have recorded PASS at the same commit and the lead has compared their reviews.
 - **After publishing:** a failing CI run or a conflict goes to the lead, which gives the fix or the rebase to a free
   builder of the slice's kind and a free QA seat, the same ones when they are free, and to a free review pair again
   when the slice's own diff changes.

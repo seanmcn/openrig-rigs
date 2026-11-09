@@ -11,7 +11,8 @@ usage: scripts/check-team.py rigs/<team>
 - skills.md lists every skill the guidance names, each row with a source, a full commit,
   a licence, the profiles that use it and whether it is required, and install-skills.sh
   reads it (a dry run, into empty folders);
-- the role guidance carries the rules the team relies on, and none it has dropped, and every
+- the role guidance carries the rules the team relies on, and none it has dropped, every
+  `rig queue block` example names its `--on` blocker, and every
   role file has its seat add a retrospective note to the slice progress;
 - every seat this team added or renamed has a profile with its guidance, a member in
   rig.yaml and runtimes in configurations.yaml, and the old names are gone;
@@ -92,6 +93,11 @@ GUIDANCE_RULES = [
     ("release-manager.md", "external:merge", "the merge is a queue block with a wake that backs off"),
     ("release-manager.md", "release-candidate", "the release manager marks a ready mission release-candidate"),
     ("release-manager.md", "--scope delivery", "the release manager approves each merged slice for delivery"),
+    ("qa.md", "--on external:next-commit", "QA parks the lead's row between commits, so the stuck sweep doesn't flag it"),
+    ("code-reviewer.md", "--on external:next-commit", "a reviewer parks the lead's row between commits"),
+    ("startup/review-pair-reviewer.md", "parked between commits", "a reviewer in a pair parks the lead's row between commits"),
+    ("builder-backend.md", "block the lead's rebase row", "the builder parks the lead's rebase row while QA checks it"),
+    ("planner.md", "rig queue handoff", "the planner's hand-off is linked, so its closed row has a successor"),
 ]
 
 # (guidance file, phrase it must not contain, why)
@@ -373,6 +379,13 @@ def check_guidance(team, problems):
     for name, phrase, why in FORBIDDEN_RULES:
         if phrase in guidance.get(name, ""):
             fail(problems, f"guidance/{name} still has {phrase!r}: {why}")
+    # OpenRig refuses a block without --on, even with a wake, so every example names its blocker straight after the
+    # row (a `\` line break may come between). The text's whitespace is collapsed, so a command is one line here, and
+    # the 40 characters after the row are only there to show which example it is.
+    texts = {**{f"guidance/{name}": text for name, text in guidance.items()}, **started}
+    for where, text in sorted(texts.items()):
+        for command in re.findall(r"rig queue block <[^>]+>(?! (?:\\ )?--on )[^`]{0,40}", text):
+            fail(problems, f"{where}: {command!r} has no --on: rig queue block requires a blocker")
     for name, text in sorted(guidance.items()):
         if RETRO_PHRASE not in text:
             fail(problems, f"guidance/{name} lacks {RETRO_PHRASE!r}: every seat writes a retrospective note")
