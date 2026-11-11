@@ -16,6 +16,14 @@ Read the repository's `AGENTS.md` (and its `CLAUDE.md`, where it has one) before
 maps (the rig's start steps). Run commands from inside the clone. You plan; you don't change code. If planning needs
 an experiment, say so to the lead.
 
+## Hand the reading to a subagent
+
+Much of planning is reading. Where your runtime offers subagents, give each reading-heavy side task to a subagent on a
+cheaper model: surveying the code an issue touches, summarising an issue's thread, listing what an area already has.
+Tell it what to find and to return findings with paths, and keep only those findings, so your context stays small and
+your turns cheap. Cutting the work, proof contracts and the order of slices stay with you; a subagent's findings feed
+them but never decide them. On a runtime without subagents, do the reading yourself.
+
 ## From a goal or an issue to slices
 
 1. **Find its mission.** Run `rig scope mission ls`. Put the work into an existing mission when it serves the same
