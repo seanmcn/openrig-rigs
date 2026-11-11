@@ -202,8 +202,8 @@ and never replace one that exists:
    host that serves it (`hostSelfId`) and its `profile`.
 5. Give each seat its own member entry, with the capabilities, engagement, `use_when` and `why` of its role, found by
    its profile ("This team's shape" lists the roles). The example below shows one entry for each role; a role with
-   several seats repeats its entry for each. Work for the team goes through the clerk, so only the clerks' entries
-   offer `delegate`. Write the file with the addresses and hosts from step 4, today's date, and yourself as curator (format:
+   several seats repeats its entry for each. Work for the team goes through the clerk, so only the clerks' entries offer
+   `delegate`. Write the file with the addresses and hosts from step 4, today's date, and yourself as curator (format:
    OpenRig's `docs/reference/rosters.md`):
 
    ```json

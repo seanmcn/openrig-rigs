@@ -205,9 +205,9 @@ def work(t: Tokens, slug: str) -> Canvas:
         "The clerk takes your goal and routes it to a planner, which cuts it; the lead takes the work on by locking "
         "each slice's spec, and the clerk assigns it a builder and a QA seat; the judge judges the proof once it is "
         "built and reviewed, passing the hard or risky slices to the lead to decide, and hands it to the release "
-        "manager, which writes the description and opens the pull requests; a failing CI run or a conflict goes back through the "
-        "lead, which decides the fix, to the clerk to assign; you merge, the release manager approves delivery, the "
-        "clerk records it, and the lead closes your goal once its mission is complete.",
+        "manager, which writes the description and opens the pull requests; a failing CI run or a conflict goes "
+        "back through the lead, which decides the fix, to the clerk to assign; you merge, the release manager "
+        "approves delivery, the clerk records it, and the lead closes your goal once its mission is complete.",
         ["You", "Lead", "Judge", "Clerk", "Planner", "Release manager"], steps)
     # The judge passes a hard or risky slice to the lead beside it, which decides and hands it back.
     jx, jy = box(6)
