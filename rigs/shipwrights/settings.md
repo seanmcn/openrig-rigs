@@ -19,11 +19,10 @@ default here, or ship your own copy of this file in its place.
 - **Confirm each triage result with the person.** When on, the planner asks the person to
   confirm each triage result before it becomes a slice. When off, the result becomes a
   slice straight away.
-- **Slice time limit.** How long a slice's build may run before the lead looks at it. The
-  clerk creates each build row with the queue tier whose deadline is closest to this limit
-  without going over it (OpenRig's `routine` tier is 4 hours, `deep` is 24), and checks
-  `rig queue overdue` each time its reminder wakes it. Queue deadlines count clock hours,
-  so the clerk counts working hours itself, and passes the lead only a build past the limit.
+- **Slice time limit.** How long a slice's build may run before the lead looks at it,
+  counted in working hours from when the clerk created the build row. Each time its
+  reminder wakes it, the clerk counts the working hours of every open build row, and passes
+  the lead only a build past the limit.
 - **One-runtime review pairs while a runtime is out.** When on, the clerk may pair two code
   reviewers on one runtime while every reviewer on the other runtime has reached its usage
   limit, so slices keep moving when one runtime's accounts have run out. The two must run

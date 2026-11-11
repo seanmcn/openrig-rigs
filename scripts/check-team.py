@@ -167,7 +167,7 @@ GUIDANCE_RULES = [
     ("clerk.md", "You never decide", "the clerk applies rules; judgement stays with the lead"),
     ("clerk.md", "to a free planner", "the clerk routes each goal, re-cut, survey and question to a free planner"),
     ("clerk.md", "once the lead has locked its spec", "the clerk hands a slice on only after the lead locks its spec"),
-    ("clerk.md", "--tier", "each build row carries the queue tier for the slice time limit"),
+    ("clerk.md", "count the working hours since its `tsCreated`", "the time limit counts from the build row's creation"),
     ("clerk.md", "two free code reviewers on different runtimes", "the clerk names the review pair"),
     # With the setting on, a review pair may share a runtime while the other runtime is out.
     ("clerk.md", "One-runtime review pairs while a runtime is out", "the clerk reads the one-runtime pairing setting"),
@@ -186,7 +186,6 @@ GUIDANCE_RULES = [
     ("clerk.md", "rig seat launch <seat> --fresh", "the clerk relaunches each freed seat fresh"),
     ("clerk.md", "## Publish the team's roster", "the clerk publishes the roster"),
     ("clerk.md", "## Keep the roster current", "the clerk keeps the roster current"),
-    ("clerk.md", "rig queue overdue", "the clerk checks for builds past the slice time limit"),
     ("clerk.md", "Only a build past the limit goes to the lead", "the time-limit reminder wakes the lead only for overdue builds"),
     ("clerk.md", "--status complete", "the clerk records a mission's completion"),
     ("clerk.md", "Tell the lead only when a mission is complete", "a delivered slice doesn't wake the lead"),
@@ -268,6 +267,9 @@ GUIDANCE_RULES = [
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)
 FORBIDDEN_RULES = [
+    # rig queue overdue lists only rows in progress, and each claim restarts a row's deadline.
+    ("clerk.md", "run `rig queue overdue", "the clerk counts each build's working hours from its row's creation"),
+    ("settings.md", "rig queue overdue", "the clerk counts each build's working hours from its row's creation"),
     ("lead.md", "Push the builder's branch", "the release manager publishes, not the lead"),
     ("release-manager.md", "external:ci --wake-after 15m", "the CI wait comes from recent run times, not a fixed 15 minutes"),
     ("peer.md", "## Take over", "the peer relaunches a down lead and never drives in its place"),
