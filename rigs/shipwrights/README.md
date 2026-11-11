@@ -22,11 +22,11 @@ reviewers on different providers than from one, and changes the rest in four way
   seat, and a review pair let two slices move at once. A rig grows the roles it needs by adding numbered seats
   ("Growing the team", below). You could run copies of the team on more machines to go further, but nothing yet stops
   two copies taking the same work: a way to claim work across copies is next.
-- **A seat for every step.** A planner cuts each goal into slices, a clerk does the lead's routine coordination, QA
-  checks every commit before review, a judge judges each slice's proof, a release manager publishes and keeps each pull
-  request mergeable, and a peer relaunches the lead if it goes down. The lead keeps only the work that needs judgement.
-  Workers start fresh for each slice, so what carries over between slices is the record: the spec, the slice progress
-  and the proof.
+- **A seat for every step.** A clerk takes your goals and does the lead's routine coordination, a planner cuts each goal
+  into slices, QA checks every commit before review, a judge judges each slice's proof, a release manager publishes and
+  keeps each pull request mergeable, and a peer relaunches the lead if it goes down. The lead keeps only the work that
+  needs judgement. Workers start fresh for each slice, so what carries over between slices is the record: the spec, the
+  slice progress and the proof.
 
 The runtime each seat uses is my current suggestion. I'm trying different mixes and measuring them, and the
 recommended preset will change as results come in.
@@ -42,9 +42,9 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 
 | Seat | Runtime | Does |
 |---|---|---|
-| `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs and decides the hard or risky slices the judge passes it. Talk to this seat. |
+| `orch-lead` | Codex | Locks the specs of the slices each goal is cut into, which is how the team takes work on, settles the goals the clerk can't, and decides the hard or risky slices the judge passes it. Talk to this seat. |
 | `orch-peer` | Claude Code | Watches the lead and restores it after a handover with a recap. When the lead's seat has been down for 10 minutes, relaunches it with that recap and tells you; if it is still down 10 minutes later, tells you and stops. Never drives, so it can run on either runtime. |
-| `orch-clerk-1` | Claude Code | Does the lead's routine coordination by fixed rules: routes work to a planner, gives each locked slice a builder, a QA seat and a review pair, relaunches seats when their part is done, keeps the roster, checks the slice time limit and records deliveries. Passes anything else to the lead. |
+| `orch-clerk-1` | Claude Code | Takes your goals, and does the lead's routine coordination by fixed rules: routes each clear goal and the lead's work to a planner, gives each locked slice a builder, a QA seat and a review pair, relaunches seats when their part is done, keeps the roster, checks the slice time limit and records deliveries. Passes anything else to the lead. |
 | `orch-planner-1` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
 | `dev-backend-1` | Claude Code | Builds a backend slice in its own worktree, reviews its own diff and runs the repository's checks. |
 | `dev-frontend-1` | Claude Code | Builds on the backend builder's guidance for slices tagged UI or both: checks them in a real browser and runs impeccable's reviews and detector. |
@@ -104,7 +104,7 @@ an overlay.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-the-work-moves-dark.svg">
-  <img alt="How the work moves, in lanes for you, the lead, the judge, the clerk, the planner and the release manager: the lead takes on your goal and the clerk routes it to the planner, which cuts it; the lead locks each spec and the clerk assigns a builder and a QA seat; once the slice is built and reviewed, the judge judges its proof, passing the hard or risky slices to the lead to decide; the release manager writes the description and opens the pull requests, and a failing CI run or a conflict goes back through the lead to the clerk to assign; you merge; the release manager approves delivery and the clerk records it; the lead closes your goal once its mission is complete." src="diagrams/how-the-work-moves.svg">
+  <img alt="How the work moves, in lanes for you, the lead, the judge, the clerk, the planner and the release manager: the clerk takes your goal and routes it to the planner, which cuts it; the lead locks each spec and the clerk assigns a builder and a QA seat; once the slice is built and reviewed, the judge judges its proof, passing the hard or risky slices to the lead to decide; the release manager writes the description and opens the pull requests, and a failing CI run or a conflict goes back through the lead to the clerk to assign; you merge; the release manager approves delivery and the clerk records it; the lead closes your goal once its mission is complete." src="diagrams/how-the-work-moves.svg">
 </picture>
 
 Inside "Built and reviewed", each slice goes through these steps:
@@ -114,9 +114,9 @@ Inside "Built and reviewed", each slice goes through these steps:
   <img alt="How a slice is built, in lanes for the clerk, the builder, QA, the reviewers and the judge: the clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the clerk names a review pair on two runtimes; their findings go back to the builder and through QA again; once both pass, the judge compares the reviews and judges." src="diagrams/how-a-slice-is-built.svg">
 </picture>
 
-1. The planner records your goal or issues as a mission in OpenRig's work tree (`rig scope`), with its slices and the
-   dependencies between them. Each slice's `SPEC.md` lists the repositories it touches in merge order and ends with a
-   proof contract ([`slice-spec.md`](startup/slice-spec.md)). The lead locks each spec.
+1. The clerk hands your goal to a free planner, which records it as a mission in OpenRig's work tree (`rig scope`), with
+   its slices and the dependencies between them. Each slice's `SPEC.md` lists the repositories it touches in merge order
+   and ends with a proof contract ([`slice-spec.md`](startup/slice-spec.md)). The lead locks each spec.
 2. The clerk hands each locked slice to a free builder as a queue row, with a free QA seat: slices tagged UI or both
    to a frontend builder, backend slices to a backend builder ([`team-shape.md`](startup/team-shape.md), "Which seats
    a slice holds").
@@ -219,11 +219,21 @@ rig bundle install <link> --preset recommended --target ~/rigs/shipwrights --cwd
 `--cwd .` sets where the seats work, and `--target` is your installed copy of the team. To put one seat on the other
 runtime, add `--seat <pod.member>=<runtime>`, such as `--seat dev.backend-1=codex`.
 
-Then give your goal to OpenRig's kernel operator, the seat you talk to in OpenRig's view (`rig` opens it), such as
-"Have shipwrights take issue #42: <one line on what you want>". It hands the goal to the lead as a queue row. The lead
-starts from that row; with no goal, it waits. Ask it to find work, and it offers you three options from your
-repositories' roadmaps, issues and CI; ask it to keep finding work, and it offers three more each time a piece you
-picked is delivered, until you say stop.
+Then give your goal to the team's clerk, `orch-clerk-1@shipwrights`, as a queue row. Ask OpenRig's kernel operator,
+the seat you talk to in OpenRig's view (`rig` opens it), such as "Have shipwrights take issue #42: <one line on what you
+want>. Put it on the queue of its clerk, orch-clerk-1@shipwrights." Or put it there yourself, from any shell:
+
+```sh
+rig queue create --source <your name> --destination orch-clerk-1@shipwrights \
+  --summary "<the goal in a sentence>" --body "<what you want, where, and any issues it names>"
+```
+
+The clerk hands a clear goal straight to a planner, and the planner's cut goes to the lead, which takes the work on by
+locking it, so a new goal doesn't wait for the lead. The clerk passes the lead a goal that is unclear, a question, or
+one it can't tell the team should take on, and the lead asks you what it needs to. You can also tell the lead a goal
+in its terminal, which costs it a turn to pass on. With no goal, the team waits. Ask the lead to find work, and it
+offers you three options from your repositories' roadmaps, issues and CI; ask it to keep finding work, and it offers
+three more each time a piece you picked is delivered, until you say stop.
 
 `rig capture orch-lead@shipwrights` reads the lead's screen and `tmux attach -t orch-lead@shipwrights` puts a terminal
 on it. Watch for prompts: the seats never answer one for you, and tell you which seat is waiting.

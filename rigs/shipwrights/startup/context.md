@@ -29,9 +29,9 @@ Last, submit your startup proof: run the `rig startup-proof submit` command from
 challenge" in your startup text, exactly as given. It tells OpenRig and the lead that you read your start steps. If
 your `rig` commands fail in the sandbox, say so instead.
 
-Then the lead starts from the person's goal, usually delivered in the kernel operator's queue row, and follows its "Your
-first move" startup guidance. It does not ask for that goal again. With no goal, it waits for one, and looks for work
-only when the person asks it to. Everyone else waits for work. The lead and the clerk bring it as queue rows, and an
-idle seat is fine.
+Then the clerk takes the person's goal, usually delivered as a queue row from the kernel operator, and hands it to a
+planner, or to the lead when its rules don't settle it. Nobody asks for that goal again. With no goal, the team waits
+for one, and the lead looks for work only when the person asks it to. Everyone else waits for work. The lead and the
+clerk bring it as queue rows, and an idle seat is fine.
 
 Need expertise your team lacks? `rig roster find <topic>` lists who to ask and why.

@@ -59,7 +59,8 @@ seat does it. Anything these rules don't settle goes to the lead.
 
 With more than one clerk, each owns its own worker seats, and no seat belongs to two: when a clerk is added, the lead
 splits the seats between them, and the roster's curator writes each clerk's seats in its entry. A clerk assigns only
-from its own, and the lead sends each mission, from its goal on, to one clerk.
+from its own, and each mission stays with one clerk, the clerk that took its goal, which the lead sends the mission's
+later work to.
 
 - **Free:** a seat is free when it holds no open row on another slice
   (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
@@ -79,8 +80,9 @@ from its own, and the lead sends each mission, from its goal on, to one clerk.
 - **After publishing:** a failing CI run or a conflict goes to the lead, which decides the fix or when to rebase and
   sends it to the clerk. The clerk gives it to a free builder of the slice's kind and a free QA seat, the same ones
   when they are free, and to a free review pair again when the slice's own diff changes.
-- **Planner:** the lead sends the clerk each goal, slice to re-cut, survey for work and question that needs reading
-  code, and the clerk hands it to a free planner.
+- **Planner:** the person's goals come to the clerk, and the lead sends it each slice to re-cut, survey for work and
+  question that needs reading code. The clerk hands each to a free planner, and passes the lead a goal its rules don't
+  settle.
 - **Judge:** the clerk names a slice's judge when it hands the slice on: with more than one judge, the one with the
   fewest open rows. The judge passes the hard or risky slices to the lead (below).
 - **Release manager:** the judge, not the clerk, gives each judged slice to the release manager that already holds its
