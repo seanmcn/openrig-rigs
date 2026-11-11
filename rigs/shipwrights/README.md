@@ -90,7 +90,10 @@ The suggestions use five tiers of models, by price and capability:
 | Clerk, peer | budget | `low` |
 
 The clerk pairs one code reviewer from each runtime, so every pair gets one upper and one workhorse model, at least one
-of them stronger than the builder's.
+of them stronger than the builder's. With the team setting "One-runtime review pairs while a runtime is out" on, a pair
+may share a runtime while the other runtime's accounts have run out, if its two models differ and one is a tier above
+the builder's. Two reviewers on one runtime share a suggested model, so to use that setting, give one of them another
+model in your copy of `rig.yaml`.
 
 These are suggestions, and a rig may override any seat's model: set `model` (and `effort`) on the member in your copy
 of `rig.yaml`, which OpenRig prefers to the profile's. To change a role's model on every seat, change its profile in

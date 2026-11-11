@@ -9,6 +9,7 @@ default here, or ship your own copy of this file in its place.
 | Disagreement rounds before the person is asked | 2 | lead |
 | Confirm each triage result with the person | off | planner |
 | Slice time limit | 4 working hours | clerk, lead |
+| One-runtime review pairs while a runtime is out | off | clerk |
 
 - **Disagreement rounds before the person is asked.** How many fix rounds a disagreement
   between the builder and a reviewer or QA may go before the lead takes it to the person,
@@ -21,3 +22,10 @@ default here, or ship your own copy of this file in its place.
   without going over it (OpenRig's `routine` tier is 4 hours, `deep` is 24), and checks
   `rig queue overdue` each time its reminder wakes it. Queue deadlines count clock hours,
   so the clerk counts working hours itself, and passes the lead only a build past the limit.
+- **One-runtime review pairs while a runtime is out.** When on, the clerk may pair two code
+  reviewers on one runtime while no reviewer on the other runtime has room, so slices keep
+  moving when one runtime's accounts have run out. The two must run different models, at
+  least one of them a tier above the builder's, and the pull request says so. When off, a
+  slice with no pair on different runtimes waits, as "No free pair" says. With the
+  suggested models, two reviewers on one runtime share a model, so to use this, give one
+  of them another model in your copy of `rig.yaml`.

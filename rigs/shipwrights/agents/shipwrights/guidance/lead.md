@@ -168,6 +168,8 @@ evidence. Whatever the template, cover:
 - **What a user gets:** before and after, in a sentence or two, with the issue linked.
 - **How it was verified:** each check that ran, the commit it ran at, and its result, taken from the recorded proof.
   Then what could not run, and why.
+- **Who reviewed it:** which review ran on which model, and why the pair shared a runtime when it did, from the
+  clerk's "Review pair" line in the slice progress.
 - **What depends on it:** the downstream effect and what covers it.
 - **Unsure:** what anyone was unsure about.
 

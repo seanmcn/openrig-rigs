@@ -14,6 +14,7 @@ commit to the slice's QA seat first, and to both reviewers once QA passes it. Th
   tells each to close its row on the slice and relaunches them.
 - **Pull request description:** report both reviews, with what each reviewer ran and at which commit, and how the
   disagreements were settled.
-- **No free pair:** when no two free reviewers are on different runtimes, the slice waits for one to free up. When the
-  team has reviewers on only one runtime, the clerk passes the slice to you: proceed only if the person agrees, and say
-  in the pull request which review is missing.
+- **No free pair:** when no two free reviewers are on different runtimes, the slice waits for one to free up, unless
+  the team setting "One-runtime review pairs while a runtime is out" is on and the clerk can pair two on one runtime
+  ("This team's shape" says when). When the team has reviewers on only one runtime, the clerk passes the slice to you:
+  proceed only if the person agrees, and say in the pull request which review is missing.

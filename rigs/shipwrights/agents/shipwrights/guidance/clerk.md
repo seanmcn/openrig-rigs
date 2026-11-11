@@ -89,6 +89,41 @@ whose own diff changed after a fix or a rebase gets a pair again the same way.
 When no two free reviewers are on different runtimes, block the builder's row on a busy reviewer's slice row, and
 name the pair when it frees. When the team has reviewers on only one runtime, hand it to the lead.
 
+### While a runtime is out
+
+The team setting "One-runtime review pairs while a runtime is out" is off unless the rig turned it on. While it is
+off, every pair spans two runtimes, as above.
+
+A runtime is out when its accounts have run out of usage: the lead tells you so, or a reviewer on it tells you its
+limit is reached, which you pass on to the lead. It stays out until the lead tells you it is back. A reviewer has room
+when it is free and its runtime isn't out.
+
+With the setting on, while no reviewer on the other runtime has room because that runtime is out, you may name two
+free reviewers on one runtime, but only two that pass both checks:
+
+- they run different models;
+- at least one of them runs a model a tier above the builder's: any higher tier counts.
+
+A seat's model is the member's `model` in this rig's `rig.yaml`, or, where the member has none, the `preferences.model`
+of its profile in `agents/shipwrights/agent.yaml`. A model's tier is in the rig README's "Models" section; from the
+highest, the tiers are top, upper, workhorse, lower and budget. If a model isn't in that table, hand it to the lead.
+When no two free reviewers pass both checks, the slice waits as above.
+
+Once the lead tells you the other runtime is back, name each new pair one of each again. A pair already on a slice
+keeps it to the end.
+
+### Record the pair
+
+Whichever runtimes a pair spans, record it on the slice when you name it, so the pull request can say which review
+ran on which model:
+
+```sh
+rig scope slice progress <slice> --mission <mission> \
+  --add "Review pair: <reviewer> (<runtime>, <model>) and <reviewer> (<runtime>, <model>)"
+```
+
+For a pair on one runtime, end the line with why: "shared <runtime>: <other runtime> is out".
+
 ## Free the seats
 
 Each seat's part in a piece of work ends at a point you are told of:
