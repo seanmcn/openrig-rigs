@@ -8,7 +8,7 @@ default here, or ship your own copy of this file in its place.
 | --- | --- | --- |
 | Disagreement rounds before the person is asked | 2 | lead |
 | Confirm each triage result with the person | off | planner |
-| Slice time limit | 4 working hours | lead |
+| Slice time limit | 4 working hours | clerk, lead |
 
 - **Disagreement rounds before the person is asked.** How many fix rounds a disagreement
   between the builder and a reviewer or QA may go before the lead takes it to the person,
@@ -17,7 +17,7 @@ default here, or ship your own copy of this file in its place.
   confirm each triage result before it becomes a slice. When off, the result becomes a
   slice straight away.
 - **Slice time limit.** How long a slice's build may run before the lead looks at it. The
-  lead creates each build row with the queue tier whose deadline is closest to this limit
+  clerk creates each build row with the queue tier whose deadline is closest to this limit
   without going over it (OpenRig's `routine` tier is 4 hours, `deep` is 24), and checks
   `rig queue overdue` each time its reminder wakes it. Queue deadlines count clock hours,
-  so the lead counts working hours itself before it acts on an overdue row.
+  so the clerk counts working hours itself, and passes the lead only a build past the limit.

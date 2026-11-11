@@ -2,7 +2,7 @@
 # runtime, which carries the model and effort the README's "Models" section suggests.
 # `rig bundle configurations rigs/shipwrights/rig.yaml` lists them, and `--preset <name>` or
 # `--seat pod.member=runtime` picks one at install. Format: openrig.bundle-configurations/v1.
-# The lead pairs two code reviewers on different runtimes for each slice, so keep the
+# The clerk pairs two code reviewers on different runtimes for each slice, so keep the
 # reviewers on at least two runtimes: the recommended preset puts one on each. The peer
 # only watches the lead and relaunches it, so it may run on either runtime, whichever is
 # cheaper. A seat you grow gets a line here like the others of its role.
@@ -11,6 +11,7 @@ recommended: recommended
 seats:
   orch.lead: { runtimes: { codex: lead-codex, claude-code: lead-claude } }
   orch.peer: { runtimes: { claude-code: peer-claude, codex: peer-codex } }
+  orch.clerk-1: { runtimes: { claude-code: clerk-claude, codex: clerk-codex } }
   orch.planner-1: { runtimes: { claude-code: planner-claude, codex: planner-codex } }
   dev.backend-1: { runtimes: { claude-code: builder-backend-claude, codex: builder-backend-codex } }
   dev.frontend-1: { runtimes: { claude-code: builder-frontend-claude, codex: builder-frontend-codex } }
@@ -20,4 +21,4 @@ seats:
   review.reviewer-2: { runtimes: { codex: code-reviewer-codex, claude-code: code-reviewer-claude } }
   release.manager-1: { runtimes: { codex: release-manager-codex, claude-code: release-manager-claude } }
 presets:
-  recommended: { orch.lead: codex, orch.peer: claude-code, orch.planner-1: claude-code, dev.backend-1: claude-code, dev.frontend-1: claude-code, quality.qa-1: claude-code, quality.qa-2: claude-code, review.reviewer-1: claude-code, review.reviewer-2: codex, release.manager-1: codex }
+  recommended: { orch.lead: codex, orch.peer: claude-code, orch.clerk-1: claude-code, orch.planner-1: claude-code, dev.backend-1: claude-code, dev.frontend-1: claude-code, quality.qa-1: claude-code, quality.qa-2: claude-code, review.reviewer-1: claude-code, review.reviewer-2: codex, release.manager-1: codex }

@@ -3,7 +3,7 @@ name: shipwrights
 summary: >
   An engineering team built on OpenRig's Workshop: a lead who turns your goal into
   missions and slices and judges the proof, a peer that watches the lead and relaunches
-  it if it goes down, a planner, a backend builder and a frontend builder, a QA seat
+  it if it goes down, a clerk that does the lead's routine coordination, a planner, a backend builder and a frontend builder, a QA seat
   for each builder, two code reviewers who review each slice as a pair on different runtimes,
   and a release manager who publishes and keeps each pull request mergeable. Enough for two
   streams of work; a rig grows the roles it needs. Launch it with --cwd in a clone of your
@@ -53,7 +53,7 @@ non_interruptive: true
 pods:
   - id: orch
     label: Orchestration
-    summary: Turns your goal into missions and slices, assigns them and judges their proof. The peer relaunches the lead if it goes down, and the planner cuts the work.
+    summary: Turns your goal into missions and slices and judges their proof. The peer relaunches the lead if it goes down, the clerk assigns seats and relaunches them, and the planner cuts the work.
     members:
       - id: lead
         agent_ref: "local:agents/shipwrights"
@@ -71,23 +71,20 @@ pods:
             - path: startup/slice-spec.md
               delivery_hint: send_text
               required: true
-      # The lead's watchdog, on either runtime. It relaunches a down lead and never drives.
+      # The lead's watchdog, on either runtime. It relaunches a down lead and never drives, so it gets none of the
+      # lead's start files.
       - id: peer
         agent_ref: "local:agents/shipwrights"
         profile: peer-claude
         runtime: claude-code
         cwd: "."
-        startup:
-          files:
-            - path: startup/lead-first-move.md
-              delivery_hint: send_text
-              required: true
-            - path: startup/review-pair-lead.md
-              delivery_hint: send_text
-              required: true
-            - path: startup/slice-spec.md
-              delivery_hint: send_text
-              required: true
+      # Does the lead's routine coordination by fixed rules: routes work to planners, assigns each locked slice its
+      # seats, relaunches freed seats, keeps the roster, checks the slice time limit and records deliveries.
+      - id: clerk-1
+        agent_ref: "local:agents/shipwrights"
+        profile: clerk-claude
+        runtime: claude-code
+        cwd: "."
       # Cuts goals and issues into missions and slices with specs, dependencies and a build order.
       - id: planner-1
         agent_ref: "local:agents/shipwrights"
@@ -150,7 +147,7 @@ pods:
         cwd: "."
     edges: []
 
-  # The lead pairs two reviewers on different runtimes for each slice; they review the same commit independently.
+  # The clerk pairs two reviewers on different runtimes for each slice; they review the same commit independently.
   - id: review
     label: Review
     summary: Two reviewers on different runtimes check each slice's commit independently; the lead compares their findings.
@@ -190,9 +187,12 @@ pods:
 
 # OpenRig makes the source of a seat's delegates_to edge its orchestrator: the seat its stuck or unclaimed queue rows
 # escalate to, taking the latest-launched source when there are several. So the lead is the only delegates_to source,
-# and every seat reports back to it. The lead pairs builders, QA seats and reviewers afresh for each slice, so no
-# edges join them.
+# and every seat reports back to it. The clerk acts through queue rows, not edges: it pairs builders, QA seats and
+# reviewers afresh for each slice, so no edges join them.
 edges:
+  - kind: delegates_to
+    from: orch.lead
+    to: orch.clerk-1
   - kind: delegates_to
     from: orch.lead
     to: orch.planner-1

@@ -7,6 +7,7 @@ seats. Seats are found by role, never by a name you remember: the team may have 
 | --- | --- | --- | --- | --- |
 | Lead | `lead-claude`, `lead-codex` | `orch` | `lead` | No |
 | Peer | `peer-claude`, `peer-codex` | `orch` | `peer`, on either runtime | No |
+| Clerk | `clerk-claude`, `clerk-codex` | `orch` | `clerk-1` | Yes, rarely needed |
 | Planner | `planner-claude`, `planner-codex` | `orch` | `planner-1` | Yes, rarely needed |
 | Backend builder | `builder-backend-claude`, `builder-backend-codex` | `dev` | `backend-1` | Yes |
 | Frontend builder | `builder-frontend-claude`, `builder-frontend-codex` | `dev` | `frontend-1` | Yes |
@@ -50,30 +51,32 @@ seat comes back the next time the rig starts.
 
 ## Which seats a slice holds
 
-The lead is the only seat that assigns seats to a slice, so two slices never take the same seat.
+The clerk is the only role that assigns seats, by the rules below, so two slices never take the same seat. The lead
+decides what is built and when; the clerk decides which free seat does it. Anything these rules don't settle goes to
+the lead.
 
 - **Free:** a seat is free when it holds no open row on another slice
   (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
-- **Builder and QA:** when the lead hands a slice on, it names one free builder of the slice's kind and one free QA
-  seat, and sends each a row for the slice. Both hold the slice until the lead has judged it, QA parking its row
-  between commits.
-- **Review pair:** when QA first records PASS on the slice, the lead names two free code reviewers on different
-  runtimes, and sends each a row for the slice. They hold it, parked between commits, through every fix round, until
-  both have recorded PASS at the same commit and the lead has compared their reviews.
-- **After publishing:** a failing CI run or a conflict goes to the lead, which gives the fix or the rebase to a free
-  builder of the slice's kind and a free QA seat, the same ones when they are free, and to a free review pair again
-  when the slice's own diff changes.
-- **Planner:** the lead gives each goal, slice to re-cut, survey for work and question that needs reading code to a
-  free planner.
+- **Builder and QA:** once the lead has locked a slice's spec and the slice is ready, the clerk names one free builder
+  of the slice's kind and one free QA seat, and sends each a row for the slice. Both hold the slice until the lead has
+  judged it, QA parking its row between commits.
+- **Review pair:** when QA first records PASS on the slice, the builder asks the clerk, which names two free code
+  reviewers on different runtimes and sends each a row for the slice. They hold it, parked between commits, through
+  every fix round, until both have recorded PASS at the same commit and the lead has compared their reviews.
+- **After publishing:** a failing CI run or a conflict goes to the lead, which decides the fix or when to rebase and
+  sends it to the clerk. The clerk gives it to a free builder of the slice's kind and a free QA seat, the same ones
+  when they are free, and to a free review pair again when the slice's own diff changes.
+- **Planner:** the lead sends the clerk each goal, slice to re-cut, survey for work and question that needs reading
+  code, and the clerk hands it to a free planner.
 - **Release manager:** the lead gives each judged slice to the release manager that already holds its mission's other
   slices, or else to the one with the fewest open rows, so one release manager sees each mission's merge order.
 
-A seat closes its row on a slice when the lead says the slice no longer needs it.
+A seat closes its row on a slice when the clerk tells it the lead has released it.
 
 ## Fresh seats and long-lived seats
 
 **Builders, QA seats, code reviewers and planners start fresh for each piece of work.** Once such a seat has closed its
-rows on a slice (a planner: its row on the work it took) and holds no other claimed row, the lead relaunches it:
+rows on a slice (a planner: its row on the work it took) and holds no other claimed row, the clerk relaunches it:
 
 ```sh
 rig seat launch <seat> --fresh --stop --reason "<slice> done"
@@ -83,8 +86,8 @@ It keeps its address and gets its start steps again, but remembers nothing of th
 put whatever the next seat would need into the record: the slice progress, the spec or the proof. A seat never
 relaunches itself.
 
-**The lead, its peer and the release manager are long-lived:** they hold work across slices. Each registers one
-reminder on its own session when it starts, unless `rig watchdog list` already shows it:
+**The lead, its peer, the clerk and the release manager are long-lived:** they hold work across slices. Each registers
+one reminder on its own session when it starts, unless `rig watchdog list` already shows it:
 
 ```sh
 rig watchdog register --policy context-usage-threshold --target-session <your session> --registered-by <your session> \

@@ -83,8 +83,9 @@ anyone else pushed, don't force; tell the lead.
 
 ## Several slices together
 
-When this team has two or more open pull requests in one repository, tell the lead as a queue row, naming them,
-before the person merges the first. The lead has a QA seat check them merged together, and gives any fix to a builder.
+When this team has two or more open pull requests in one repository, tell the clerk as a queue row, naming them and
+their branches, before the person merges the first. The clerk has a QA seat check them merged together, QA sends the
+result to the lead, and the lead has any fix made.
 Once QA has recorded its result, say on each pull request whether they work together. Only this team's pull requests
 count: leave anyone else's alone, even in the same repository.
 
@@ -131,8 +132,9 @@ is nothing to wait for.
 ## Close the slice
 
 After the person merges a slice's pull request, approve it for delivery with
-`rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and tell the
-lead the slice is delivered, so it can close the mission and the person's goal when their last slice is.
+`rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and
+tell the clerk the slice is delivered, with its mission and the merged pull requests, as a queue row. The clerk
+records it, and tells the lead when the mission's last slice is delivered, so the lead can close the person's goal.
 
 ## Retrospectives
 

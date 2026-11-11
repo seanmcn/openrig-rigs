@@ -15,7 +15,7 @@ usage: scripts/check-team.py rigs/<team>
   `rig queue block` example names its `--on` blocker, and every
   role file has its seat add a retrospective note to the slice progress;
 - every role in ROLES has one profile per runtime in RUNTIMES, named <role>-<runtime>, each
-  delivering the role's guidance and setting preferences.runtime, the model SUGGESTED for the role
+  delivering the role's guidance and no other, and setting preferences.runtime, the model SUGGESTED for the role
   on that runtime and its effort; agent.yaml has no other profiles; the README's Models section
   names every model the tiers list and says a rig may override a seat's model;
 - rig.yaml declares exactly the seats in SEATS, each a member whose profile is its role's for the
@@ -55,13 +55,14 @@ SETTINGS = {
 
 # (guidance file, or startup/<file>, phrase it must contain, why)
 GUIDANCE_RULES = [
-    ("lead.md", "rig watchdog", "the slice time limit wakes the lead through a watchdog"),
+    ("clerk.md", "rig watchdog register", "the slice time limit wakes the clerk through a watchdog"),
     ("lead.md", "## Stop and pause", "stop and pause hold work without stopping sessions"),
     ("lead.md", "--wake-after", "waits are queue blocks with a wake"),
     ("lead.md", "--subject commit:<sha>", "the lead judges proof at the commit it checked"),
     ("lead.md", "Never judge without a commit", "a judgement always names a commit"),
     ("lead.md", "judge the slice again", "a rebase that changes the code needs a new judgement"),
-    ("startup/team-shape.md", "## Which seats a slice holds", "the lead assigns every seat a slice uses, from free seats"),
+    ("startup/team-shape.md", "## Which seats a slice holds", "the clerk assigns every seat a slice uses, from free seats"),
+    ("startup/team-shape.md", "The clerk is the only role that assigns seats", "two seats never assign the same free seat"),
     ("startup/team-shape.md", "two free code reviewers on different", "a review pair is two code reviewers on different runtimes"),
     ("startup/team-shape.md", "rig seat launch <seat> --fresh", "worker seats start fresh for each piece of work"),
     ("startup/team-shape.md", "context-usage-threshold", "long-lived seats hand over at a context threshold"),
@@ -73,7 +74,7 @@ GUIDANCE_RULES = [
     ("startup/team-shape.md", "`rig grow` adds only OpenRig's default agent", "rig grow would drop the role and its model"),
     ("lead.md", "## Find work when asked", "the lead looks for work only when the person asks"),
     ("lead.md", "Don't go looking for work unless they ask", "with no goal, the lead waits"),
-    ("lead.md", "## Close the mission", "the lead ends each mission once its last slice is delivered"),
+    ("lead.md", "## Close the mission", "the lead closes the person's goal once the clerk says its mission is complete"),
     ("startup/slice-spec.md", "`repos:`", "each slice's SPEC.md frontmatter lists the repositories it touches"),
     ("startup/slice-spec.md", "in merge order", "the repositories are listed in the order their pull requests merge"),
     ("startup/slice-spec.md", "## Proof contract", "each spec ends in the proof contract the lead judges"),
@@ -114,9 +115,30 @@ GUIDANCE_RULES = [
     ("qa.md", "--on external:next-commit", "QA parks the lead's row between commits, so the stuck sweep doesn't flag it"),
     ("code-reviewer.md", "--on external:next-commit", "a reviewer parks the lead's row between commits"),
     ("startup/review-pair-reviewer.md", "parked between commits", "a reviewer in a pair parks the lead's row between commits"),
-    ("builder-backend.md", "block the lead's rebase row", "the builder parks the lead's rebase row while QA checks it"),
+    ("builder-backend.md", "block the rebase row", "the builder parks the rebase row while QA checks it"),
     ("planner.md", "rig queue handoff", "the planner's hand-off is linked, so its closed row has a successor"),
     ("planner.md", "subagent on a cheaper model", "the planner hands reading-heavy side tasks to a cheaper subagent"),
+    # The clerk does the lead's routine coordination by fixed rules, and passes anything else to the lead.
+    ("clerk.md", "When you are unsure, hand it to the lead", "the clerk's first rule: a budget model never guesses"),
+    ("clerk.md", "You never decide", "the clerk applies rules; judgement stays with the lead"),
+    ("clerk.md", "to a free planner", "the clerk routes each goal, re-cut, survey and question to a free planner"),
+    ("clerk.md", "once the lead has locked its spec", "the clerk hands a slice on only after the lead locks its spec"),
+    ("clerk.md", "--tier", "each build row carries the tier for the slice time limit"),
+    ("clerk.md", "two free code reviewers on different runtimes", "the clerk names the review pair"),
+    ("clerk.md", "rig seat launch <seat> --fresh", "the clerk relaunches each freed seat fresh"),
+    ("clerk.md", "## Publish the team's roster", "the clerk publishes the roster"),
+    ("clerk.md", "## Keep the roster current", "the clerk keeps the roster current"),
+    ("clerk.md", "rig queue overdue", "the clerk checks for builds past the slice time limit"),
+    ("clerk.md", "Only a build past the limit goes to the lead", "the time-limit reminder wakes the lead only for overdue builds"),
+    ("clerk.md", "--status complete", "the clerk records a mission's completion"),
+    ("clerk.md", "Tell the lead only when a mission is complete", "a delivered slice doesn't wake the lead"),
+    ("clerk.md", "metadata.status", "the clerk sets a mission active when its first slice is handed on"),
+    ("lead.md", "## What the clerk does", "the lead knows which jobs the clerk does and what it passes back"),
+    ("startup/lead-first-move.md", "to the clerk", "the lead sends a goal to the clerk to route to a planner"),
+    ("startup/review-pair-lead.md", "the clerk", "the clerk names and releases the review pair"),
+    ("builder-backend.md", "ask the clerk for the slice's review pair", "the builder asks the clerk, not the lead, for a pair"),
+    ("planner.md", "from the clerk", "the clerk routes work to the planner"),
+    ("release-manager.md", "tell the clerk the slice is delivered", "delivery reports go to the clerk, not the lead"),
 ]
 
 # (guidance file, phrase it must not contain, why)
@@ -129,12 +151,31 @@ FORBIDDEN_RULES = [
     ("peer.md", "not yours to reset", "the peer relaunches a lead that has been down for 10 minutes"),
     ("peer.md", "on the other runtime", "the peer may run on either runtime"),
     ("startup/team-shape.md", "on the other runtime from the lead", "the peer may run on either runtime"),
+    # The jobs that moved to the clerk.
+    ("lead.md", "## Publish the team's roster", "the clerk publishes the roster"),
+    ("lead.md", "rig roster list", "the clerk publishes and keeps the roster"),
+    ("lead.md", "rig watchdog register", "the clerk registers the time-limit reminder"),
+    ("lead.md", "rig queue overdue", "the clerk checks for overdue builds and passes only those to the lead"),
+    ("lead.md", "--tier", "the clerk writes the build rows"),
+    ("lead.md", "to a free planner", "the clerk routes work to a planner"),
+    ("lead.md", "free code reviewers", "the clerk names the review pair"),
+    ("lead.md", "## Free the seats", "the clerk frees and relaunches seats"),
+    ("lead.md", "relaunch <seat>", "the clerk relaunches freed seats"),
+    ("lead.md", "metadata.status", "the clerk sets a mission active"),
+    ("lead.md", "--status complete", "the clerk records a mission's completion"),
+    ("startup/lead-first-move.md", "to a free planner", "the clerk routes work to a planner"),
+    ("startup/review-pair-lead.md", "which you name for each slice", "the clerk names the review pair"),
+    ("startup/team-shape.md", "the lead relaunches it", "the clerk relaunches freed seats"),
+    ("release-manager.md", "tell the lead the slice is delivered", "delivery reports go to the clerk"),
+    ("peer.md", "time-limit reminder", "the clerk registers the time-limit reminder, not the lead"),
+    ("peer.md", "publishes the roster", "the clerk publishes the roster, not the lead"),
 ]
 
 # Every role, and the guidance files each of its profiles must deliver.
 ROLES = {
     "lead": ["guidance/lead.md"],
-    "peer": ["guidance/lead.md", "guidance/peer.md"],
+    "clerk": ["guidance/clerk.md"],
+    "peer": ["guidance/peer.md"],
     "planner": ["guidance/planner.md"],
     "builder-backend": ["guidance/builder-backend.md"],
     "builder-frontend": ["guidance/builder-backend.md", "guidance/builder-frontend.md"],
@@ -153,6 +194,7 @@ CODEX = {"top": "gpt-6-astra", "workhorse": "gpt-6.1-sol", "lower": "gpt-6.1-ter
 # and the Codex one workhorse, and every pair has one of each.
 SUGGESTED = {
     "lead": ({"claude-code": CLAUDE["upper"], "codex": CODEX["top"]}, "high"),
+    "clerk": ({"claude-code": CLAUDE["budget"], "codex": CODEX["budget"]}, "low"),
     "peer": ({"claude-code": CLAUDE["budget"], "codex": CODEX["budget"]}, "low"),
     "planner": ({"claude-code": CLAUDE["upper"], "codex": CODEX["top"]}, "high"),
     "builder-backend": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
@@ -164,7 +206,7 @@ SUGGESTED = {
 # Every seat the team ships and its role: pod.member in rig.yaml and configurations.yaml, and pod-member in the
 # README's seat table. A role that can grow numbers its seats, so a grown seat takes the next number in its pod.
 SEATS = {
-    "orch.lead": "lead", "orch.peer": "peer", "orch.planner-1": "planner",
+    "orch.lead": "lead", "orch.peer": "peer", "orch.clerk-1": "clerk", "orch.planner-1": "planner",
     "dev.backend-1": "builder-backend", "dev.frontend-1": "builder-frontend",
     "quality.qa-1": "qa", "quality.qa-2": "qa",
     "review.reviewer-1": "code-reviewer", "review.reviewer-2": "code-reviewer",
@@ -221,7 +263,7 @@ NOT_SKILLS = {
     # the rig, and a grown seat's name in the examples (the seats themselves are added from SEATS below)
     "shipwrights", "backend-2", "dev-backend-2",
     # the pods and the profiles
-    "orch", "dev", "quality", "review", "release", "lead", "peer", "planner", "builder-backend", "builder-frontend", "qa",
+    "orch", "dev", "quality", "review", "release", "lead", "peer", "clerk", "planner", "builder-backend", "builder-frontend", "qa",
     "code-reviewer", "release-manager",
     # commands, states, tiers, branches, proof types and roster fields
     "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
@@ -472,6 +514,8 @@ def check_profiles(team, problems):
         for path in ROLES[role]:
             if f"path: {path}" not in block:
                 fail(problems, f"the {profile!r} profile doesn't deliver {path}")
+        for path in sorted(set(re.findall(r"path: (guidance/\S+)", block)) - set(ROLES[role])):
+            fail(problems, f"the {profile!r} profile delivers {path}, which isn't the {role!r} role's guidance")
         preferences = dict(re.findall(r"^      (runtime|model|effort):\s*(\S+)", block, re.MULTILINE))
         models, effort = SUGGESTED[role]
         for key, value in (("runtime", runtime), ("model", models[runtime]), ("effort", effort)):

@@ -3,8 +3,8 @@ version: "1.0"
 description: >
   A seat on the shipwrights rig, which works in a clone of a repository, or in a folder
   that holds several clones. The rig member's profile picks the role and the runtime: each of
-  lead, peer, planner, builder-backend, builder-frontend, qa, code-reviewer and release-manager
-  has a profile for Claude Code and one for Codex, such as lead-claude and lead-codex. (An
+  lead, peer, clerk, planner, builder-backend, builder-frontend, qa, code-reviewer and
+  release-manager has a profile for Claude Code and one for Codex, such as lead-claude and lead-codex. (An
   OpenRig profile selects resources and startup files; it is not a Codex permission profile.)
 
 # Claude Code and Codex seats select OpenRig's own openrig-core plugin from the daemon's
@@ -43,7 +43,7 @@ resources:
 # its role's profile for the runtime it runs on, and a rig may override any seat's model.
 profiles:
   lead-claude:
-    summary: Turns the person's goal into scoped slices, assigns them, judges their proof and keeps the PR description true.
+    summary: Turns the person's goal into scoped slices, locks their specs, judges their proof and keeps the PR description true.
     preferences:
       runtime: claude-code
       model: claude-opus-5-5
@@ -60,7 +60,7 @@ profiles:
       actions: []
 
   lead-codex:
-    summary: Turns the person's goal into scoped slices, assigns them, judges their proof and keeps the PR description true.
+    summary: Turns the person's goal into scoped slices, locks their specs, judges their proof and keeps the PR description true.
     preferences:
       runtime: codex
       model: gpt-6-astra
@@ -88,9 +88,6 @@ profiles:
       runtime_resources: [claude-activity-hooks]
     startup:
       files:
-        - path: guidance/lead.md
-          delivery_hint: send_text
-          required: true
         - path: guidance/peer.md
           delivery_hint: send_text
           required: true
@@ -108,10 +105,41 @@ profiles:
       runtime_resources: [claude-activity-hooks]
     startup:
       files:
-        - path: guidance/lead.md
+        - path: guidance/peer.md
           delivery_hint: send_text
           required: true
-        - path: guidance/peer.md
+      actions: []
+
+  clerk-claude:
+    summary: Does the lead's routine coordination by fixed rules. Routes work to planners, assigns each locked slice its seats, relaunches freed seats, keeps the roster, checks the slice time limit and records deliveries.
+    preferences:
+      runtime: claude-code
+      model: claude-haiku-5-5
+      effort: low
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/clerk.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  clerk-codex:
+    summary: Does the lead's routine coordination by fixed rules. Routes work to planners, assigns each locked slice its seats, relaunches freed seats, keeps the roster, checks the slice time limit and records deliveries.
+    preferences:
+      runtime: codex
+      model: gpt-6-luna
+      effort: low
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/clerk.md
           delivery_hint: send_text
           required: true
       actions: []
