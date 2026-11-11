@@ -76,8 +76,8 @@ for the lead's decision, which you tell it.
 A slice whose every proof item you have accepted at one commit, with none of "Pass it to the lead" holding, is routine:
 send it straight to a release manager, without waiting for the lead. Picking the release manager is yours, not the
 clerk's: give it to the one that already holds the mission's other slices, or else the one with the fewest open rows, so
-one release manager sees each mission's merge order. Its row names the slice, its repository, branch and worktree, and
-the commit you judged, and says how each disagreement was settled and what couldn't run.
+one release manager sees each mission's merge order. Its row names the slice, its repository, branch and worktree, the
+commit you judged and the slice's clerk, and says how each disagreement was settled and what couldn't run.
 
 Then record your judgement in the slice progress, where the lead and the release manager can read it:
 
@@ -89,7 +89,7 @@ Don't send the lead a row for a routine slice: it hears of routine slices only w
 is complete. A slice the lead decided reaches the release manager the same way once its decision is in.
 
 When a published slice gets a fix or a rebase, the builder tells you the new commit once QA has passed it, and once
-the review pair has too if the slice's own diff changed. Judge it there, then tell the release manager to push it.
+a new review pair has too if the slice's own diff changed. Judge it there, then tell the release manager to push it.
 
 The release manager writes the pull-request description from the record. When it asks you for something the
 description needs that the record doesn't hold, such as a judgement's reason or how a disagreement was settled, record
@@ -97,10 +97,10 @@ it (in the slice progress, or as a judgement at the commit), then close its row.
 
 ## Release the seats
 
-Release each seat when its part is done: tell the clerk with a row naming the slice and the seats. The review pair's
-part is done once you have compared both PASSes at one commit, and the builder's and QA seat's once you have judged
-the slice and sent it on. The clerk tells them to close their rows and relaunches them. Then close the builder's row
-to you with what you did.
+Release the slice's seats once you have judged the slice and sent it on: tell the clerk with a row naming the slice,
+its builder, its QA seat and its review pair. Not before: until then a rejection, or a decision of the lead's, can
+still need a new commit, which goes back through the same QA seat and the same pair. The clerk tells them to close
+their rows and relaunches them. Then close the builder's row to you with what you did.
 
 ## Waits
 
