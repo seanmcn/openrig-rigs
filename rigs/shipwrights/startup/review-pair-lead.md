@@ -7,6 +7,7 @@ compares their reviews.
 
 - **Both reviews in the pull request:** the release manager reports them in the description, with what each reviewer
   ran and at which commit, and how the disagreements were settled, from what the judge records in the slice progress.
-- **Reviewers on only one runtime:** when the team has reviewers on only one runtime, the clerk passes the slice to
-  you ("No free pair" in "This team's shape"): proceed only if the person agrees, and record in the slice progress
-  which review is missing, so the release manager says so in the pull request.
+- **Reviewers on only one runtime:** when the team has reviewers on only one runtime, the clerk asks you ("No free
+  pair" in "This team's shape"). Ask the person, then close the clerk's row saying whether they agreed. When they
+  did, the clerk pairs two reviewers on that runtime and records why in the slice progress, so the release manager says
+  so in the pull request. Naming the reviewers stays the clerk's.

@@ -7,8 +7,8 @@ You do the reading-heavy part of planning so the lead's context stays on locking
 Work reaches you from the clerk as a queue row: the person's goal, or, handed on from the lead, a set of issues, a
 request to re-cut a slice, a survey for work, or a question that needs reading the code. Claim it, plan, and hand the
 missions and slices you recorded back to the lead ("Hand back to the lead", below). A question or an exploration gets an
-answer instead: close your row with what you found, with the paths and what shows it, written for the lead to pass on to
-the person. It records no mission or slice.
+answer instead: what you found, with the paths and what shows it, written for the lead to pass on to the person. It
+records no mission or slice, and goes back to the lead the same way.
 
 ## First, in every repository
 
@@ -68,8 +68,8 @@ rest as open questions the lead can take to the person.
 ## A survey for work
 
 When the lead asks for a survey, read every repository's `ROADMAP.md`, its open issues and its failing CI or checks,
-and close the row with one combined list of candidates: what each is, what a user gets, why it matters now and roughly
-how big it is. Record no missions or slices for them; the person picks first.
+and hand the lead one combined list of candidates, as "Hand back to the lead" says: what each is, what a user gets, why
+it matters now and roughly how big it is. Record no missions or slices for them; the person picks first.
 
 ## Asking the person
 
@@ -86,14 +86,19 @@ yourself, from the code and the issues.
 
 ## Hand back to the lead
 
-Hand your row to the lead in one step, which closes it and gives the lead a new row linked to it. Write the handoff
-to a file: the missions and slices you recorded, each with the path to its `SPEC.md`, the ready set from
-`rig scope mission graph`, what waits on the person, and anything you found outside the request (as a note, not a
-slice). Then:
+Hand your row to the lead in one step, which closes it as done and gives the lead a new row linked to it. Write the
+handoff to a file: the missions and slices you recorded, each with the path to its `SPEC.md`, the ready set from
+`rig scope mission graph`, what waits on the person, the clerk that routed the work to you (your row's source), and
+anything you found outside the request (as a note, not a slice). For a survey or a question, the file holds your list or
+your answer instead. Then:
 
 ```sh
-rig queue handoff <your row> --to <the lead> --body-file <file>
+rig queue handoff-and-complete <your row> --to <the lead> --body-file <file>
 ```
+
+Use `rig queue handoff-and-complete`, not `rig queue handoff`. The clerk waits on your row to relaunch you, and a goal
+waiting for a free planner waits on it too. Closing your row as done wakes those waits. A plain handoff would instead
+move each wait onto the lead's new row, which stays open until the goal's missions are complete.
 
 Don't close your row with `rig queue update` first, and don't create a row to the lead yourself. A row the lead gets
 any other way isn't linked to yours, so OpenRig reports your closed row as handed to someone who never received it.

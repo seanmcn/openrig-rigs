@@ -234,7 +234,7 @@ locking it, so a new goal doesn't wait for the lead. The clerk passes the lead a
 one it can't tell the team should take on, and the lead asks you what it needs to. You can also tell the lead a goal
 in its terminal, which costs it a turn to pass on. With no goal, the team waits. Ask the lead to find work, and it
 offers you three options from your repositories' roadmaps, issues and CI; ask it to keep finding work, and it offers
-three more each time a piece you picked is delivered, until you say stop.
+three more each time a goal you picked is done, until you say stop.
 
 `rig capture orch-lead@shipwrights` reads the lead's screen and `tmux attach -t orch-lead@shipwrights` puts a terminal
 on it. Watch for prompts: the seats never answer one for you, and tell you which seat is waiting.

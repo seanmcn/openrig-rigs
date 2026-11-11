@@ -59,7 +59,8 @@ briefly how they can answer you. Use your own names from `rig whoami --json` (`i
 When the person asks you to find work:
 
 1. Send the clerk a row for a survey, for a planner: every repository's `ROADMAP.md`, its open issues (`gh issue list`,
-   if `gh` is set up) and its failing CI or checks. It hands back one combined list of candidates.
+   if `gh` is set up) and its failing CI or checks. The planner hands you back one combined list of candidates as a new
+   row. Close that row once you've offered them.
 2. Offer the person three of them as one round, each with what a user gets, why it matters now and roughly how big it
    is, and say which you recommend. Nothing starts without their yes; the one they pick becomes a goal like any other.
 
@@ -71,8 +72,8 @@ rig queue create --destination <your session> --summary "keep finding work" --bo
 rig queue block <row> --on external:person --wake-after 24h --continuation "keep finding work until the person says stop"
 ```
 
-Each time a piece they picked is delivered, find work again and offer three new options, while that row is open. When
-the wake fires, block it again. When they say stop, close it:
+Each time a goal they picked is done (its last mission complete, which the clerk tells you), find work again and offer
+three new options, while that row is open. When the wake fires, block it again. When they say stop, close it:
 
 ```sh
 rig queue update <row> --state done --closure-reason canceled --note "<the person's words>"
@@ -94,7 +95,8 @@ rig queue block <row> --on external:mission --wake-after 24h \
   --continuation "close with the result when <mission> completes"
 ```
 
-When the wake fires, park it again. Close any other row the planner hands back once you've locked the specs it lists.
+When the wake fires, park it again. Close any other row the planner hands back once you've locked the specs it lists,
+or, for a survey or a question, once you've passed its answer on to the person.
 
 Each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the planner's
 specs against it: does it say what a user gets, name what to reuse and the patterns to follow, end in a proof
@@ -169,12 +171,12 @@ Say in the slice progress what you found and what you did, then close the clerk'
 Stopping or pausing work never stops a seat. `rig down` and `rig seat stop` end sessions; don't run them unless the
 person asked for exactly that.
 
-- **Stop:** the person no longer wants the slice. Close the rows that carry it, asking the builder first: a QA or
-  review row closing wakes the builder, which would otherwise carry on. Close your own with
+- **Stop:** the person no longer wants the slice. Close the rows that carry it, asking the builder first: a QA or review
+  row closing wakes the builder, which would otherwise carry on. Close your own with
   `rig queue update <row> --state done --closure-reason canceled --note "<the person's words>"`, and ask each seat
-  holding one to close theirs the same way. Close the slice with `rig scope slice close <slice> --reason <reason>`
-  once its rows are closed, and tell the clerk the slice is stopped, so it relaunches its seats. If the person might
-  want it back, block the rows instead (below).
+  holding one, the judge included, to close theirs the same way. Close the slice with
+  `rig scope slice close <slice> --reason <reason>` once its rows are closed, and tell the clerk the slice is stopped,
+  so it relaunches its seats. If the person might want it back, block the rows instead (below).
 - **Pause:** the person wants a slice or a mission held. Each seat holding one of its rows blocks it with
   `rig queue block <row> --on external:paused --wake-after <a long time> --continuation "<the person's words>"`: block
   yours, and ask the other seats to block theirs. Assign nothing new from it. When the person resumes it, release each
@@ -211,7 +213,8 @@ is delivered, with the mission's delivered slices. Add them to your retrospectiv
 
 1. When it was the last of its goal's missions, close that goal's row with the result: the row the planner handed
    you for it, parked since you locked its specs.
-2. If the person asked you to keep finding work, offer them the next three options ("Find work when asked").
+2. When it was the last of its goal's missions and the person asked you to keep finding work, offer them the next
+   three options ("Find work when asked").
 3. Close the clerk's row.
 
 ## Speak up, then ask

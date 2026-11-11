@@ -160,7 +160,9 @@ GUIDANCE_RULES = [
     ("code-reviewer.md", "--on external:next-commit", "a reviewer parks the lead's row between commits"),
     ("startup/review-pair-reviewer.md", "parked between commits", "a reviewer in a pair parks the lead's row between commits"),
     ("builder-backend.md", "block the rebase row", "the builder parks the rebase row while QA checks it"),
-    ("planner.md", "rig queue handoff", "the planner's hand-off is linked, so its closed row has a successor"),
+    ("planner.md", "rig queue handoff-and-complete <your row> --to <the lead>",
+     "the planner's hand-off is linked, and closes its row as done, so a wait on that row wakes"),
+    ("lead.md", "The planner hands you back one combined list", "a survey's list reaches the lead as a row"),
     ("planner.md", "subagent on a cheaper model", "the planner hands reading-heavy side tasks to a cheaper subagent"),
     # The clerk does the lead's routine coordination by fixed rules, and passes anything else to the lead.
     ("clerk.md", "When you are unsure, hand it to the lead", "the clerk's first rule: a budget model never guesses"),
@@ -179,18 +181,25 @@ GUIDANCE_RULES = [
     ("clerk.md", "\"Models\"", "the clerk takes a model's model tier from the README's table"),
     ("clerk.md", "one of each again", "new pairs go back to both runtimes once the other has room"),
     ("clerk.md", "At every new pairing", "the clerk checks the other runtime at each pairing, so pairs go back by themselves"),
-    ("clerk.md", "told you it has reached its usage limit", "a runtime is out by the reviewers' own reports, not the lead's"),
-    ("code-reviewer.md", "usage limit, tell the clerk", "a reviewer at its runtime's limit tells the clerk"),
+    # A seat at its usage limit can't run a command, so OpenRig's own reading says when a runtime is out.
+    ("clerk.md", "`agentActivity.reason` is `usage_limit`", "the clerk reads each reviewer's usage limit from rig ps"),
+    ("clerk.md", "at least one reviewer and every reviewer on it", "a runtime with no reviewers is missing, not out"),
+    ("clerk.md", "saying the person agreed", "the clerk pairs on one runtime on the person's word, through the lead"),
     ("clerk.md", "--add \"Review pair: <reviewer> (<runtime>, <model>)", "the clerk records each pair's models on the slice"),
     ("clerk.md", "shared <runtime>: <other runtime> is out", "the clerk records why a pair shared a runtime"),
     ("clerk.md", "rig seat launch <seat> --fresh", "the clerk relaunches each freed seat fresh"),
     ("clerk.md", "## Publish the team's roster", "the clerk publishes the roster"),
     ("clerk.md", "## Keep the roster current", "the clerk keeps the roster current"),
     ("clerk.md", "Only a build past the limit goes to the lead", "the time-limit reminder wakes the lead only for overdue builds"),
-    ("clerk.md", "--status complete", "the clerk records a mission's completion"),
+    ("clerk.md", "set its status to `complete`", "the clerk records a mission's completion in its mission.yaml"),
     ("clerk.md", "Tell the lead only when a mission is complete", "a delivered slice doesn't wake the lead"),
     ("clerk.md", "metadata.status", "the clerk sets a mission active when its first slice is handed on"),
     ("lead.md", "## What the clerk does", "the lead knows which jobs the clerk does and what it passes back"),
+    # With several clerks, each slice's rows reach the clerk that owns it, not the lead.
+    ("clerk.md", "`clerk=<your session>`", "the slice's handoff names its clerk"),
+    ("clerk.md", "--add \"Clerk: <your session>\"", "the mission's progress names its clerk"),
+    ("clerk.md", "hand it on to that clerk", "a clerk passes another clerk's row to that clerk, not the lead"),
+    ("startup/team-shape.md", "it means the slice's clerk", "every seat sends a slice's rows to its own clerk"),
     ("startup/lead-first-move.md", "to the clerk", "the lead sends a goal to the clerk to route to a planner"),
     ("startup/review-pair-lead.md", "the clerk", "the clerk names and releases the review pair"),
     ("builder-backend.md", "ask the clerk for the slice's review pair", "the builder asks the clerk, not the lead, for a pair"),
@@ -238,7 +247,8 @@ GUIDANCE_RULES = [
     ("qa.md", "to the judge", "QA's NOT-CLEAR reaches the lead through the judge"),
     ("code-reviewer.md", "to the judge", "a reviewer's verdict goes to the judge"),
     ("startup/review-pair-reviewer.md", "the judge compares", "the judge compares the pair's findings"),
-    ("clerk.md", "the judge tells you it has compared both PASSes", "the judge releases the review pair"),
+    ("clerk.md", "the review pair's when the judge tells you it has judged the slice", "the judge releases the pair only once the slice is judged"),
+    ("judge.md", "its builder, its QA seat and its review pair", "a rejection or the lead's decision can still need the same pair"),
     ("clerk.md", "the judge tells you it has judged the slice", "the judge releases the builder and QA seat"),
     ("release-manager.md", "from the judge", "the release manager takes judged slices from the judge"),
     ("startup/team-shape.md", "the judge, not the clerk, gives each judged slice", "the judge picks the release manager"),
@@ -267,9 +277,18 @@ GUIDANCE_RULES = [
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)
 FORBIDDEN_RULES = [
+    # The lead hears of a goal's missions completing, never of a single delivery.
+    ("lead.md", "Each time a piece they picked is delivered", "the lead finds work again when a picked goal is done"),
+    ("README.md", "each time a piece you picked is delivered", "the lead finds work again when a picked goal is done"),
+    ("clerk.md", "another clerk holds isn't yours: hand it to the lead", "another clerk's row goes to that clerk"),
+    ("judge.md", "once you have compared both PASSes", "the pair is released with the builder and QA, once the slice is judged"),
+    ("code-reviewer.md", "usage limit, tell the clerk", "a seat at its usage limit can't run a command; OpenRig sees the limit"),
     # rig queue overdue lists only rows in progress, and each claim restarts a row's deadline.
     ("clerk.md", "run `rig queue overdue", "the clerk counts each build's working hours from its row's creation"),
     ("settings.md", "rig queue overdue", "the clerk counts each build's working hours from its row's creation"),
+    # A plain handoff moves every wait on the planner's row onto the lead's new row, which stays open for days.
+    ("planner.md", "rig queue handoff <your row>", "the planner hands back with handoff-and-complete, so waits on its row wake"),
+    ("planner.md", "close the row with one combined list", "a survey's list goes back to the lead as a row"),
     ("lead.md", "Push the builder's branch", "the release manager publishes, not the lead"),
     ("release-manager.md", "external:ci --wake-after 15m", "the CI wait comes from recent run times, not a fixed 15 minutes"),
     ("peer.md", "## Take over", "the peer relaunches a down lead and never drives in its place"),
@@ -290,7 +309,7 @@ FORBIDDEN_RULES = [
     ("clerk.md", "## Free the seats", "the clerk's section and the judge's share one name, \"Release the seats\""),
     ("lead.md", "relaunch <seat>", "the clerk relaunches freed seats"),
     ("lead.md", "metadata.status", "the clerk sets a mission active"),
-    ("lead.md", "--status complete", "the clerk records a mission's completion"),
+    ("lead.md", "status to `complete`", "the clerk records a mission's completion"),
     ("startup/lead-first-move.md", "to a free planner", "the clerk routes work to a planner"),
     ("startup/lead-first-move.md", "Claim that row", "a goal goes to the clerk, not the lead"),
     ("lead.md", "Claim the kernel operator's goal row", "a goal goes to the clerk, not the lead"),
@@ -360,7 +379,7 @@ FORBIDDEN_RULES = [
     ("clerk.md", "a tier above", "a model tier, not a queue tier"),
     ("startup/team-shape.md", "a tier above", "a model tier, not a queue tier"),
     # One-runtime pairing starts and stops without the lead.
-    ("clerk.md", "the lead tells you so", "the clerk sees a runtime out from the reviewers' own reports"),
+    ("clerk.md", "the lead tells you so", "the clerk sees a runtime out from rig ps"),
     ("clerk.md", "of its profile in `agents/shipwrights/agent.yaml`", "a seat moved to the other runtime has that runtime's profile"),
     ("clerk.md", "the other runtime is back", "the clerk sees a runtime back at its next pairing, without the lead"),
     ("clerk.md", "pass on to the lead", "a reviewer's usage limit doesn't wake the lead"),
@@ -498,7 +517,7 @@ NOT_SKILLS = {
     "code-reviewer", "release-manager", "judge",
     # commands, states, tiers, branches, proof types, roster fields, and a member's model and profile fields
     "model", "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
-    "planned", "active", "runtime", "profile", "release-candidate", "rev1-", "delegate", "capabilities", "why",
+    "planned", "active", "complete", "runtime", "profile", "release-candidate", "rev1-", "delegate", "capabilities", "why",
     # impeccable's own commands
     "shape", "critique", "audit", "polish", "harden", "typeset", "quieter", "distill", "layout", "init", "generate",
 }

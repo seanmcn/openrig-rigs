@@ -80,11 +80,6 @@ stop working on the older one and close its row as superseded:
 rig queue update <old row> --state done --closure-reason superseded --closure-target <new row>
 ```
 
-## Your runtime's usage limit
-
-When your runtime says you have reached its usage limit, tell the clerk in a queue row, with the time your runtime
-gives for the limit to reset. The clerk leaves you out of new review pairs until then.
-
 ## Park your slice row between commits
 
 Between commits, your row on the slice has nothing for you to do. Each time you close a commit's row, park that

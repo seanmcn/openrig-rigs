@@ -54,10 +54,11 @@ When a new commit replaces one whose row is still open, such as after a rebase, 
 replaces, and its seat closes the old one.
 
 When QA first records PASS, ask the clerk for the slice's review pair: a row naming the slice and the commit QA passed,
-with your row blocked on it. The clerk closes it with the two code reviewers' sessions: hand them that commit, a row
-each. Their findings come straight back to you. Fix them in a new commit, which goes to QA first and then back to both
-reviewers, saying which finding it answers. If a finding is wrong, say why, with what you ran and saw. A disagreement
-you and the reviewer or QA can't settle goes to the judge, with both sides' case.
+with your row blocked on it. Ask again the same way after a fix or a rebase of a published slice that changed its own
+diff: its first pair was released when the judge sent the slice on. The clerk closes it with the two code reviewers'
+sessions: hand them that commit, a row each. Their findings come straight back to you. Fix them in a new commit, which
+goes to QA first and then back to both reviewers, saying which finding it answers. If a finding is wrong, say why, with
+what you ran and saw. A disagreement you and the reviewer or QA can't settle goes to the judge, with both sides' case.
 
 After each handoff, block your row on a commit row you handed out that's still open, so its closing wakes you. The
 timer is a backstop in case its seat forgets to close it:
@@ -79,8 +80,9 @@ Don't push: once the judge has judged the slice, the release manager publishes i
 When the slice's base branch moves while you work, rebase onto it, resolve the conflicts and re-run the checks. After
 the pull request is open, rebase only when the clerk sends you a rebase row. Hand the rebased commit to QA saying it is
 a rebase: onto which base, and whether `git range-diff` shows the slice's own diff changed, so QA can scope its checks.
-Once QA passes it, hand it to the reviewers again only if the diff changed; if it didn't, tell the judge the new commit,
-so it can judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's change goes
+Once QA passes it, have it reviewed again only if the diff changed: before the pull request is open, by the slice's
+pair; after, by a new pair you ask the clerk for. If the diff didn't change, tell the judge the new commit, so it can
+judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's change goes
 to the lead.
 
 A rebase reaches you from the clerk as a row of its own, once the lead has decided when. Once you've handed the
@@ -90,7 +92,7 @@ rebased commit to QA, block the rebase row on QA's row, as after any handoff:
 rig queue block <the rebase row> --on <QA's row> --wake-after 1h --continuation "check QA's row for the rebased <commit>"
 ```
 
-Once QA has passed it and you've handed it on (to the reviewers if the diff changed, otherwise to the judge), close the
+Once QA has passed it and you've handed it on (to a review pair if the diff changed, otherwise to the judge), close the
 rebase row:
 
 ```sh

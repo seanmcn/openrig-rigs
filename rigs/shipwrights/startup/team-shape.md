@@ -92,7 +92,8 @@ seat does it. Anything these rules don't settle goes to the lead.
 With more than one clerk, each owns its own worker seats, and no seat belongs to two: when a clerk is added, the lead
 splits the seats between them, and the roster's curator writes each clerk's seats in its entry. A clerk assigns only
 from its own, and each mission stays with one clerk, the clerk that took its goal, which the lead sends the mission's
-later work to.
+later work to. Wherever a role file says "the clerk", it means the slice's clerk: the one its handoff names
+(`clerk=<session>`), or the one its mission's progress names ("Clerk: <session>"). Send each row about a slice there.
 
 - **Free:** a seat is free when it holds no open row on another slice
   (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
@@ -101,14 +102,14 @@ later work to.
   until the judge has judged it, QA parking its row between commits.
 - **Review pair:** when QA first records PASS on the slice, the builder asks the clerk, which names two free code
   reviewers on different runtimes and sends each a row for the slice. They hold it, parked between commits, through
-  every fix round, until both have recorded PASS at the same commit and the judge has compared their reviews.
-  When the team setting "One-runtime review pairs while a runtime is out" is on and every reviewer on one runtime has
-  told the clerk it has reached its usage limit, the clerk may pair two reviewers on the other runtime instead: two
+  every fix round, until the judge has judged the slice and sent it on.
+  When the team setting "One-runtime review pairs while a runtime is out" is on and `rig ps` shows every reviewer on
+  one runtime at its usage limit, the clerk may pair two reviewers on the other runtime instead: two
   different models, one a model tier above the builder's. It checks at every new pairing, so new pairs go back to one of
   each once the other runtime has room, and the slice progress records each pair's models and why it shared a runtime.
 - **No free pair:** when no two free reviewers are on different runtimes, the slice waits for one to free up, unless
-  the clerk can pair two on one runtime as above. When the team has reviewers on only one runtime, the clerk passes
-  the slice to the lead, which goes on only if the person agrees.
+  the clerk can pair two on one runtime as above. When the team has reviewers on only one runtime, the clerk asks
+  the lead, which asks the person. When the person agrees, the clerk pairs two reviewers on that runtime.
 - **After publishing:** a failing CI run or a conflict goes to the lead, which decides the fix or when to rebase and
   sends it to the clerk. The clerk gives it to a free builder of the slice's kind and a free QA seat, the same ones
   when they are free, and to a free review pair again when the slice's own diff changes.

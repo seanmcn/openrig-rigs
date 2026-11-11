@@ -22,7 +22,9 @@ judge (seats whose part is done), from the release manager (pull requests it ope
 check together), and from your own reminders and relaunch rows. Claim each row, do what its rule says, and close it.
 
 When the team has more than one clerk, you own the worker seats your roster entry names, and assign only from them:
-"free" below means free and yours. A row about a mission another clerk holds isn't yours: hand it to the lead.
+"free" below means free and yours. A row about a mission another clerk holds isn't yours: hand it on to that clerk,
+which the mission's progress names ("Clerk: <session>"), with `rig queue handoff <row> --to <that clerk>`. Only a row
+whose mission names no clerk goes to the lead.
 
 ## Take the person's goals
 
@@ -55,8 +57,8 @@ rig queue handoff <the row> --to <a free planner> --body-file <file>
 ```
 
 "This team's shape" says how to find a role's seats and which are free. The planner hands its cut or its answer back
-to the lead, not to you. Give yourself a relaunch row for the planner straight away, blocked on its new row
-("Release the seats").
+to the lead, not to you, with `rig queue handoff-and-complete`, which closes its row as done. Give yourself a relaunch
+row for the planner straight away, blocked on its new row ("Release the seats"), so that closing wakes you.
 
 When no planner is free, block the row on the open row of a busy planner
 (`rig queue block <row> --on <its row> --continuation "hand on to a free planner"`), and hand it on when that closes.
@@ -73,8 +75,8 @@ and a free QA seat:
 - With each slice goes a free QA seat.
 
 Write the handoff to a file that names the slice, the repository, the worktree path on a line of its own
-(`worktree_path=<path>`), the builder, the QA seat and the judge (with more than one, the one with the fewest open
-rows). Send the builder its build row:
+(`worktree_path=<path>`), the builder, the QA seat, the judge (with more than one, the one with the fewest open rows)
+and you, the slice's clerk (`clerk=<your session>`). Send the builder its build row:
 
 ```sh
 rig queue create --destination <builder session> --body-file <file> \
@@ -86,7 +88,8 @@ skill covers the rest.
 
 When you hand on a mission's first slice, set the mission's status to `active`: edit `metadata.status` in its
 `mission.yaml` (`rig scope mission show <mission>` gives its path). A new mission is `planned`, and `rig proof show`
-leaves a planned mission out of its readiness.
+leaves a planned mission out of its readiness. Record yourself as its clerk too, so every seat can find you:
+`rig scope mission progress <mission> --add "Clerk: <your session>"`.
 
 A locked slice that isn't in the ready set yet, or has no free builder of its kind or no free QA seat, waits. Keep the
 lead's row while any of its slices wait, and block it on a row whose closing frees what they wait for: the slice row of
@@ -109,21 +112,29 @@ seats" says.
 ## Name the review pair
 
 When QA first records PASS on a slice, its builder asks you for the slice's review pair with a row. Name two free code
-reviewers on different runtimes (`runtime` in `rig ps --nodes`). Send each a row for the slice that names the builder,
-the other reviewer and the slice's judge, then close the builder's row with both their sessions, so it hands them the
-commit. A slice whose own diff changed after a fix or a rebase gets a pair again the same way.
+reviewers on different runtimes (`runtime` in `rig ps --nodes`), neither at its usage limit (below). Send each a row for
+the slice that names the builder, the other reviewer and the slice's judge, then close the builder's row with both their
+sessions, so it hands them the commit. A slice whose own diff changed after a fix or a rebase gets a pair again the same
+way.
 
 When no two free reviewers are on different runtimes, block the builder's row on a busy reviewer's slice row, and
-name the pair when it frees. When the team has reviewers on only one runtime, hand it to the lead.
+name the pair when it frees.
+
+When the team has reviewers on only one runtime, send the lead a row saying so, and block the builder's row on it. The
+lead asks the person. When the lead closes its row saying the person agreed, name two free reviewers on the runtime
+the team has, two that pass both checks in "While a runtime is out" when there are two, and record the pair with why:
+"shared <runtime>: no <other runtime> reviewer; the person agreed". When it says they didn't, the slice waits for a
+reviewer on the other runtime: tell the builder.
 
 ### While a runtime is out
 
 The team setting "One-runtime review pairs while a runtime is out" is off unless the rig turned it on. While it is
 off, every pair spans two runtimes, as above.
 
-A reviewer has room when it is free and hasn't told you it has reached its usage limit. One that has told you has no
-room until the time it gave for the limit to reset. A runtime is out while every reviewer on it has told you so and
-none of their limits has reset.
+OpenRig sees when a seat reaches its runtime's usage limit: in `rig ps --nodes --rig <rig> --json --full`, that seat's
+`agentActivity.reason` is `usage_limit`, until the limit resets. A reviewer has room when it is free and isn't
+at its usage limit. A runtime is out while it has at least one reviewer and every reviewer on it is at its usage
+limit. A runtime with no reviewers at all isn't out: it is missing, as above.
 
 At every new pairing, check first whether the other runtime has a reviewer with room. With the setting on, while no
 reviewer on the other runtime has room because that runtime is out, you may name two free reviewers on one runtime,
@@ -161,9 +172,8 @@ For a pair on one runtime, end the line with why: "shared <runtime>: <other runt
 Each seat's part in a piece of work ends at a point you are told of:
 
 - a planner's when it hands its cut or its answer back to the lead: its row closes;
-- the review pair's when the judge tells you it has compared both PASSes;
-- the builder's and QA seat's when the judge tells you it has judged the slice, or the lead tells you it has stopped
-  it;
+- the builder's, the QA seat's and the review pair's when the judge tells you it has judged the slice and sent it
+  on, or the lead tells you it has stopped it (a stopped slice may have no pair yet);
 - a QA seat's that checked pull requests together when its row on them closes.
 
 Tell each seat the judge or the lead has released to close its row on the slice, which it does after its
@@ -297,10 +307,11 @@ rig scope mission progress <mission> --add "<slice> delivered: <its merged pull 
 ```
 
 When the last slice of a mission is delivered (`rig scope mission graph <mission>` shows none left), record the
-mission complete:
+mission complete: set its status to `complete` the same way you set it `active`, by editing `metadata.status` in its
+`mission.yaml`, and add the line to its progress:
 
 ```sh
-rig scope mission progress <mission> --status complete --add "<the merged pull requests>"
+rig scope mission progress <mission> --add "Mission complete: <the merged pull requests>"
 ```
 
 Then send the lead one row: the mission, its delivered slices and their pull requests. Tell the lead only when a
