@@ -23,9 +23,8 @@ reviewers on different providers than from one, and changes the rest in four way
   ("Growing the team", below). You could run copies of the team on more machines to go further, but nothing yet stops
   two copies taking the same work: a way to claim work across copies is next.
 - **A seat for every step.** A planner cuts each goal into slices, QA checks every commit before review, a release
-  manager publishes and keeps each pull request mergeable, and a peer on the other runtime stands in if the lead goes
-  down. Workers start fresh for each slice, so what carries over between slices is the record: the spec, the slice
-  progress and the proof.
+  manager publishes and keeps each pull request mergeable, and a peer relaunches the lead if it goes down. Workers start
+  fresh for each slice, so what carries over between slices is the record: the spec, the slice progress and the proof.
 
 The runtime each seat uses is my current suggestion. I'm trying different mixes and measuring them, and the
 recommended preset will change as results come in.
@@ -36,13 +35,13 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
-  <img alt="Shipwrights' ten seats in five pods: in orch, the lead (Codex), which you talk to, its peer (Claude Code), which stands in while it is down, and a planner (Claude Code); in dev, a backend builder and a frontend builder (Claude Code); in quality, two QA seats (Claude Code); in review, two code reviewers, one on Claude Code and one on Codex; and in release, a release manager (Codex)." src="diagrams/seats.svg">
+  <img alt="Shipwrights' ten seats in five pods: in orch, the lead (Codex), which you talk to, its peer (Claude Code), which watches it and relaunches it when it is down, and a planner (Claude Code); in dev, a backend builder and a frontend builder (Claude Code); in quality, two QA seats (Claude Code); in review, two code reviewers, one on Claude Code and one on Codex; and in release, a release manager (Codex)." src="diagrams/seats.svg">
 </picture>
 
 | Seat | Runtime | Does |
 |---|---|---|
 | `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs, hands them on, judges their proof and owns each PR description. Talk to this seat. |
-| `orch-peer` | Claude Code | Runs the lead's guidance on the other runtime and follows its work. Takes over, and tells you, only when the lead's seat has been down for 10 minutes; hands back with a recap. |
+| `orch-peer` | Claude Code | Watches the lead and restores it after a handover with a recap. When the lead's seat has been down for 10 minutes, relaunches it with that recap and tells you; if it is still down 10 minutes later, tells you and stops. Never drives, so it can run on either runtime. |
 | `orch-planner-1` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
 | `dev-backend-1` | Claude Code | Builds a backend slice in its own worktree, reviews its own diff and runs the repository's checks. |
 | `dev-frontend-1` | Claude Code | Builds on the backend builder's guidance for slices tagged UI or both: checks them in a real browser and runs impeccable's reviews and detector. |
@@ -52,7 +51,7 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 | `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
-seat on the other one. Keep the lead and its peer on different runtimes, and the code reviewers on at least two.
+seat on the other one. Keep the code reviewers on at least two runtimes; the peer can go on either.
 
 ### Growing the team
 
@@ -250,8 +249,9 @@ select sandbox and approvals together").
   ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one QA seat still work, but
   a review needs two code reviewers on different runtimes.
 - **The peer notices a downed lead within minutes.** OpenRig has no event that fires when a seat goes down, so a
-  watchdog wakes the peer every five minutes to look, and it takes over only once the lead has been down for 10
-  minutes without a break ([`peer.md`](agents/shipwrights/guidance/peer.md)).
+  watchdog wakes the peer every five minutes to look, and it relaunches the lead only once it has been down for 10
+  minutes without a break. If the relaunch fails, the lead stays down until you act: the peer tells you and never
+  drives in its place ([`peer.md`](agents/shipwrights/guidance/peer.md)).
 - **Each building seat uses its own worktree** and installs the repository's dependencies there, which costs disk and
   time.
 - **The time limit counts clock hours in the queue.** The lead counts working hours itself before it acts on an

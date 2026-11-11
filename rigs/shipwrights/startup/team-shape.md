@@ -6,7 +6,7 @@ seats. Seats are found by role, never by a name you remember: the team may have 
 | Role | Profile | Pod | Seats in the default team | Can grow |
 | --- | --- | --- | --- | --- |
 | Lead | `lead` | `orch` | `lead` | No |
-| Peer | `peer` | `orch` | `peer`, on the other runtime from the lead | No |
+| Peer | `peer` | `orch` | `peer`, on either runtime | No |
 | Planner | `planner` | `orch` | `planner-1` | Yes, rarely needed |
 | Backend builder | `builder-backend` | `dev` | `backend-1` | Yes |
 | Frontend builder | `builder-frontend` | `dev` | `frontend-1` | Yes |

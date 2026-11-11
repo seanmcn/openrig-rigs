@@ -2,8 +2,8 @@ version: "0.2"
 name: shipwrights
 summary: >
   An engineering team built on OpenRig's Workshop: a lead who turns your goal into
-  missions and slices and judges the proof, a peer on the other runtime who takes over
-  if the lead goes down, a planner, a backend builder and a frontend builder, a QA seat
+  missions and slices and judges the proof, a peer that watches the lead and relaunches
+  it if it goes down, a planner, a backend builder and a frontend builder, a QA seat
   for each builder, two code reviewers who review each slice as a pair on different runtimes,
   and a release manager who publishes and keeps each pull request mergeable. Enough for two
   streams of work; a rig grows the roles it needs. Launch it with --cwd in a clone of your
@@ -53,7 +53,7 @@ non_interruptive: true
 pods:
   - id: orch
     label: Orchestration
-    summary: Turns your goal into missions and slices, assigns them and judges their proof. The peer takes over if the lead goes down, and the planner cuts the work.
+    summary: Turns your goal into missions and slices, assigns them and judges their proof. The peer relaunches the lead if it goes down, and the planner cuts the work.
     members:
       - id: lead
         agent_ref: "local:agents/shipwrights"
@@ -71,7 +71,7 @@ pods:
             - path: startup/slice-spec.md
               delivery_hint: send_text
               required: true
-      # The lead's guidance on the other runtime. It drives only while the lead is down.
+      # The lead's watchdog, on either runtime. It relaunches a down lead and never drives.
       - id: peer
         agent_ref: "local:agents/shipwrights"
         profile: peer

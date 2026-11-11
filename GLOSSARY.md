@@ -34,7 +34,7 @@ _Avoid_: profile (for a Codex config profile; say "Codex profile")
 A named choice of runtime for every seat, from a team's `configurations.yaml`, such as `recommended`.
 
 **Peer**:
-The `orch-peer` seat, which follows the lead's work and takes over when the lead's seat is down.
+The `orch-peer` seat, the lead's watchdog: it restores the lead after a handover and relaunches it when its seat is down. It never drives.
 _Avoid_: peer (for any other seat; say "the other seats")
 
 **Overlay**:

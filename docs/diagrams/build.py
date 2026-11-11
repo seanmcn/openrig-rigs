@@ -402,7 +402,7 @@ def seats(t: Tokens, slug: str) -> Canvas:
     ]
     width = gap + len(pods) * (side + gap)
 
-    # The orch pod on top, centred: the lead, which you talk to, its peer, which stands in while the lead is down, and
+    # The orch pod on top, centred: the lead, which you talk to, its peer, which watches the lead and relaunches it, and
     # the planner.
     orch = [("Lead", "lead", "Codex", "focal"), ("Peer", "peer", "Claude Code", "held"),
             ("Planner", "planner-1", "Claude Code", "step")]
@@ -429,7 +429,7 @@ def seats(t: Tokens, slug: str) -> Canvas:
 
 
 # name: (draw, legend, where its SVGs go)
-DIAGRAMS = {"seats": (seats, [("focal", "the seat you talk to"), ("held", "stands in while the lead is down")], TEAM),
+DIAGRAMS = {"seats": (seats, [("focal", "the seat you talk to"), ("held", "watches the lead and relaunches it")], TEAM),
             "how-the-work-moves": (work, [("focal", "your step"), ("dashed", "back to an earlier step")], TEAM),
             "how-a-slice-is-built": (building, [("dashed", "back to the builder")], TEAM),
             "slice-lifecycle": (lifecycle, [("focal", "the outcome you want"), ("held", "held, resumable"),
