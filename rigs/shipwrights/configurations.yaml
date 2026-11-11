@@ -19,6 +19,7 @@ seats:
   quality.qa-2: { runtimes: { claude-code: qa-claude, codex: qa-codex } }
   review.reviewer-1: { runtimes: { claude-code: code-reviewer-claude, codex: code-reviewer-codex } }
   review.reviewer-2: { runtimes: { codex: code-reviewer-codex, claude-code: code-reviewer-claude } }
+  review.judge-1: { runtimes: { claude-code: judge-claude, codex: judge-codex } }
   release.manager-1: { runtimes: { codex: release-manager-codex, claude-code: release-manager-claude } }
 presets:
-  recommended: { orch.lead: codex, orch.peer: claude-code, orch.clerk-1: claude-code, orch.planner-1: claude-code, dev.backend-1: claude-code, dev.frontend-1: claude-code, quality.qa-1: claude-code, quality.qa-2: claude-code, review.reviewer-1: claude-code, review.reviewer-2: codex, release.manager-1: codex }
+  recommended: { orch.lead: codex, orch.peer: claude-code, orch.clerk-1: claude-code, orch.planner-1: claude-code, dev.backend-1: claude-code, dev.frontend-1: claude-code, quality.qa-1: claude-code, quality.qa-2: claude-code, review.reviewer-1: claude-code, review.reviewer-2: codex, review.judge-1: claude-code, release.manager-1: codex }

@@ -52,6 +52,7 @@ SETTINGS = {
     "Confirm each triage result with the person": "off",
     "Slice time limit": "4 working hours",
     "One-runtime review pairs while a runtime is out": "off",
+    "Risky slices": "`risky: true` in the spec",
 }
 
 # (guidance file, or startup/<file>, phrase it must contain, why)
@@ -59,9 +60,9 @@ GUIDANCE_RULES = [
     ("clerk.md", "rig watchdog register", "the slice time limit wakes the clerk through a watchdog"),
     ("lead.md", "## Stop and pause", "stop and pause hold work without stopping sessions"),
     ("lead.md", "--wake-after", "waits are queue blocks with a wake"),
-    ("lead.md", "--subject commit:<sha>", "the lead judges proof at the commit it checked"),
-    ("lead.md", "Never judge without a commit", "a judgement always names a commit"),
-    ("lead.md", "judge the slice again", "a rebase that changes the code needs a new judgement"),
+    ("judge.md", "--subject commit:<sha>", "the judge judges proof at the commit it checked"),
+    ("judge.md", "Never judge without a commit", "a judgement always names a commit"),
+    ("judge.md", "judge the slice again", "a rebase that changes the code needs a new judgement"),
     ("startup/team-shape.md", "## Which seats a slice holds", "the clerk assigns every seat a slice uses, from free seats"),
     ("startup/team-shape.md", "The clerk is the only role that assigns seats", "two seats never assign the same free seat"),
     ("startup/team-shape.md", "two free code reviewers on different", "a review pair is two code reviewers on different runtimes"),
@@ -81,7 +82,7 @@ GUIDANCE_RULES = [
     ("lead.md", "## Close the mission", "the lead closes the person's goal once the clerk says its mission is complete"),
     ("startup/slice-spec.md", "`repos:`", "each slice's SPEC.md frontmatter lists the repositories it touches"),
     ("startup/slice-spec.md", "in merge order", "the repositories are listed in the order their pull requests merge"),
-    ("startup/slice-spec.md", "## Proof contract", "each spec ends in the proof contract the lead judges"),
+    ("startup/slice-spec.md", "## Proof contract", "each spec ends in the proof contract the judge judges"),
     ("release-manager.md", "judged at the commit you are about to push", "only proof judged at the pushed commit publishes"),
     ("builder-backend.md", "AGENTS.md", "a slice starts by reading the repository's AGENTS.md"),
     ("builder-backend.md", "inside the worktree", "commands run from inside the worktree"),
@@ -155,6 +156,35 @@ GUIDANCE_RULES = [
     ("builder-backend.md", "ask the clerk for the slice's review pair", "the builder asks the clerk, not the lead, for a pair"),
     ("planner.md", "from the clerk", "the clerk routes work to the planner"),
     ("release-manager.md", "tell the clerk the slice is delivered", "delivery reports go to the clerk, not the lead"),
+    # The judge judges each slice from the record, and passes only the hard or risky ones to the lead.
+    ("judge.md", "the spec and proof contract the lead locked", "the judge judges against the criteria the lead approved"),
+    ("judge.md", "## Compare the reviews", "the judge compares the pair's reviews"),
+    ("judge.md", "Disagreement rounds before the person is asked", "the judge reads the disagreement-rounds setting"),
+    ("judge.md", "## Pass it to the lead", "the judge passes the hard or risky slices to the lead"),
+    ("judge.md", "still not settled after one fix round", "a disagreement that survives a fix round goes to the lead"),
+    ("judge.md", "QA records NOT-CLEAR", "a NOT-CLEAR goes to the lead"),
+    ("judge.md", "has no direct evidence", "a proof item without direct evidence goes to the lead"),
+    ("judge.md", "the slice is marked risky", "a risky slice goes to the lead"),
+    ("judge.md", "Risky slices", "the judge reads how the rig marks a slice risky"),
+    ("judge.md", "straight to a release manager", "a routine judged slice never waits for the lead"),
+    ("judge.md", "tell the lead", "the lead hears of each routine slice the judge sends on"),
+    ("judge.md", "tell the clerk", "the judge releases the seats through the clerk"),
+    ("judge.md", "You never decide", "scope, the person and the hard cases stay with the lead"),
+    ("startup/review-pair-judge.md", "Compare the two reviews", "the judge compares the pair's reviews"),
+    ("startup/review-pair-judge.md", "Release the pair", "the judge releases the pair through the clerk"),
+    ("startup/slice-spec.md", "`risky: true`", "the default way a slice is marked risky"),
+    ("planner.md", "`risky: true`", "the planner marks a risky slice in its spec"),
+    ("lead.md", "## Slices the judge passes you", "the lead decides the slices the judge passes it"),
+    ("lead.md", "## Overrule the judge", "the lead keeps the last word"),
+    ("lead.md", "with your reason", "the lead overrules only with a reason"),
+    ("builder-backend.md", "## Tell the judge it's done", "the builder tells the judge, not the lead, that a slice is ready"),
+    ("qa.md", "to the judge", "QA's NOT-CLEAR reaches the lead through the judge"),
+    ("code-reviewer.md", "to the judge", "a reviewer's verdict goes to the judge"),
+    ("startup/review-pair-reviewer.md", "the judge compares", "the judge compares the pair's findings"),
+    ("clerk.md", "the judge tells you it has compared both PASSes", "the judge releases the review pair"),
+    ("clerk.md", "the judge tells you it has judged the slice", "the judge releases the builder and QA seat"),
+    ("release-manager.md", "from the judge", "the release manager takes judged slices from the judge"),
+    ("startup/team-shape.md", "the judge gives each judged slice", "the judge picks the release manager"),
 ]
 
 # (guidance file, phrase it must not contain, why)
@@ -185,6 +215,23 @@ FORBIDDEN_RULES = [
     ("release-manager.md", "tell the lead the slice is delivered", "delivery reports go to the clerk"),
     ("peer.md", "time-limit reminder", "the clerk registers the time-limit reminder, not the lead"),
     ("peer.md", "publishes the roster", "the clerk publishes the roster, not the lead"),
+    # The jobs that moved to the judge.
+    ("lead.md", "## Judge the proof", "the judge judges the proof"),
+    ("lead.md", "Compare the two reviews", "the judge compares the reviews"),
+    ("lead.md", "Never judge without a commit", "the judge judges each slice at its commit"),
+    ("lead.md", "judge the slice again", "the judge judges a fixed or rebased slice again"),
+    ("lead.md", "fewest open rows", "the judge picks the release manager"),
+    ("lead.md", "compared both PASSes", "the judge releases the review pair"),
+    ("startup/review-pair-lead.md", "Compare the two reviews", "the judge compares the reviews"),
+    ("startup/review-pair-lead.md", "Release the pair", "the judge releases the pair"),
+    ("startup/review-pair-reviewer.md", "the lead compares", "the judge compares the pair's findings"),
+    ("builder-backend.md", "## Tell the lead it's done", "the builder tells the judge a slice is ready"),
+    ("qa.md", "Send the results to the builder and the lead", "QA's results go to the builder, and a NOT-CLEAR to the judge"),
+    ("code-reviewer.md", "short verdict, with what you ran, to the lead", "a reviewer's verdict goes to the judge"),
+    ("clerk.md", "the lead tells you it has compared", "the judge releases the review pair"),
+    ("clerk.md", "the lead tells you it has judged", "the judge releases the builder and QA seat"),
+    ("release-manager.md", "once the lead has judged", "the judge judges each slice"),
+    ("startup/team-shape.md", "the lead gives each judged slice", "the judge picks the release manager"),
 ]
 
 # Every role, and the guidance files each of its profiles must deliver.
@@ -198,6 +245,7 @@ ROLES = {
     "qa": ["guidance/qa.md"],
     "code-reviewer": ["guidance/code-reviewer.md"],
     "release-manager": ["guidance/release-manager.md"],
+    "judge": ["guidance/judge.md"],
 }
 # Each runtime a seat may use, and the suffix of its profiles' names. A role has one profile per runtime, such as
 # planner-claude and planner-codex, so a seat gets the model suggested for its role on whichever runtime it runs.
@@ -218,6 +266,7 @@ SUGGESTED = {
     "qa": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
     "code-reviewer": ({"claude-code": CLAUDE["upper"], "codex": CODEX["workhorse"]}, "high"),
     "release-manager": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
+    "judge": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
 }
 # Every seat the team ships and its role: pod.member in rig.yaml and configurations.yaml, and pod-member in the
 # README's seat table. A role that can grow numbers its seats, so a grown seat takes the next number in its pod.
@@ -225,7 +274,7 @@ SEATS = {
     "orch.lead": "lead", "orch.peer": "peer", "orch.clerk-1": "clerk", "orch.planner-1": "planner",
     "dev.backend-1": "builder-backend", "dev.frontend-1": "builder-frontend",
     "quality.qa-1": "qa", "quality.qa-2": "qa",
-    "review.reviewer-1": "code-reviewer", "review.reviewer-2": "code-reviewer",
+    "review.reviewer-1": "code-reviewer", "review.reviewer-2": "code-reviewer", "review.judge-1": "judge",
     "release.manager-1": "release-manager",
 }
 
@@ -280,7 +329,7 @@ NOT_SKILLS = {
     "shipwrights", "backend-2", "dev-backend-2",
     # the pods and the profiles
     "orch", "dev", "quality", "review", "release", "lead", "peer", "clerk", "planner", "builder-backend", "builder-frontend", "qa",
-    "code-reviewer", "release-manager",
+    "code-reviewer", "release-manager", "judge",
     # commands, states, tiers, branches, proof types, roster fields and a member's model field
     "model", "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
     "planned", "active", "runtime", "release-candidate", "rev1-", "delegate", "capabilities", "why",

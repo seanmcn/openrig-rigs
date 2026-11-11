@@ -52,7 +52,7 @@ rig proof add <slice> --mission <mission> --artifact-type rev1-<your member id> 
   --candidate-sha <commit> --money-evidence "<any paid service the review used, or none>" --file <your report>
 ```
 
-Send findings to the builder and a short verdict, with what you ran, to the lead. If you cannot reach the daemon,
+Send findings to the builder and a short verdict, with what you ran, to the judge. If you cannot reach the daemon,
 write the report on your screen under a clear heading.
 
 ## Claim and close each commit's row
@@ -92,11 +92,11 @@ rig queue block <your slice row> --on external:next-commit --wake-after 2h \
 
 The builder's next commit comes as a row of its own, so leave your slice row parked while you review it. When the
 timer wakes you and no new commit row is waiting (`rig queue list --destination <your seat> --state pending`), park
-the row again. When the clerk tells you the lead has released you, close it as below.
+the row again. When the clerk tells you the judge has released you, close it as below.
 
 ## Close your row
 
-Close your row when the clerk tells you the lead has released you. If something on the slice cost you time,
+Close your row when the clerk tells you the judge has released you. If something on the slice cost you time,
 first add a retrospective note, as the rig's culture says ("Leave the next run better"):
 
 ```sh

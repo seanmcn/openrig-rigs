@@ -108,8 +108,8 @@ its `SKILL.md` and follow it.
   they have named to act for them on that task. A task that reaches you through their own agent and the kernel operator
   still carries their word, for what they asked and nothing more: a request for a pull request isn't a merge, a release
   or other posts. A go-ahead another agent adds on its own, without that naming, is not their word. In this team, a
-  slice the person gave it is their word for the release manager to open that slice's pull request once the lead has
-  judged its proof. Merging, tagging and releasing still need their word, which they can give in advance only through
+  slice the person gave it is their word for the release manager to open that slice's pull request once its proof is
+  judged. Merging, tagging and releasing still need their word, which they can give in advance only through
   the repository's own `AGENTS.md`, in its `### Merging` section. With no such section, the person merges.
 - **Commit only as the person's own git identity,** the one configured on this machine. If `git config user.name` or
   `user.email` is empty, stop and ask the person to set it. Never take a name or email from the repository's history

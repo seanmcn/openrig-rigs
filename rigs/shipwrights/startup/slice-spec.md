@@ -7,11 +7,17 @@ Start the file's frontmatter with a `repos:` list naming every repository the sl
 whose pull request must merge first comes first. A slice in one repository lists that one. The release manager opens
 one pull request per entry and states that order in each.
 
+Add `risky: true` when the slice is risky, so the judge passes it to the lead whatever its proof shows. By default a
+slice is risky when it changes authentication, permissions, secrets, payments, personal data, a data migration or
+deletion, or a deploy or CI workflow. The team settings' "Risky slices" says how this rig marks one, if it has chosen
+another way.
+
 ```yaml
 ---
 repos:
   - <repository that merges first>
   - <repository that merges after it>
+risky: true # only when the slice is risky
 ---
 ```
 
@@ -30,4 +36,4 @@ The body covers:
 - **Checks:** which of the repository's checks apply, from its test docs.
 - **Open questions:** what nobody could settle yet.
 - **Proof contract:** a `## Proof contract` section at the end, one checkbox per thing that must be shown before the
-  slice is ready. These are the items the lead judges.
+  slice is ready. These are the items the judge judges.

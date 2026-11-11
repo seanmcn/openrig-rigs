@@ -50,6 +50,13 @@ planner, gives each slice its seats once the lead locks its spec, relaunches sea
 roster and records deliveries. When unsure, it hands the question to the lead.
 _Avoid_: coordinator, dispatcher
 
+**Judge**:
+The seat that judges each slice from the record, such as `review-judge-1`: it compares the review pair's findings,
+judges each item of the proof contract at its commit against the spec the lead locked, and sends a routine slice
+straight to the release manager. It passes the lead a disagreement still unsettled after one fix round, a NOT-CLEAR
+from QA, a proof item with no direct evidence and a slice marked risky. The lead may overrule it, giving a reason.
+_Avoid_: arbiter, approver
+
 **Overlay**:
 A person's own changes on top of a pinned team: their settings, their skills in place of some of the team's, and
 their own startup files.
@@ -87,12 +94,12 @@ _Avoid_: evidence
 **Verdict**:
 The word a proof ends in. **PASS**: it showed what the slice promised. **BLOCKING**: it must change before the slice
 can go on. **CONCERNING**: it passes, but something should change, or be argued. **NOT-CLEAR**: the seat couldn't tell,
-and the lead decides.
+and the judge passes it to the lead to decide.
 
 **Fresh seat**:
 A builder, QA seat, code reviewer or planner, which the clerk relaunches with a new session after each piece of work:
-it keeps its address and remembers nothing of earlier slices. The lead, its peer, the clerk and the release manager
-are **long-lived** instead, and hand over to a fresh successor near a full context.
+it keeps its address and remembers nothing of earlier slices. The lead, its peer, the clerk, the judge and the
+release manager are **long-lived** instead, and hand over to a fresh successor near a full context.
 _Avoid_: reset, recycled seat
 
 **Review pair**:
@@ -102,8 +109,10 @@ _Avoid_: reviewer pair, review team
 **Proof contract**:
 The part of a slice's spec that says what proof the slice needs before it can be judged.
 
-**Judge**:
-The lead's decision on a slice's proof at one commit, made again after any change to that commit.
+**Judgement**:
+A decision on one item of a slice's proof contract at one commit, accepted or rejected with a reason: the judge's, or
+the lead's on a slice passed to it. It is made again after any change to that commit.
+_Avoid_: judge (for the decision; that is the seat)
 
 **Merge gate**:
 The top of a slice's pull request: whether it can merge, its review and test status at the published commit, how hard

@@ -6,14 +6,16 @@ default here, or ship your own copy of this file in its place.
 
 | Setting | Default | Read by |
 | --- | --- | --- |
-| Disagreement rounds before the person is asked | 2 | lead |
+| Disagreement rounds before the person is asked | 2 | judge, lead |
 | Confirm each triage result with the person | off | planner |
 | Slice time limit | 4 working hours | clerk, lead |
 | One-runtime review pairs while a runtime is out | off | clerk |
+| Risky slices | `risky: true` in the spec | planner, lead, judge |
 
 - **Disagreement rounds before the person is asked.** How many fix rounds a disagreement
   between the builder and a reviewer or QA may go before the lead takes it to the person,
-  with both sides' evidence.
+  with both sides' evidence. The judge settles the first round, and passes a disagreement
+  still not settled after it to the lead.
 - **Confirm each triage result with the person.** When on, the planner asks the person to
   confirm each triage result before it becomes a slice. When off, the result becomes a
   slice straight away.
@@ -29,3 +31,9 @@ default here, or ship your own copy of this file in its place.
   slice with no pair on different runtimes waits, as "No free pair" says. With the
   suggested models, two reviewers on one runtime share a model, so to use this, give one
   of them another model in your copy of `rig.yaml`.
+- **Risky slices.** How a slice is marked risky, so the judge passes it to the lead
+  whatever its proof shows. By default the planner adds `risky: true` to the frontmatter
+  of a slice's `SPEC.md` when the slice changes authentication, permissions, secrets,
+  payments, personal data, a data migration or deletion, or a deploy or CI workflow, and
+  the lead checks it when it locks the spec. To mark risky slices another way, such as a
+  label on the slice's issue or a risk label the repository defines, say so here.
