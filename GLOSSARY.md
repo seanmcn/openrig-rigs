@@ -27,8 +27,15 @@ A group of seats with one job in a rig, such as `dev` for the builders or `revie
 can grow numbers its seats in its pod, such as `dev-backend-1`.
 
 **Profile**:
-A seat's role in a team's `agent.yaml`: which guidance, skills and startup files a seat gets.
+A seat's role on one runtime in a team's `agent.yaml`: which guidance, skills and startup files a seat gets, and the
+model and effort it suggests. A role has one profile per runtime, such as `planner-claude` and `planner-codex`, which
+share its guidance.
 _Avoid_: profile (for a Codex config profile; say "Codex profile")
+
+**Model tier**:
+A class of model by price and capability: top, upper, workhorse, lower or budget. A team's README suggests one for
+each role.
+_Avoid_: tier (that is a queue row's deadline class)
 
 **Preset**:
 A named choice of runtime for every seat, from a team's `configurations.yaml`, such as `recommended`.

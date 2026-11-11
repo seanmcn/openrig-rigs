@@ -56,11 +56,44 @@ seat on the other one. Keep the code reviewers on at least two runtimes; the pee
 ### Growing the team
 
 The team ships small: enough seats for two slices at once. A role that can grow numbers its seats, so a seat you add
-takes the next number in its role's pod, such as `dev-backend-2`, with the role's profile and edges.
+takes the next number in its role's pod, such as `dev-backend-2`, with the role's profile for its runtime and the role's
+edges.
 [`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats, what a new
 seat needs and how to add one to a running rig. Builders, QA seats and code reviewers grow with the work you run at
 once, a QA seat for each builder. A second planner or release manager is rarely needed. Every seat reads that file at
 start, and finds the others by role, so a seat you add is used without changing any guidance.
+
+## Models
+
+Each role has two profiles in [`agents/shipwrights/agent.yaml`](agents/shipwrights/agent.yaml), one for each runtime,
+such as `planner-claude` and `planner-codex`. Both deliver the role's guidance and skills; each suggests a model on its
+runtime and an effort. [`configurations.yaml`](configurations.yaml) gives each seat its role's profile for the runtime
+you put it on, so a seat that only routes or watches never runs on a runtime's most expensive default.
+
+The suggestions use five tiers of models, by price and capability:
+
+| Tier | Claude Code | Codex |
+| --- | --- | --- |
+| top | Fable 5.2 (`claude-fable-5-2`) | GPT-6 Astra (`gpt-6-astra`) |
+| upper | Opus 5.5 (`claude-opus-5-5`) | — |
+| workhorse | Sonnet 5.5 (`claude-sonnet-5-5`) | GPT-6.1 Sol (`gpt-6.1-sol`) |
+| lower | — | GPT-6.1 Terra (`gpt-6.1-terra`) |
+| budget | Haiku 5.5 (`claude-haiku-5-5`) | GPT-6 Luna (`gpt-6-luna`) |
+
+| Role | Tier | Effort |
+| --- | --- | --- |
+| Lead, planner | upper (top on Codex, which has no upper) | `high` |
+| Code reviewers | one upper and one workhorse in each pair: upper on Claude Code, workhorse on Codex | `high` |
+| Builders, QA | workhorse | `medium` |
+| Release manager | workhorse | `medium` |
+| Peer | budget | `low` |
+
+The lead pairs one code reviewer from each runtime, so every pair gets one upper and one workhorse model, at least one
+of them stronger than the builder's.
+
+These are suggestions, and a rig may override any seat's model: set `model` (and `effort`) on the member in your copy
+of `rig.yaml`, which OpenRig prefers to the profile's. To change a role's model on every seat, change its profile in
+an overlay.
 
 ## How the work moves
 

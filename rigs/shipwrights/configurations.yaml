@@ -1,4 +1,5 @@
-# The runtimes each seat may use, and the profile it uses there.
+# The runtimes each seat may use, and the profile it uses there: its role's profile for that
+# runtime, which carries the model and effort the README's "Models" section suggests.
 # `rig bundle configurations rigs/shipwrights/rig.yaml` lists them, and `--preset <name>` or
 # `--seat pod.member=runtime` picks one at install. Format: openrig.bundle-configurations/v1.
 # The lead pairs two code reviewers on different runtimes for each slice, so keep the
@@ -8,15 +9,15 @@
 schema: openrig.bundle-configurations/v1
 recommended: recommended
 seats:
-  orch.lead: { runtimes: { codex: lead, claude-code: lead } }
-  orch.peer: { runtimes: { claude-code: peer, codex: peer } }
-  orch.planner-1: { runtimes: { claude-code: planner, codex: planner } }
-  dev.backend-1: { runtimes: { claude-code: builder-backend, codex: builder-backend } }
-  dev.frontend-1: { runtimes: { claude-code: builder-frontend, codex: builder-frontend } }
-  quality.qa-1: { runtimes: { claude-code: qa, codex: qa } }
-  quality.qa-2: { runtimes: { claude-code: qa, codex: qa } }
-  review.reviewer-1: { runtimes: { claude-code: code-reviewer, codex: code-reviewer } }
-  review.reviewer-2: { runtimes: { codex: code-reviewer, claude-code: code-reviewer } }
-  release.manager-1: { runtimes: { codex: release-manager, claude-code: release-manager } }
+  orch.lead: { runtimes: { codex: lead-codex, claude-code: lead-claude } }
+  orch.peer: { runtimes: { claude-code: peer-claude, codex: peer-codex } }
+  orch.planner-1: { runtimes: { claude-code: planner-claude, codex: planner-codex } }
+  dev.backend-1: { runtimes: { claude-code: builder-backend-claude, codex: builder-backend-codex } }
+  dev.frontend-1: { runtimes: { claude-code: builder-frontend-claude, codex: builder-frontend-codex } }
+  quality.qa-1: { runtimes: { claude-code: qa-claude, codex: qa-codex } }
+  quality.qa-2: { runtimes: { claude-code: qa-claude, codex: qa-codex } }
+  review.reviewer-1: { runtimes: { claude-code: code-reviewer-claude, codex: code-reviewer-codex } }
+  review.reviewer-2: { runtimes: { codex: code-reviewer-codex, claude-code: code-reviewer-claude } }
+  release.manager-1: { runtimes: { codex: release-manager-codex, claude-code: release-manager-claude } }
 presets:
   recommended: { orch.lead: codex, orch.peer: claude-code, orch.planner-1: claude-code, dev.backend-1: claude-code, dev.frontend-1: claude-code, quality.qa-1: claude-code, quality.qa-2: claude-code, review.reviewer-1: claude-code, review.reviewer-2: codex, release.manager-1: codex }
