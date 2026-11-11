@@ -82,9 +82,14 @@ GUIDANCE_RULES = [
     ("code-reviewer.md", "AGENTS.md", "a slice starts by reading the repository's AGENTS.md"),
     ("code-reviewer.md", "inside the worktree", "commands run from inside the worktree"),
     ("peer.md", "rig watchdog register", "a watchdog wakes the peer; it never polls"),
-    ("peer.md", "10 minutes", "the peer takes over only after the lead is down for 10 minutes"),
     ("peer.md", "Never compact the lead", "the peer restores the lead and never compacts it"),
-    ("peer.md", "## Hand back", "the peer hands back with a recap"),
+    ("peer.md", "down for 10 minutes", "the peer relaunches the lead only after it is down for 10 minutes"),
+    ("peer.md", "rig seat launch <lead> --fresh", "the peer relaunches a down lead fresh"),
+    ("peer.md", "the recap row", "a relaunched lead gets the recap row a handed-over lead gets"),
+    ("peer.md", "still down 10 minutes after", "a lead still down after its relaunch goes to the person"),
+    ("peer.md", "Then stop", "the peer stops once it has told the person"),
+    ("peer.md", "You never drive", "the peer is a watchdog and never drives"),
+    ("startup/team-shape.md", "`peer`, on either runtime", "the peer no longer has to be on the other runtime"),
     ("planner.md", "wayfinder", "large work with open questions is charted with wayfinder"),
     ("planner.md", "rig scope mission graph", "the build order comes from the mission graph"),
     ("planner.md", "Confirm each triage result with the person", "the planner honours the triage setting"),
@@ -114,6 +119,12 @@ GUIDANCE_RULES = [
 FORBIDDEN_RULES = [
     ("lead.md", "Push the builder's branch", "the release manager publishes, not the lead"),
     ("release-manager.md", "external:ci --wake-after 15m", "the CI wait comes from recent run times, not a fixed 15 minutes"),
+    ("peer.md", "## Take over", "the peer relaunches a down lead and never drives in its place"),
+    ("peer.md", "## Hand back", "the peer never drives, so it has nothing to hand back"),
+    ("peer.md", "(driving)", "the peer never drives, so it records no driving decisions"),
+    ("peer.md", "not yours to reset", "the peer relaunches a lead that has been down for 10 minutes"),
+    ("peer.md", "on the other runtime", "the peer may run on either runtime"),
+    ("startup/team-shape.md", "on the other runtime from the lead", "the peer may run on either runtime"),
 ]
 
 # Profiles this team added or renamed from Workshop's, and the guidance files each must deliver.
@@ -400,8 +411,9 @@ def check_guidance(team, problems):
         elif phrase not in text:
             fail(problems, f"{where} lacks {phrase!r}: {why}")
     for name, phrase, why in FORBIDDEN_RULES:
-        if phrase in guidance.get(name, ""):
-            fail(problems, f"guidance/{name} still has {phrase!r}: {why}")
+        where = name if name in started else f"guidance/{name}"
+        if phrase in started.get(name, guidance.get(name, "")):
+            fail(problems, f"{where} still has {phrase!r}: {why}")
     # OpenRig refuses a block without --on, even with a wake, so every example names its blocker straight after the
     # row (a `\` line break may come between). The text's whitespace is collapsed, so a command is one line here, and
     # the 40 characters after the row are only there to show which example it is.
@@ -477,8 +489,8 @@ def member_ids(rig):
 
 
 LEAD = "orch.lead"
-# The peer stands in when the lead is down, so its rows mustn't escalate to the lead: with no orchestrator,
-# OpenRig sends them to its operator instead.
+# The peer watches the lead and relaunches it when it is down, so its rows mustn't escalate to the lead: with no
+# orchestrator, OpenRig sends them to its operator instead.
 PEER = "orch.peer"
 
 

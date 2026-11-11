@@ -3,8 +3,8 @@
 # `--seat pod.member=runtime` picks one at install. Format: openrig.bundle-configurations/v1.
 # The lead pairs two code reviewers on different runtimes for each slice, so keep the
 # reviewers on at least two runtimes: the recommended preset puts one on each. The peer
-# exists to run the lead's guidance on the other runtime, so when you move the lead, move
-# the peer the other way. A seat you grow gets a line here like the others of its role.
+# only watches the lead and relaunches it, so it may run on either runtime, whichever is
+# cheaper. A seat you grow gets a line here like the others of its role.
 schema: openrig.bundle-configurations/v1
 recommended: recommended
 seats:

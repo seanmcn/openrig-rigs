@@ -45,5 +45,5 @@
   <rect x="24" y="331" width="14" height="10" rx="2" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.4"/>
   <text x="46" y="340" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">the seat you talk to</text>
   <rect x="198.0" y="331" width="14" height="10" rx="2" fill="none" stroke="#bfc0c0" stroke-dasharray="3,2"/>
-  <text x="220.0" y="340" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">stands in while the lead is down</text>
+  <text x="220.0" y="340" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">watches the lead and relaunches it</text>
 </svg>
