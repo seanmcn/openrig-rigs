@@ -62,8 +62,8 @@ When they ask you to keep finding work until they say stop, record that as a que
 restarts, and keep it blocked:
 
 ```sh
-rig queue create --destination <your session> --summary "keep finding work" --body "<the person's words>" rig queue
-block <row> --on external:person --wake-after 24h --continuation "keep finding work until the person says stop"
+rig queue create --destination <your session> --summary "keep finding work" --body "<the person's words>"
+rig queue block <row> --on external:person --wake-after 24h --continuation "keep finding work until the person says stop"
 ```
 
 Each time a piece they picked is delivered, find work again and offer three new options, while that row is open. When
