@@ -7,8 +7,18 @@ Teams of agents for [OpenRig](https://github.com/mvschwarz/openrig), and the wor
 ### Teams and seats
 
 **Team**:
-A set of seats, their guidance and their settings, shipped as one folder under `rigs/` and installed as a bundle.
+A set of seats, their guidance, their skills and their settings, shipped as one folder under `rigs/` and installed as
+a bundle.
 _Avoid_: crew
+
+**Team version**:
+A numbered release of a team, which a person installs and pins to.
+_Avoid_: bundle version, release (alone)
+
+**Team skill**:
+A skill a team ships in its own folder: one it wrote, or a copy of another source's skill taken unchanged at a pinned
+commit. Each profile selects the team skills its seats use.
+_Avoid_: bundled skill; user-level skill (for one installed in a person's home folder, which no team relies on)
 
 **Rig**:
 A team installed and running under OpenRig, under its own name, such as `shipwrights` in `rig down shipwrights`.
