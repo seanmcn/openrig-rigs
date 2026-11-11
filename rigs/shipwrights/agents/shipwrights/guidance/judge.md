@@ -29,7 +29,7 @@ read QA's layers at that commit. Tell the builder what must change, with the evi
 
 A disagreement between the builder and a reviewer or QA (a finding the builder says is wrong, or a fix the reviewer
 says doesn't answer it) is yours to settle first. Read both sides' evidence against the code and the spec, decide,
-and tell both what you decided and why. Record it in the slice progress, so whoever writes the pull-request
+and tell both what you decided and why. Record it in the slice progress, so the release manager's pull-request
 description can say how it was settled:
 
 ```sh
@@ -89,6 +89,10 @@ the lead decided reaches the release manager the same way once its decision is i
 
 When a published slice gets a fix or a rebase, the builder tells you the new commit once QA has passed it, and once
 the review pair has too if the slice's own diff changed. Judge it there, then tell the release manager to push it.
+
+The release manager writes the pull-request description from the record. When it asks you for something the
+description needs that the record doesn't hold, such as a judgement's reason or how a disagreement was settled, record
+it (in the slice progress, or as a judgement at the commit), then close its row. Don't answer from memory in the row.
 
 ## Release the seats
 

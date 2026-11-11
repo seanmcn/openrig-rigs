@@ -140,8 +140,6 @@ GUIDANCE_RULES = [
     ("clerk.md", "one of each again", "new pairs go back to both runtimes once the other has room"),
     ("clerk.md", "--add \"Review pair: <reviewer> (<runtime>, <model>)", "the clerk records each pair's models on the slice"),
     ("clerk.md", "shared <runtime>: <other runtime> is out", "the clerk records why a pair shared a runtime"),
-    ("lead.md", "which review ran on which model", "the pull request says which review ran on which model"),
-    ("lead.md", "why the pair shared a runtime", "the pull request says why a pair shared a runtime"),
     ("clerk.md", "rig seat launch <seat> --fresh", "the clerk relaunches each freed seat fresh"),
     ("clerk.md", "## Publish the team's roster", "the clerk publishes the roster"),
     ("clerk.md", "## Keep the roster current", "the clerk keeps the roster current"),
@@ -185,6 +183,21 @@ GUIDANCE_RULES = [
     ("clerk.md", "the judge tells you it has judged the slice", "the judge releases the builder and QA seat"),
     ("release-manager.md", "from the judge", "the release manager takes judged slices from the judge"),
     ("startup/team-shape.md", "the judge gives each judged slice", "the judge picks the release manager"),
+    # The release manager writes the pull-request description from the record, and keeps it true.
+    ("release-manager.md", "## Write the description", "the release manager owns the pull-request description"),
+    ("release-manager.md", "the slice's locked spec", "the description says what the spec the lead locked promised"),
+    ("release-manager.md", "--subject commit:<sha>", "the description reports proof as judged at its commit"),
+    ("release-manager.md", "the judge's slice progress", "the description says how each disagreement was settled"),
+    ("release-manager.md", "Fill the repository's pull-request template", "the description fills the repository's template"),
+    ("release-manager.md", "what each reviewer ran and at which commit", "the pull request reports both reviews"),
+    ("release-manager.md", "which review ran on which model", "the pull request says which review ran on which model"),
+    ("release-manager.md", "why the pair shared a runtime", "the pull request says why a pair shared a runtime"),
+    ("release-manager.md", "the lead's decision", "a slice the lead decided is described from its decision"),
+    ("release-manager.md", "say that it didn't run", "a check the lead decided can't run here is reported as not run"),
+    ("release-manager.md", "back to whoever judged the slice", "a claim the record doesn't support goes back, not into the description"),
+    ("release-manager.md", "## Keep the description true", "the release manager keeps the description true"),
+    ("release-manager.md", "when the reviews, CI or the code change", "the description changes with the reviews, CI and code"),
+    ("startup/review-pair-lead.md", "the release manager", "the release manager reports both reviews in the pull request"),
 ]
 
 # (guidance file, phrase it must not contain, why)
@@ -232,6 +245,17 @@ FORBIDDEN_RULES = [
     ("clerk.md", "the lead tells you it has judged", "the judge releases the builder and QA seat"),
     ("release-manager.md", "once the lead has judged", "the judge judges each slice"),
     ("startup/team-shape.md", "the lead gives each judged slice", "the judge picks the release manager"),
+    # The pull-request description moved to the release manager.
+    ("lead.md", "Keep the pull request description true", "the release manager keeps the description true"),
+    ("lead.md", "You own the description", "the release manager owns the description"),
+    ("lead.md", "the slice's pull-request description", "judged slices reach the release manager without a description"),
+    ("lead.md", "the updated description", "the release manager updates the description itself"),
+    ("lead.md", "which review ran on which model", "the release manager says which review ran on which model"),
+    ("lead.md", "why the pair shared a runtime", "the release manager says why a pair shared a runtime"),
+    ("release-manager.md", "comes from the lead", "the release manager writes the description"),
+    ("release-manager.md", "as the lead wrote it", "the release manager writes the description"),
+    ("release-manager.md", "owns scope and the description", "the lead owns scope; the description is the release manager's"),
+    ("startup/review-pair-lead.md", "Pull request description:", "the release manager writes the description"),
 ]
 
 # Every role, and the guidance files each of its profiles must deliver.
