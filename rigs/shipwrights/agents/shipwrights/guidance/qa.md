@@ -42,9 +42,16 @@ failing case: never weaken an assertion to get green.
 
 ## Pull requests checked together
 
-When the clerk asks you to check several of the team's open pull requests together, merge their branches onto a
-throwaway local branch in your own worktree, run the repository's checks there, report which combination fails, if
-any, and delete the branch. Never push it, and never merge anything into a base branch this way.
+When the clerk asks you to check several of the team's open pull requests together, claim its row, merge their
+branches onto a throwaway local branch in your own worktree, run the repository's checks there, and delete the
+branch. Never push it, and never merge anything into a base branch this way.
+
+Closing that row is how your result reaches the release manager that asked: it is blocked on the row. Close it with
+the result in its note: that they work together, or which combination fails, with the failing check and its output.
+
+```sh
+rig queue update <row> --state done --closure-reason no-follow-on --note "<work together, or what fails>: <report>"
+```
 
 ## Record and report
 

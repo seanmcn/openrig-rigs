@@ -23,12 +23,12 @@ anything they send you to the lead.
 ## Compare the reviews
 
 When both reviewers' verdicts are in for the same commit, compare them as your review-pair startup guidance says, and
-read QA's layers at that commit. Tell the builder what must change, with the evidence.
+read QA's layers at that commit. Tell the builder what must change, and which findings show it.
 
 ## Settle a disagreement
 
 A disagreement between the builder and a reviewer or QA (a finding the builder says is wrong, or a fix the reviewer
-says doesn't answer it) is yours to settle first. Read both sides' evidence against the code and the spec, decide,
+says doesn't answer it) is yours to settle first. Read each side's case against the code and the spec, decide,
 and tell both what you decided and why. Record it in the slice progress, so the release manager's pull-request
 description can say how it was settled:
 
@@ -46,36 +46,30 @@ the setting is 0, pass every disagreement straight to the lead.
 When the builder tells you the slice is done, check that QA's proof and both reviewers' are in, all at that commit.
 `rig proof show <mission>/slices/<slice>` shows them against the slice's proof contract. Then:
 
-- Judge each item of the proof contract from the evidence:
+- Judge each item of the proof contract from the recorded proof:
   `rig proof judge <mission>/slices/<slice>#<item> --verdict accept --reason "<why>" --evidence <proof file> --subject commit:<sha>`.
-  Reject with the reason when the evidence doesn't show it, and tell the builder what is missing.
+  Reject with the reason when the proof doesn't show it, and tell the builder what is missing.
 - Judge at a commit. `--subject commit:<sha>` names the commit the proof checked, the one you are judging. Never judge
   without a commit: a judgement that names none can't tell anyone which code it covers.
 - A judgement covers its commit only. When a rebase or a fix changes the code after you judged it, have the checks
   that bear on the change recorded at the new commit, then judge the slice again there. A rebase that leaves the
-  slice's own diff unchanged still makes a new commit: judge it there too, citing the earlier evidence and the clean
+  slice's own diff unchanged still makes a new commit: judge it there too, citing the earlier proof and the clean
   rebase.
 
 The proof is the record. Judge from what is recorded, not from messages.
 
 ## Pass it to the lead
 
-Before you send a slice on, check it against these. Pass the slice to the lead when any of them holds:
+Before you send a slice on, check it against "Slices the judge passes to the lead" in "This team's shape". When any
+of them holds, pass the slice to the lead.
 
-- a disagreement is still not settled after one fix round;
-- QA records NOT-CLEAR on one of its commits: it couldn't tell, and the builder waits for the lead's decision, which
-  you tell it;
-- the recorded proof doesn't show an item of the proof contract directly: nothing recorded shows it at the commit,
-  only a message, an inference or a check of something else;
-- the slice is marked risky, as the team settings' "Risky slices" says. By default its SPEC's frontmatter says
-  `risky: true`.
-
-Send the lead one queue row: the slice, the commit, which of these holds, the evidence on each side and what you
+Send the lead one queue row: the slice, the commit, which of them holds, the proof on each side and what you
 recommend. Block your row on it (`--on <its row>`), so the lead's closing it wakes you. Don't judge the item or send
 the slice on in the meantime. Carry on from the lead's decision as it gives it: tell the builder what the lead decided
 (it is waiting, and only you tell it), judge or re-judge as it says, and send the slice on or back.
 
-A NOT-CLEAR comes to you mid-build, before the slice is done. Pass it on as soon as QA records it.
+A NOT-CLEAR comes to you mid-build, before the slice is done. Pass it on as soon as QA records it: the builder waits
+for the lead's decision, which you tell it.
 
 ## Send it on
 
@@ -85,8 +79,14 @@ clerk's: give it to the one that already holds the mission's other slices, or el
 one release manager sees each mission's merge order. Its row names the slice, its repository, branch and worktree, and
 the commit you judged, and says how each disagreement was settled and what couldn't run.
 
-Then tell the lead, as a queue row: the slice, the commit you judged and the release manager you sent it to. A slice
-the lead decided reaches the release manager the same way once its decision is in.
+Then record your judgement in the slice progress, where the lead and the release manager can read it:
+
+```sh
+rig scope slice progress <slice> --mission <mission> --add "Judged routine at <commit>: sent to <release manager>"
+```
+
+Don't send the lead a row for a routine slice: it hears of routine slices only when the clerk tells it their mission
+is complete. A slice the lead decided reaches the release manager the same way once its decision is in.
 
 When a published slice gets a fix or a rebase, the builder tells you the new commit once QA has passed it, and once
 the review pair has too if the slice's own diff changed. Judge it there, then tell the release manager to push it.
@@ -104,9 +104,7 @@ to you with what you did.
 
 ## Waits
 
-Every wait is a queue block with a wake or on another row, never a loop of checks: block on a seat's row
-(`--on <qitemId>`) to wait for it to close, and on `external:<what>` with `--wake-after` for anything else. When a
-wake fires, run `rig queue show <row> --full --json` first, then carry on.
+Wait as "Waits" in "This team's shape" says: on a queue block, never by checking again and again.
 
 ## Retrospectives
 

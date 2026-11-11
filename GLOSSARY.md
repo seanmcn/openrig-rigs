@@ -54,9 +54,8 @@ _Avoid_: coordinator, dispatcher
 **Judge**:
 The seat that judges each slice from the record, such as `review-judge-1`: it compares the review pair's findings,
 judges each item of the proof contract at its commit against the spec the lead locked, and sends a routine slice
-straight to the release manager. It passes the lead a disagreement still unsettled after one fix round, a NOT-CLEAR from
-QA, a proof item the recorded proof doesn't show directly and a slice marked risky. The lead may overrule it, giving a
-reason.
+straight to the release manager. It passes the lead only the hard or risky slices, which Shipwrights lists in its
+`startup/team-shape.md`. The lead may overrule it, giving a reason.
 _Avoid_: arbiter, approver
 
 **Overlay**:
