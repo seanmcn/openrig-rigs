@@ -78,12 +78,11 @@ rows). Send the builder its build row:
 
 ```sh
 rig queue create --destination <builder session> --body-file <file> \
-  --mission <mission> --slice <slice> --tier <tier for the slice time limit> --summary "<slice>: <one line>"
+  --mission <mission> --slice <slice> --summary "<slice>: <one line>"
 ```
 
-and the QA seat a row for the slice from the same file, which it holds until the slice is judged. The queue tier gives
-the build row its deadline: choose it as the team settings' slice time limit says. The `queue-handoff` skill covers the
-rest.
+and the QA seat a row for the slice from the same file, which it holds until the slice is judged. The `queue-handoff`
+skill covers the rest.
 
 When you hand on a mission's first slice, set the mission's status to `active`: edit `metadata.status` in its
 `mission.yaml` (`rig scope mission show <mission>` gives its path). A new mission is `planned`, and `rig proof show`
@@ -266,20 +265,26 @@ row, as "Remove a seat" in "This team's shape" says. Once it is gone, take its e
 
 ## The slice time limit
 
-The team settings set a slice time limit. Each build row carries the queue tier you chose for it, so `rig queue overdue`
-lists a build that has run past it. When you first start, register one reminder that wakes you to look, unless
-`rig watchdog list` already shows yours:
+The team settings set a slice time limit, counted in working hours from when you created a build row, a fix's or a
+rebase's included. Don't use `rig queue overdue` for it: that lists only rows in progress, and a builder blocks its
+row each time it hands a commit to QA or the reviewers, and each new claim restarts the row's deadline. When you first
+start, register one reminder that wakes you to look, unless `rig watchdog list` already shows yours:
 
 ```sh
 rig watchdog register --policy periodic-reminder --target-session <your session> --registered-by <your session> \
-  --interval-seconds 1800 --message "Time-limit check: run rig queue overdue for this rig's build rows."
+  --interval-seconds 1800 --message "Time-limit check: count the working hours of this rig's open build rows."
 ```
 
-When it wakes you, run `rig queue overdue --rig <rig> --json`. Queue deadlines count clock hours and the setting counts
-working hours, so leave alone a row whose working hours are still under the limit. Only a build past the limit goes to
-the lead: send it one row per build, naming the build row, its builder and how long it has run, unless a row you sent
-the lead already names it. Whether to split it, unblock it or ask the person is the lead's call. The reminder is quiet
-when nothing is overdue: say nothing then.
+When it wakes you, list the rows you created that are still open:
+
+```sh
+rig queue list --source <your session> --state pending,in-progress,blocked --json
+```
+
+The build rows are the ones whose destination is a builder. For each, count the working hours since its `tsCreated`.
+Only a build past the limit goes to the lead: send it one row per build, naming the build row, its builder and how
+long it has run, unless a row you sent the lead already names it. Whether to split it, unblock it or ask the person is
+the lead's call. The reminder is quiet when nothing is past the limit: say nothing then.
 
 ## Record pull requests and deliveries
 

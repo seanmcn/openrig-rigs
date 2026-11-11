@@ -313,8 +313,8 @@ approvals together").
   drives in its place ([`peer.md`](agents/shipwrights/guidance/peer.md)).
 - **Each building seat uses its own worktree** and installs the repository's dependencies there, which costs disk and
   time.
-- **The time limit counts clock hours in the queue.** The clerk counts working hours itself before it passes an
-  overdue build to the lead.
+- **The clerk counts the time limit itself.** OpenRig's queue deadlines count clock hours, and only while a row is in
+  progress, so the clerk counts each build's working hours from when it created the build row.
 - **Every map here is incomplete.** These files and the repository's own maps can be stale. The code and its behaviour
   decide.
 
