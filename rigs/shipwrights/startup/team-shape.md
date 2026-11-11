@@ -3,16 +3,18 @@
 Every seat reads this. It names the team's roles, which of them can have more than one seat, and how to find a role's
 seats. Seats are found by role, never by a name you remember: the team may have grown since this file was written.
 
-| Role | Profile | Seats in the default team | Can grow |
-| --- | --- | --- | --- |
-| Lead | `lead` | 1 | No |
-| Peer | `peer` | 1, on the other runtime from the lead | No |
-| Planner | `planner` | 1 | Yes, rarely needed |
-| Backend builder | `builder-backend` | 2 | Yes |
-| Frontend builder | `builder-frontend` | 1 | Yes |
-| QA | `qa` | 3, one for each builder | Yes, with the builders |
-| Code reviewer | `code-reviewer` | 4, two on each runtime | Yes, keeping both runtimes |
-| Release manager | `release-manager` | 1 | Yes, rarely needed |
+| Role | Profile | Pod | Seats in the default team | Can grow |
+| --- | --- | --- | --- | --- |
+| Lead | `lead` | `orch` | `lead` | No |
+| Peer | `peer` | `orch` | `peer`, on the other runtime from the lead | No |
+| Planner | `planner` | `orch` | `planner-1` | Yes, rarely needed |
+| Backend builder | `builder-backend` | `dev` | `backend-1` | Yes |
+| Frontend builder | `builder-frontend` | `dev` | `frontend-1` | Yes |
+| QA | `qa` | `quality` | `qa-1`, `qa-2`, one for each builder | Yes, with the builders |
+| Code reviewer | `code-reviewer` | `review` | `reviewer-1`, `reviewer-2`, one on each runtime | Yes, keeping both runtimes |
+| Release manager | `release-manager` | `release` | `manager-1` | Yes, rarely needed |
+
+The default team has enough seats for two slices at once. A rig grows the roles its work needs.
 
 ## Find a role's seats
 
@@ -25,16 +27,22 @@ gives (`canonicalSessionName`).
 
 ## Add a seat
 
-A new seat joins its role's pod in `rig.yaml` (`plan`, `dev` for builders and QA, `review`, `release`) as a member
-with the role's profile, with:
+Only a role marked "Yes" above grows. A grown seat takes the next number in its role's pod, such as `backend-2` in
+`dev` after `backend-1`, the same profile and start files as the role's other seats, and the role's edges:
 
 - a `delegates_to` edge from `orch.lead`, so its stuck rows escalate to the lead;
-- a runtime for it in `configurations.yaml`;
+- a runtime for it in `configurations.yaml`, from the same choices as the role's other seats;
 - for a builder, the `startup/review-pair-builder.md` start file, and for a code reviewer,
   `startup/review-pair-reviewer.md`.
 
 Add a QA seat with each builder, so every builder can build at once. Keep code reviewers on at least two runtimes, so
-every review pair can have one of each. Then the team needs starting again.
+every review pair can have one of each.
+
+To grow a team you haven't launched, add the member to its pod in `rig.yaml`. To grow a running rig, use OpenRig's
+`rig add`, which adds a member to an existing pod, or `rig expand`, which adds a new pod; both take the full member
+definition, as `rig.yaml` writes it. Don't use `rig grow`: `rig grow` adds only OpenRig's default agent, so the new
+seat would lose its role's profile and runtime choices. Put the same member in your copy of `rig.yaml` too, so the
+seat comes back the next time the rig starts.
 
 ## Which seats a slice holds
 

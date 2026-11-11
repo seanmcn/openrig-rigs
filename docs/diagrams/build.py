@@ -388,43 +388,43 @@ def seat_start(t: Tokens, slug: str) -> Canvas:
     return c
 
 
-# The team's seats: its five pods, and each role's seats and runtime. ----------------------------------------------
+# The team's seats: its five pods, and each seat's role, member id and runtime. ------------------------------------
 
 def seats(t: Tokens, slug: str) -> Canvas:
-    w, h, pad = 136, 48, 16
+    w, h, pad, gap = 168, 48, 16, 24
     side = w + 2 * pad  # a pod of one column
-    plan_x = 24
-    dev_x = plan_x + side + 24
-    dev_w = 2 * w + 12 + 2 * pad
-    review_x = dev_x + dev_w + 24
-    release_x = review_x + side + 24
-    width = release_x + side + 24
+    # The pods below orch, side by side, each a column of its seats: (pod, [(role, member id, runtime)]).
+    pods = [
+        ("dev", [("Backend builder", "backend-1", "Claude Code"), ("Frontend builder", "frontend-1", "Claude Code")]),
+        ("quality", [("QA", "qa-1", "Claude Code"), ("QA", "qa-2", "Claude Code")]),
+        ("review", [("Code reviewer", "reviewer-1", "Claude Code"), ("Code reviewer", "reviewer-2", "Codex")]),
+        ("release", [("Release manager", "manager-1", "Codex")]),
+    ]
+    width = gap + len(pods) * (side + gap)
 
-    # The orch pod on top, centred: the lead, which you talk to, and its peer, which stands in while the lead is down.
-    orch_w = 2 * w + 24 + 2 * pad
+    # The orch pod on top, centred: the lead, which you talk to, its peer, which stands in while the lead is down, and
+    # the planner.
+    orch = [("Lead", "lead", "Codex", "focal"), ("Peer", "peer", "Claude Code", "held"),
+            ("Planner", "planner-1", "Claude Code", "step")]
+    orch_w = len(orch) * w + (len(orch) - 1) * gap + 2 * pad
     orch_x, orch_y = (width - orch_w) // 2, 32
-    zone_y, zone_h = orch_y + h + 2 * pad + 40, 160
-    row1, row2 = zone_y + 16, zone_y + 96
+    zone_y, zone_h = orch_y + h + 2 * pad + 40, 2 * h + 3 * pad
     c = Canvas(t, slug, width, zone_y + zone_h + 64, "Shipwrights' seats",
-               "Shipwrights' fourteen seats in five pods: the lead and its peer; a planner; two backend builders, a "
-               "frontend builder and three QA seats; four code reviewers, two on each runtime; and a release manager.")
+               "Shipwrights' ten seats in five pods: in orch, the lead, its peer and a planner; in dev, a backend "
+               "builder and a frontend builder; in quality, two QA seats; in review, two code reviewers, one on each "
+               "runtime; and in release, a release manager. A role that can grow numbers its seats.")
     c.legend_x = 24
     c.rect(orch_x, orch_y, orch_w, h + 2 * pad, rx=8)
     c.eyebrow(orch_x, orch_y - 8, "orch", anchor="start")
-    c.node(orch_x + pad, orch_y + pad, w, h, "Lead", "Codex", "focal")
-    c.node(orch_x + pad + w + 24, orch_y + pad, w, h, "Peer", "Claude Code", "held")
+    for i, (role, member, runtime, kind) in enumerate(orch):
+        c.node(orch_x + pad + i * (w + gap), orch_y + pad, w, h, role, f"{member} · {runtime}", kind)
 
-    for name, x, zw in (("plan", plan_x, side), ("dev", dev_x, dev_w), ("review", review_x, side),
-                        ("release", release_x, side)):
-        c.rect(x, zone_y, zw, zone_h, rx=8)
-        c.eyebrow(x, zone_y - 8, name, anchor="start")
-    c.node(plan_x + pad, row1, w, h, "Planner", "Claude Code")
-    c.node(dev_x + pad, row1, w, h, "Backend builders", "2 × Claude Code")
-    c.node(dev_x + pad + w + 12, row1, w, h, "Frontend builder", "Claude Code")
-    c.node(dev_x + (dev_w - w) // 2, row2, w, h, "QA seats", "3 × Claude Code")
-    c.node(review_x + pad, row1, w, h, "Reviewers", "2 × Claude Code")
-    c.node(review_x + pad, row2, w, h, "Reviewers", "2 × Codex")
-    c.node(release_x + pad, row1, w, h, "Release manager", "Codex")
+    for k, (pod, members) in enumerate(pods):
+        x = gap + k * (side + gap)
+        c.rect(x, zone_y, side, zone_h, rx=8)
+        c.eyebrow(x, zone_y - 8, pod, anchor="start")
+        for row, (role, member, runtime) in enumerate(members):
+            c.node(x + pad, zone_y + pad + row * (h + pad), w, h, role, f"{member} · {runtime}")
     return c
 
 

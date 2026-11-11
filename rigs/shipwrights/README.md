@@ -18,9 +18,10 @@ reviewers on different providers than from one, and changes the rest in four way
   [engineering skills](https://github.com/mattpocock/skills) (`triage`, `wayfinder`, `implement`, `tdd`,
   `diagnosing-bugs` and others), with `impeccable` for UI work. [`skills.md`](skills.md) lists every skill and where
   it comes from.
-- **More than one stream of work.** Two backend builders and a frontend builder, each with its own QA seat, and two
-  review pairs let two or three slices move at once. You could run copies of the team on more machines to go further,
-  but nothing yet stops two copies taking the same work: a way to claim work across copies is next.
+- **More than one stream of work, from a small start.** A backend builder and a frontend builder, each with its own QA
+  seat, and a review pair let two slices move at once. A rig grows the roles it needs by adding numbered seats
+  ("Growing the team", below). You could run copies of the team on more machines to go further, but nothing yet stops
+  two copies taking the same work: a way to claim work across copies is next.
 - **A seat for every step.** A planner cuts each goal into slices, QA checks every commit before review, a release
   manager publishes and keeps each pull request mergeable, and a peer on the other runtime stands in if the lead goes
   down. Workers start fresh for each slice, so what carries over between slices is the record: the spec, the slice
@@ -35,30 +36,32 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
-  <img alt="Shipwrights' fourteen seats in five pods: the lead (Codex), which you talk to, and its peer (Claude Code), which stands in while it is down; a planner (Claude Code); two backend builders, a frontend builder and three QA seats (Claude Code); four code reviewers, two on Claude Code and two on Codex; and a release manager (Codex)." src="diagrams/seats.svg">
+  <img alt="Shipwrights' ten seats in five pods: in orch, the lead (Codex), which you talk to, its peer (Claude Code), which stands in while it is down, and a planner (Claude Code); in dev, a backend builder and a frontend builder (Claude Code); in quality, two QA seats (Claude Code); in review, two code reviewers, one on Claude Code and one on Codex; and in release, a release manager (Codex)." src="diagrams/seats.svg">
 </picture>
 
 | Seat | Runtime | Does |
 |---|---|---|
 | `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs, hands them on, judges their proof and owns each PR description. Talk to this seat. |
 | `orch-peer` | Claude Code | Runs the lead's guidance on the other runtime and follows its work. Takes over, and tells you, only when the lead's seat has been down for 10 minutes; hands back with a recap. |
-| `plan-planner` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
-| `dev-backend`, `dev-backend2` | Claude Code | Each builds a backend slice in its own worktree, reviews its own diff and runs the repository's checks. |
-| `dev-frontend` | Claude Code | Builds on the backend builder's guidance for slices tagged UI or both: checks them in a real browser and runs impeccable's reviews and detector. |
-| `dev-qa`, `dev-qa2`, `dev-qa3` | Claude Code | One per builder: each runs the checks a slice calls for and records what each one proved. |
-| `review-r1`, `review-r3` | Claude Code | Each reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
-| `review-r2`, `review-r4` | Codex | The same, on the other runtime: the lead pairs one reviewer from each runtime for each slice, and they review independently. |
-| `release-manager` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
+| `orch-planner-1` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
+| `dev-backend-1` | Claude Code | Builds a backend slice in its own worktree, reviews its own diff and runs the repository's checks. |
+| `dev-frontend-1` | Claude Code | Builds on the backend builder's guidance for slices tagged UI or both: checks them in a real browser and runs impeccable's reviews and detector. |
+| `quality-qa-1`, `quality-qa-2` | Claude Code | One per builder: each runs the checks a slice calls for and records what each one proved. |
+| `review-reviewer-1` | Claude Code | Reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
+| `review-reviewer-2` | Codex | The same, on the other runtime: the lead pairs one reviewer from each runtime for each slice, and they review independently. |
+| `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
 seat on the other one. Keep the lead and its peer on different runtimes, and the code reviewers on at least two.
 
 ### Growing the team
 
-[`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats and what a
-new seat needs. Builders, QA seats and code reviewers grow with the work you run at once, a QA seat for each builder.
-A second planner or release manager is rarely needed. Every seat reads that file at start, and finds the others by
-role, so a seat you add is used without changing any guidance.
+The team ships small: enough seats for two slices at once. A role that can grow numbers its seats, so a seat you add
+takes the next number in its role's pod, such as `dev-backend-2`, with the role's profile and edges.
+[`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats, what a new
+seat needs and how to add one to a running rig. Builders, QA seats and code reviewers grow with the work you run at
+once, a QA seat for each builder. A second planner or release manager is rarely needed. Every seat reads that file at
+start, and finds the others by role, so a seat you add is used without changing any guidance.
 
 ## How the work moves
 
@@ -167,7 +170,7 @@ rig bundle install <link> --preset recommended --target ~/rigs/shipwrights --cwd
 ```
 
 `--cwd .` sets where the seats work, and `--target` is your installed copy of the team. To put one seat on the other
-runtime, add `--seat <pod.member>=<runtime>`, such as `--seat review.r1=codex`.
+runtime, add `--seat <pod.member>=<runtime>`, such as `--seat dev.backend-1=codex`.
 
 Then give your goal to OpenRig's kernel operator, the seat you talk to in OpenRig's view (`rig` opens it), such as
 "Have shipwrights take issue #42: <one line on what you want>". It hands the goal to the lead as a queue row. The lead
@@ -236,14 +239,14 @@ In the default posture, a Codex seat can't run `rig` commands, `git fetch`, `gh`
 says so on its screen, and someone with daemon access reaches it with `rig send` and `rig capture`. To give the Codex
 seats network access while keeping approvals, create a Codex profile with `sandbox_mode = "workspace-write"`,
 `approval_policy = "on-request"` and `[sandbox_workspace_write] network_access = true`, and set
-`codex_config_profile: <its name>` on each seat that runs on Codex in `rig.yaml`: `orch.lead`, `review.r2`,
-`review.r4` and `release.manager` in the recommended preset (OpenRig's `docs/reference/getting-started.md`, "Codex:
+`codex_config_profile: <its name>` on each seat that runs on Codex in `rig.yaml`: `orch.lead`,
+`review.reviewer-2` and `release.manager-1` in the recommended preset (OpenRig's `docs/reference/getting-started.md`, "Codex:
 select sandbox and approvals together").
 
 ## Limits
 
-- **Fourteen seats run at once,** so expect up to fourteen seats' worth of provider usage. The peer, the planner and any
-  seat without a slice are idle much of the time. To run fewer, remove seats in an overlay
+- **Ten seats run at once,** so expect up to ten seats' worth of provider usage, and more as you grow the team. The
+  peer, the planner and any seat without a slice are idle much of the time. To run fewer, remove seats in an overlay
   ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one QA seat still work, but
   a review needs two code reviewers on different runtimes.
 - **The peer notices a downed lead within minutes.** OpenRig has no event that fires when a seat goes down, so a

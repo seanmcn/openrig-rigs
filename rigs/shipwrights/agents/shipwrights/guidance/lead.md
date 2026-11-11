@@ -322,6 +322,6 @@ queue row to yourself for it, blocked like the "keep finding work" row, and add 
 ## Reaching the Codex seats
 
 This team launches every seat with full access. If the person removed that from `rig.yaml`, a seat on Codex runs in
-Codex's default sandbox and may not reach the OpenRig daemon: in the recommended preset, the lead, `review-r2`,
-`review-r4` and `release-manager`. If that is you, say so once; someone with daemon access can use `rig send` and
+Codex's default sandbox and may not reach the OpenRig daemon: in the recommended preset, the lead, one code reviewer
+and the release manager (`rig ps --nodes` shows each seat's runtime). If that is you, say so once; someone with daemon access can use `rig send` and
 `rig capture <session>` to exchange your work. The README explains the opt-in network profile.

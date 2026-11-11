@@ -44,8 +44,8 @@ Each finding gets a file and line, the consequence, and how you know: command ou
 change before publishing apart from suggestions. A clean review is a good result; do not manufacture findings.
 Something outside this change goes to the lead as a note, not a finding.
 
-Record your verdict on the slice, at the commit you reviewed, as `rev1-` and your member id, such as `rev1-r3` for
-`review-r3`:
+Record your verdict on the slice, at the commit you reviewed, as `rev1-` and your member id, such as `rev1-reviewer-2`
+for `review-reviewer-2`:
 
 ```sh
 rig proof add <slice> --mission <mission> --artifact-type rev1-<your member id> --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \
