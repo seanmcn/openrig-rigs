@@ -25,10 +25,12 @@ default here, or ship your own copy of this file in its place.
   `rig queue overdue` each time its reminder wakes it. Queue deadlines count clock hours,
   so the clerk counts working hours itself, and passes the lead only a build past the limit.
 - **One-runtime review pairs while a runtime is out.** When on, the clerk may pair two code
-  reviewers on one runtime while no reviewer on the other runtime has room, so slices keep
-  moving when one runtime's accounts have run out. The two must run different models, at
-  least one of them a tier above the builder's, and the pull request says so. When off, a
-  slice with no pair on different runtimes waits, as "No free pair" says. With the
+  reviewers on one runtime while every reviewer on the other runtime has reached its usage
+  limit, so slices keep moving when one runtime's accounts have run out. The two must run
+  different models, at least one of them a model tier above the builder's, and the pull request
+  says so. The clerk checks at every new pairing, so pairs go back to one of each by
+  themselves once the other runtime has room. When off, a slice with no pair on
+  different runtimes waits, as "No free pair" in "This team's shape" says. With the
   suggested models, two reviewers on one runtime share a model, so to use this, give one
   of them another model in your copy of `rig.yaml`.
 - **Risky slices.** How a slice is marked risky, so the judge passes it to the lead

@@ -46,15 +46,19 @@ every review pair can have one of each.
 
 To grow a team you haven't launched, add the member to its pod in `rig.yaml`. To grow a running rig, use OpenRig's
 `rig add`, which adds a member to an existing pod, or `rig expand`, which adds a new pod; both take the full member
-definition, as `rig.yaml` writes it. Don't use `rig grow`: `rig grow` adds only OpenRig's default agent, so the new
-seat would lose its role's profile, model and runtime choices. Put the same member in your copy of `rig.yaml` too, so the
+definition, as `rig.yaml` writes it. Don't use `rig grow`: `rig grow` adds only OpenRig's default agent, so the new seat
+would lose its role's profile, model and runtime choices. Put the same member in your copy of `rig.yaml` too, so the
 seat comes back the next time the rig starts.
 
 ## Which seats a slice holds
 
-The clerk is the only role that assigns seats, by the rules below, so two slices never take the same seat. The lead
-decides what is built and when; the clerk decides which free seat does it. Anything these rules don't settle goes to
-the lead.
+The clerk is the only role that assigns worker seats (builders, QA seats, code reviewers and planners), by the rules
+below, so two slices never take the same seat. The lead decides what is built and when; the clerk decides which free
+seat does it. Anything these rules don't settle goes to the lead.
+
+With more than one clerk, each owns its own worker seats, and no seat belongs to two: when a clerk is added, the lead
+splits the seats between them, and the roster's curator writes each clerk's seats in its entry. A clerk assigns only
+from its own, and the lead sends each mission, from its goal on, to one clerk.
 
 - **Free:** a seat is free when it holds no open row on another slice
   (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
@@ -64,10 +68,13 @@ the lead.
 - **Review pair:** when QA first records PASS on the slice, the builder asks the clerk, which names two free code
   reviewers on different runtimes and sends each a row for the slice. They hold it, parked between commits, through
   every fix round, until both have recorded PASS at the same commit and the judge has compared their reviews.
-  When the team setting "One-runtime review pairs while a runtime is out" is on and one runtime's accounts have run
-  out, the clerk may pair two reviewers on the other runtime instead: two different models, one a tier above the
-  builder's. New pairs go back to one of each once the other runtime has room, and the slice progress records each
-  pair's models and why it shared a runtime.
+  When the team setting "One-runtime review pairs while a runtime is out" is on and every reviewer on one runtime has
+  told the clerk it has reached its usage limit, the clerk may pair two reviewers on the other runtime instead: two
+  different models, one a model tier above the builder's. It checks at every new pairing, so new pairs go back to one of
+  each once the other runtime has room, and the slice progress records each pair's models and why it shared a runtime.
+- **No free pair:** when no two free reviewers are on different runtimes, the slice waits for one to free up, unless
+  the clerk can pair two on one runtime as above. When the team has reviewers on only one runtime, the clerk passes
+  the slice to the lead, which goes on only if the person agrees.
 - **After publishing:** a failing CI run or a conflict goes to the lead, which decides the fix or when to rebase and
   sends it to the clerk. The clerk gives it to a free builder of the slice's kind and a free QA seat, the same ones
   when they are free, and to a free review pair again when the slice's own diff changes.
@@ -75,8 +82,9 @@ the lead.
   code, and the clerk hands it to a free planner.
 - **Judge:** the clerk names a slice's judge when it hands the slice on: with more than one judge, the one with the
   fewest open rows. The judge passes the hard or risky slices to the lead.
-- **Release manager:** the judge gives each judged slice to the release manager that already holds its mission's other
-  slices, or else to the one with the fewest open rows, so one release manager sees each mission's merge order.
+- **Release manager:** the judge, not the clerk, gives each judged slice to the release manager that already holds its
+  mission's other slices, or else to the one with the fewest open rows, so one release manager sees each mission's merge
+  order.
 
 A seat closes its row on a slice when the clerk tells it the judge, or the lead, has released it.
 

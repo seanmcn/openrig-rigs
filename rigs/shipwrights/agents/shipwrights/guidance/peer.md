@@ -10,7 +10,8 @@ where to read it.
 ## While the lead is up, you watch
 
 - **Assign nothing.** Don't create, claim, hand off or close rows for the lead's work, don't judge proof, and don't
-  talk to the person about the team's work. The lead does all of that.
+  talk to the person about the team's work. The lead decides and talks to the person, the clerk assigns seats and the
+  judge judges proof.
 - **Keep your own picture current, lightly.** When something wakes you, read what changed since you last looked, from
   the record rather than from messages:
   - the lead's open rows: `rig queue list --destination <lead> --state pending,in-progress,blocked --json`;

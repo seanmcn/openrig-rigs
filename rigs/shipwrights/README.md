@@ -24,8 +24,9 @@ reviewers on different providers than from one, and changes the rest in four way
   two copies taking the same work: a way to claim work across copies is next.
 - **A seat for every step.** A planner cuts each goal into slices, a clerk does the lead's routine coordination, QA
   checks every commit before review, a judge judges each slice's proof, a release manager publishes and keeps each pull
-  request mergeable, and a peer relaunches the lead if it goes down. The lead keeps only the work that needs judgement. Workers start fresh for each
-  slice, so what carries over between slices is the record: the spec, the slice progress and the proof.
+  request mergeable, and a peer relaunches the lead if it goes down. The lead keeps only the work that needs judgement.
+  Workers start fresh for each slice, so what carries over between slices is the record: the spec, the slice progress
+  and the proof.
 
 The runtime each seat uses is my current suggestion. I'm trying different mixes and measuring them, and the
 recommended preset will change as results come in.
@@ -50,7 +51,7 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 | `quality-qa-1`, `quality-qa-2` | Claude Code | One per builder: each runs the checks a slice calls for and records what each one proved. |
 | `review-reviewer-1` | Claude Code | Reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
 | `review-reviewer-2` | Codex | The same, on the other runtime: the clerk pairs one reviewer from each runtime for each slice, and they review independently. |
-| `review-judge-1` | Claude Code | Judges each slice from the record against the spec and proof contract the lead locked: compares the pair's reviews, settles a disagreement's first fix round, judges each proof item at its commit and sends a routine slice straight to the release manager. Passes the lead a disagreement still unsettled after a fix round, QA's NOT-CLEAR, a proof item without direct evidence and a slice marked risky. |
+| `review-judge-1` | Claude Code | Judges each slice from the record against the spec and proof contract the lead locked: compares the pair's reviews, settles a disagreement's first fix round, judges each proof item at its commit and sends a routine slice straight to the release manager. Passes the lead a disagreement still unsettled after a fix round, QA's NOT-CLEAR, a proof item the recorded proof doesn't show directly and a slice marked risky. |
 | `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, writes each description from the record and keeps it true, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
@@ -62,8 +63,8 @@ The team ships small: enough seats for two slices at once. A role that can grow 
 takes the next number in its role's pod, such as `dev-backend-2`, with the role's profile for its runtime and the role's
 edges. [`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats, what
 a new seat needs and how to add one to a running rig. Builders, QA seats and code reviewers grow with the work you run
-at once, a QA seat for each builder. A second planner, clerk, judge or release manager is rarely needed. Every seat reads that
-file at start, and finds the others by role, so a seat you add is used without changing any guidance.
+at once, a QA seat for each builder. A second planner, clerk, judge or release manager is rarely needed. Every seat
+reads that file at start, and finds the others by role, so a seat you add is used without changing any guidance.
 
 ## Models
 
@@ -72,9 +73,9 @@ such as `planner-claude` and `planner-codex`. Both deliver the role's guidance a
 runtime and an effort. [`configurations.yaml`](configurations.yaml) gives each seat its role's profile for the runtime
 you put it on, so a seat that only routes or watches never runs on a runtime's most expensive default.
 
-The suggestions use five tiers of models, by price and capability:
+The suggestions use five model tiers, by price and capability:
 
-| Tier | Claude Code | Codex |
+| Model tier | Claude Code | Codex |
 | --- | --- | --- |
 | top | Fable 5.2 (`claude-fable-5-2`) | GPT-6 Astra (`gpt-6-astra`) |
 | upper | Opus 5.5 (`claude-opus-5-5`) | — |
@@ -82,7 +83,7 @@ The suggestions use five tiers of models, by price and capability:
 | lower | — | GPT-6.1 Terra (`gpt-6.1-terra`) |
 | budget | Haiku 5.5 (`claude-haiku-5-5`) | GPT-6 Luna (`gpt-6-luna`) |
 
-| Role | Tier | Effort |
+| Role | Model tier | Effort |
 | --- | --- | --- |
 | Lead, planner | upper (top on Codex, which has no upper) | `high` |
 | Code reviewers | one upper and one workhorse in each pair: upper on Claude Code, workhorse on Codex | `high` |
@@ -91,9 +92,9 @@ The suggestions use five tiers of models, by price and capability:
 
 The clerk pairs one code reviewer from each runtime, so every pair gets one upper and one workhorse model, at least one
 of them stronger than the builder's. With the team setting "One-runtime review pairs while a runtime is out" on, a pair
-may share a runtime while the other runtime's accounts have run out, if its two models differ and one is a tier above
-the builder's. Two reviewers on one runtime share a suggested model, so to use that setting, give one of them another
-model in your copy of `rig.yaml`.
+may share a runtime while the other runtime's accounts have run out, if its two models differ and one is a model tier
+above the builder's. Two reviewers on one runtime share a suggested model, so to use that setting, give one of them
+another model in your copy of `rig.yaml`.
 
 These are suggestions, and a rig may override any seat's model: set `model` (and `effort`) on the member in your copy
 of `rig.yaml`, which OpenRig prefers to the profile's. To change a role's model on every seat, change its profile in
@@ -125,22 +126,23 @@ Inside "Built and reviewed", each slice goes through these steps:
 4. The judge compares the reviews and judges the proof at that commit, against the spec and proof contract the lead
    locked, again after any rebase or fix. It sends a routine slice straight to the release manager, telling the lead,
    and passes the lead a slice with a disagreement still unsettled after a fix round, a NOT-CLEAR from QA, a proof item
-   without direct evidence, or one marked risky. The lead decides those, and may overrule the judge with its reason.
-5. The release manager publishes only proof judged at the commit it pushes, one pull request per repository, each
-   opened with a merge gate. It watches CI, and tells the lead when CI fails or a branch conflicts with its base; the
-   lead decides the fix or the rebase and the clerk gives it to a builder, and the new commit goes through QA and the
-   judge judges it again. A slice you
-   gave the team is your word to open its pull requests. Merging, tagging and releasing still need yours, unless the
-   repository's `AGENTS.md` allows an agent to merge in its `### Merging` section and the merge gate is all green
-   ([`release-manager.md`](agents/shipwrights/guidance/release-manager.md)). After you merge, it approves the slice for
-   delivery, and the clerk records it. The clerk tells the lead when a mission's last slice is delivered.
+   the recorded proof doesn't show directly, or one marked risky. The lead decides those, and may overrule the judge
+   with its reason.
+5. The release manager publishes only proof judged at the commit it pushes, one pull request per repository, each opened
+   with a merge gate. It watches CI, and tells the lead when CI fails or a branch conflicts with its base; the lead
+   decides the fix or the rebase and the clerk gives it to a builder, and the new commit goes through QA and the judge
+   judges it again. A slice you gave the team is your word to open its pull requests. Merging, tagging and releasing
+   still need yours, unless the repository's `AGENTS.md` allows an agent to merge in its `### Merging` section and the
+   merge gate is all green ([`release-manager.md`](agents/shipwrights/guidance/release-manager.md)). After you merge, it
+   approves the slice for delivery, and the clerk records it. The clerk tells the lead when a mission's last slice is
+   delivered.
 6. When something on a slice cost a seat time, it adds a short retrospective note to the slice's progress, naming its
    seat, runtime and model. Every ten delivered slices, the lead offers you, as proposed changes to the guidance, only
    the problems that came up more than once.
 
 The clerk relaunches each builder, QA seat, code reviewer and planner once its part of a slice is done, so each starts
-the next one fresh. The lead, its peer, the clerk, the judge and the release manager are long-lived, and hand over to a fresh
-session near a full context ([`team-shape.md`](startup/team-shape.md)).
+the next one fresh. The lead, its peer, the clerk, the judge and the release manager are long-lived, and hand over to a
+fresh session near a full context ([`team-shape.md`](startup/team-shape.md)).
 
 A seat that has to wait blocks its queue row with a wake and stays idle until it fires. An OpenRig watchdog wakes the
 clerk on a timer to check for builds past the slice time limit, which it passes to the lead, and another wakes the
@@ -168,8 +170,8 @@ The judge reads two of them. "Disagreement rounds before the person is asked" se
 builder and a reviewer or QA goes: the judge settles the first fix round, the lead decides it after that, and the lead
 takes it to you once it has gone that many rounds. "Risky slices" says how a slice is marked risky, so the judge
 passes it to the lead whatever its proof shows. By default it is `risky: true` in the slice's spec, which the planner
-adds when a slice changes authentication, permissions, secrets, payments, personal data, a data migration or
-deletion, or a deploy or CI workflow; you may choose another mark, such as a label.
+adds when a slice changes one of the things [`settings.md`](settings.md) lists; you may choose another mark, such as a
+label.
 
 ## Skills
 
@@ -285,16 +287,16 @@ In the default posture, a Codex seat can't run `rig` commands, `git fetch`, `gh`
 says so on its screen, and someone with daemon access reaches it with `rig send` and `rig capture`. To give the Codex
 seats network access while keeping approvals, create a Codex profile with `sandbox_mode = "workspace-write"`,
 `approval_policy = "on-request"` and `[sandbox_workspace_write] network_access = true`, and set
-`codex_config_profile: <its name>` on each seat that runs on Codex in `rig.yaml`: `orch.lead`,
-`review.reviewer-2` and `release.manager-1` in the recommended preset (OpenRig's `docs/reference/getting-started.md`, "Codex:
-select sandbox and approvals together").
+`codex_config_profile: <its name>` on each seat that runs on Codex in `rig.yaml`: `orch.lead`, `review.reviewer-2` and
+`release.manager-1` in the recommended preset (OpenRig's `docs/reference/getting-started.md`, "Codex: select sandbox and
+approvals together").
 
 ## Limits
 
 - **Twelve seats run at once,** so expect up to twelve seats' worth of provider usage, and more as you grow the team.
-  The peer, the clerk, the planner, the judge and any seat without a slice are idle much of the time. To run fewer, remove seats in
-  an overlay ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one QA seat still
-  work, but a review needs two code reviewers on different runtimes.
+  The peer, the clerk, the planner, the judge and any seat without a slice are idle much of the time. To run fewer,
+  remove seats in an overlay ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one
+  QA seat still work, but a review needs two code reviewers on different runtimes.
 - **The peer notices a downed lead within minutes.** OpenRig has no event that fires when a seat goes down, so a
   watchdog wakes the peer every five minutes to look, and it relaunches the lead only once it has been down for 10
   minutes without a break. If the relaunch fails, the lead stays down until you act: the peer tells you and never

@@ -41,7 +41,8 @@ _Avoid_: tier (that is a queue row's deadline class)
 A named choice of runtime for every seat, from a team's `configurations.yaml`, such as `recommended`.
 
 **Peer**:
-The `orch-peer` seat, the lead's watchdog: it restores the lead after a handover and relaunches it when its seat is down. It never drives.
+The `orch-peer` seat, the lead's watchdog: it restores the lead after a handover and relaunches it when its seat is
+down. It never drives.
 _Avoid_: peer (for any other seat; say "the other seats")
 
 **Clerk**:
@@ -53,8 +54,9 @@ _Avoid_: coordinator, dispatcher
 **Judge**:
 The seat that judges each slice from the record, such as `review-judge-1`: it compares the review pair's findings,
 judges each item of the proof contract at its commit against the spec the lead locked, and sends a routine slice
-straight to the release manager. It passes the lead a disagreement still unsettled after one fix round, a NOT-CLEAR
-from QA, a proof item with no direct evidence and a slice marked risky. The lead may overrule it, giving a reason.
+straight to the release manager. It passes the lead a disagreement still unsettled after one fix round, a NOT-CLEAR from
+QA, a proof item the recorded proof doesn't show directly and a slice marked risky. The lead may overrule it, giving a
+reason.
 _Avoid_: arbiter, approver
 
 **Overlay**:

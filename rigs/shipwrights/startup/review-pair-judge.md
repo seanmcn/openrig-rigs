@@ -9,7 +9,8 @@ reviewers once QA passes it. They review independently, and each sends you its v
   - those only one reviewer raised.
 
   A finding only one reviewer raised isn't wrong for that reason. Ask the other reviewer to check it against the code.
-  Decide each disagreement from the evidence, and tell the builder what must change.
+  Decide each disagreement from the evidence, and tell the builder what must change. Only the first fix round is
+  yours: a disagreement still not settled after one fix round goes to the lead, as your role file says.
 - **Release the pair** once both have recorded PASS at the same commit and you have compared them: tell the clerk, which
   tells each to close its row on the slice and relaunches them.
 - **Record the comparison** in the slice progress: what each reviewer ran and at which commit, and how each
