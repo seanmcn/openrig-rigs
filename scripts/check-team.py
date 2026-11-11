@@ -22,7 +22,8 @@ usage: scripts/check-team.py rigs/<team>
   and effort SUGGESTED_MODEL_AND_EFFORT gives the role on that runtime; agent.yaml has no other
   profiles; the README's Models section names every model the model tiers list and says a rig
   may override a seat's model;
-- rig.yaml's summary says the peer may run on either runtime;
+- rig.yaml's summary says the peer may run on either runtime, and NOTICE.md's rows for rig.yaml
+  and agent.yaml name every seat and every role;
 - rig.yaml declares exactly the seats in SEATS, each a member whose profile is its role's for the
   member's runtime, with each runtime in configurations.yaml mapped to the role's profile there,
   and a row in the README's seat table; the recommended preset keeps the code reviewers on two
@@ -386,8 +387,8 @@ CLAUDE_MODELS = {
 }
 CODEX_MODELS = {"top": "gpt-6-astra", "workhorse": "gpt-6.1-sol", "lower": "gpt-6.1-terra", "budget": "gpt-6-luna"}
 # The model each role's profiles suggest on each runtime, as a model tier, and their effort. Codex has no upper model
-# tier, so the lead and planner take its top one there. The clerk pairs one code reviewer from each runtime, so the Claude
-# reviewer is upper and the Codex one workhorse, and every pair has one of each.
+# tier, so the lead and planner take its top one there. The clerk pairs one code reviewer from each runtime, so the
+# Claude reviewer is upper and the Codex one workhorse, and every pair has one of each.
 class Suggested(NamedTuple):
     claude: str  # the model tier on Claude Code, a key of CLAUDE_MODELS
     codex: str  # the model tier on Codex, a key of CODEX_MODELS
@@ -871,7 +872,7 @@ def check_profiles(team, problems):
 
 
 def check_review_runtimes(team, problems):
-    """A review pair is two code reviewers on different runtimes, so the recommended preset seats them on at least two."""
+    """A review pair is two code reviewers on different runtimes, so the recommended preset seats them on two."""
     preset = re.search(r"^\s*recommended:\s*\{([^}]*)\}", text_of(team / "configurations.yaml"), re.MULTILINE)
     picks = dict(re.findall(r"([\w.-]+):\s*([\w-]+)", preset.group(1))) if preset else {}
     reviewers = {picks.get(seat) for seat, role in SEATS.items() if role == "code-reviewer"} - {None}
@@ -895,6 +896,22 @@ def check_members(team, problems):
         elif fields.get("profile") != profile_name(role, runtime):
             fail(problems, f"rig.yaml's {seat!r} has the {fields.get('profile')!r} profile, "
                            f"expected {profile_name(role, runtime)!r} for the {role!r} role on {runtime}")
+
+
+def check_notice(team, problems):
+    """NOTICE.md's rows for rig.yaml and agent.yaml say what the team added: every seat and every role's profiles."""
+    rows = {}
+    for line in text_of(team / "NOTICE.md").splitlines():
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if line.startswith("|") and len(cells) >= 3:
+            rows[cells[0]] = cells[2]
+    seats_row, agent_row = rows.get("`rig.yaml`", ""), rows.get("`agents/shipwrights/agent.yaml`", "")
+    for seat in SEATS:
+        if f"`{seat}`" not in seats_row:
+            fail(problems, f"NOTICE.md's rig.yaml row doesn't name the {seat!r} seat")
+    for role in ROLES:
+        if f"`{role}`" not in agent_row:
+            fail(problems, f"NOTICE.md's agent.yaml row doesn't name the {role!r} role's profiles")
 
 
 def check_summary(team, problems):
@@ -1058,6 +1075,7 @@ def main():
     check_review_runtimes(team, problems)
     check_members(team, problems)
     check_summary(team, problems)
+    check_notice(team, problems)
     check_seat_table(team, problems)
     check_configurations(team, problems)
     check_retired_names(team, problems)
