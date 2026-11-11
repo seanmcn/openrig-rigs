@@ -7,7 +7,7 @@ licence is in `LICENSE`. These files are modified versions of Workshop's:
 
 | File here | Workshop's file | What changed |
 |---|---|---|
-| `rig.yaml` | `rig.yaml` | Named `shipwrights`; the builder becomes `dev.backend` with the `builder-backend` profile; adds a peer beside the lead, a `plan` pod, a second backend builder, a frontend builder, a QA seat for each builder, a second review pair and a `release` pod; the lead is every seat's orchestrator, its only `delegates_to` source, so stuck rows escalate to it; the team settings and the team's shape are startup files for every seat. |
+| `rig.yaml` | `rig.yaml` | Named `shipwrights`; seats of a role that can grow are numbered, in pods by role; the builder becomes `dev.backend-1` with the `builder-backend` profile; adds a peer and a planner beside the lead, a frontend builder, a `quality` pod with a QA seat for each builder and a `release` pod; the lead is every seat's orchestrator, its only `delegates_to` source, so stuck rows escalate to it; the team settings and the team's shape are startup files for every seat. |
 | `bundle.yaml` | `bundle.yaml` | Minimum OpenRig 0.7.1; preconditions for a folder of several clones. |
 | `configurations.yaml` | `configurations.yaml` | No Pi runtimes; runtimes for the new seats, with the code reviewers half on each runtime. |
 | `CULTURE.md` | `CULTURE.md` | QA passes a commit before review starts; adds each repository's own rules first, retrospective notes, skills a person types, publishing a judged slice through the release manager, merging only as the repository's `AGENTS.md` allows, and reporting a leaked credential; a row someone else waits on is finished when it's closed. |

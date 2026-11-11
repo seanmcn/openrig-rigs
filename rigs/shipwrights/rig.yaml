@@ -3,9 +3,10 @@ name: shipwrights
 summary: >
   An engineering team built on OpenRig's Workshop: a lead who turns your goal into
   missions and slices and judges the proof, a peer on the other runtime who takes over
-  if the lead goes down, a planner, two backend builders and a frontend builder, a QA seat
-  for each builder, four code reviewers who review each slice in pairs on different runtimes,
-  and a release manager who publishes and keeps each pull request mergeable. Launch it with --cwd in a clone of your
+  if the lead goes down, a planner, a backend builder and a frontend builder, a QA seat
+  for each builder, two code reviewers who review each slice as a pair on different runtimes,
+  and a release manager who publishes and keeps each pull request mergeable. Enough for two
+  streams of work; a rig grows the roles it needs. Launch it with --cwd in a clone of your
   repository, or in a folder that holds several clones.
 
 culture_file: CULTURE.md
@@ -46,12 +47,13 @@ managed_blocks:
 permission_policy: builtin:yolo
 non_interruptive: true
 
-# startup/team-shape.md lists the roles and says what a new seat needs: a member in its role's pod, a delegates_to
-# edge from orch.lead (see the edges at the end), and a runtime in configurations.yaml.
+# Pods group seats by role. A role that can grow numbers its seats: a grown seat takes the next number in its role's
+# pod, the same profile and start files, and a delegates_to edge from orch.lead (see the edges at the end), with a
+# runtime in configurations.yaml. startup/team-shape.md says which roles can grow.
 pods:
   - id: orch
     label: Orchestration
-    summary: Turns your goal into missions and slices, assigns them and judges their proof. The peer takes over if the lead goes down.
+    summary: Turns your goal into missions and slices, assigns them and judges their proof. The peer takes over if the lead goes down, and the planner cuts the work.
     members:
       - id: lead
         agent_ref: "local:agents/shipwrights"
@@ -86,16 +88,8 @@ pods:
             - path: startup/slice-spec.md
               delivery_hint: send_text
               required: true
-    edges:
-      - kind: can_observe
-        from: peer
-        to: lead
-
-  - id: plan
-    label: Planning
-    summary: Cuts goals and issues into missions and slices with specs, dependencies and a build order.
-    members:
-      - id: planner
+      # Cuts goals and issues into missions and slices with specs, dependencies and a build order.
+      - id: planner-1
         agent_ref: "local:agents/shipwrights"
         profile: planner
         runtime: claude-code
@@ -105,23 +99,19 @@ pods:
             - path: startup/slice-spec.md
               delivery_hint: send_text
               required: true
-    edges: []
+    edges:
+      - kind: can_observe
+        from: peer
+        to: lead
+      - kind: can_observe
+        from: peer
+        to: planner-1
 
   - id: dev
     label: Development
-    summary: Builds each slice in its own worktree, and QA runs the checks each slice calls for.
+    summary: Builds each slice in its own worktree.
     members:
-      - id: backend
-        agent_ref: "local:agents/shipwrights"
-        profile: builder-backend
-        runtime: claude-code
-        cwd: "."
-        startup:
-          files:
-            - path: startup/review-pair-builder.md
-              delivery_hint: send_text
-              required: true
-      - id: backend2
+      - id: backend-1
         agent_ref: "local:agents/shipwrights"
         profile: builder-backend
         runtime: claude-code
@@ -132,7 +122,7 @@ pods:
               delivery_hint: send_text
               required: true
       # Takes slices tagged UI or both.
-      - id: frontend
+      - id: frontend-1
         agent_ref: "local:agents/shipwrights"
         profile: builder-frontend
         runtime: claude-code
@@ -142,17 +132,18 @@ pods:
             - path: startup/review-pair-builder.md
               delivery_hint: send_text
               required: true
-      - id: qa
+    edges: []
+
+  - id: quality
+    label: Quality
+    summary: Runs the checks each slice calls for at each commit, before the reviewers see it.
+    members:
+      - id: qa-1
         agent_ref: "local:agents/shipwrights"
         profile: qa
         runtime: claude-code
         cwd: "."
-      - id: qa2
-        agent_ref: "local:agents/shipwrights"
-        profile: qa
-        runtime: claude-code
-        cwd: "."
-      - id: qa3
+      - id: qa-2
         agent_ref: "local:agents/shipwrights"
         profile: qa
         runtime: claude-code
@@ -164,7 +155,7 @@ pods:
     label: Review
     summary: Two reviewers on different runtimes check each slice's commit independently; the lead compares their findings.
     members:
-      - id: r1
+      - id: reviewer-1
         agent_ref: "local:agents/shipwrights"
         profile: code-reviewer
         runtime: claude-code
@@ -174,27 +165,7 @@ pods:
             - path: startup/review-pair-reviewer.md
               delivery_hint: send_text
               required: true
-      - id: r2
-        agent_ref: "local:agents/shipwrights"
-        profile: code-reviewer
-        runtime: codex
-        cwd: "."
-        startup:
-          files:
-            - path: startup/review-pair-reviewer.md
-              delivery_hint: send_text
-              required: true
-      - id: r3
-        agent_ref: "local:agents/shipwrights"
-        profile: code-reviewer
-        runtime: claude-code
-        cwd: "."
-        startup:
-          files:
-            - path: startup/review-pair-reviewer.md
-              delivery_hint: send_text
-              required: true
-      - id: r4
+      - id: reviewer-2
         agent_ref: "local:agents/shipwrights"
         profile: code-reviewer
         runtime: codex
@@ -210,7 +181,7 @@ pods:
     label: Release
     summary: Publishes each judged slice's pull request, watches CI and keeps it mergeable until it is merged.
     members:
-      - id: manager
+      - id: manager-1
         agent_ref: "local:agents/shipwrights"
         profile: release-manager
         runtime: codex
@@ -224,43 +195,28 @@ pods:
 edges:
   - kind: delegates_to
     from: orch.lead
-    to: plan.planner
+    to: orch.planner-1
   - kind: delegates_to
     from: orch.lead
-    to: dev.backend
+    to: dev.backend-1
   - kind: delegates_to
     from: orch.lead
-    to: dev.backend2
+    to: dev.frontend-1
   - kind: delegates_to
     from: orch.lead
-    to: dev.frontend
+    to: quality.qa-1
   - kind: delegates_to
     from: orch.lead
-    to: dev.qa
+    to: quality.qa-2
   - kind: delegates_to
     from: orch.lead
-    to: dev.qa2
+    to: review.reviewer-1
   - kind: delegates_to
     from: orch.lead
-    to: dev.qa3
+    to: review.reviewer-2
   - kind: delegates_to
     from: orch.lead
-    to: review.r1
-  - kind: delegates_to
-    from: orch.lead
-    to: review.r2
-  - kind: delegates_to
-    from: orch.lead
-    to: review.r3
-  - kind: delegates_to
-    from: orch.lead
-    to: review.r4
-  - kind: delegates_to
-    from: orch.lead
-    to: release.manager
+    to: release.manager-1
   - kind: can_observe
     from: orch.peer
-    to: plan.planner
-  - kind: can_observe
-    from: orch.peer
-    to: release.manager
+    to: release.manager-1

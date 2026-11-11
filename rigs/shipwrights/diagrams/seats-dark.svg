@@ -1,46 +1,49 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 376" width="940" height="376" role="img" aria-labelledby="seats-dark-title seats-dark-desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 360" width="920" height="360" role="img" aria-labelledby="seats-dark-title seats-dark-desc">
   <title id="seats-dark-title">Shipwrights' seats</title>
-  <desc id="seats-dark-desc">Shipwrights' fourteen seats in five pods: the lead and its peer; a planner; two backend builders, a frontend builder and three QA seats; four code reviewers, two on each runtime; and a release manager.</desc>
+  <desc id="seats-dark-desc">Shipwrights' ten seats in five pods: in orch, the lead, its peer and a planner; in dev, a backend builder and a frontend builder; in quality, two QA seats; in review, two code reviewers, one on each runtime; and in release, a release manager. A role that can grow numbers its seats.</desc>
   <defs><marker id="seats-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="seats-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
-  <rect x="748" y="152" width="168" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <rect x="556" y="152" width="168" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <rect x="216" y="152" width="316" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <rect x="24" y="152" width="168" height="160" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <rect x="306" y="32" width="328" height="80" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <text x="306" y="24" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">ORCH</text>
-  <rect x="322" y="48" width="136" height="48" rx="6" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.6"/>
-  <text x="390" y="69" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f08a59" text-anchor="middle">Lead</text>
-  <text x="390" y="85" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Codex</text>
-  <rect x="482" y="48" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#bfc0c0" stroke-width="1.2" stroke-dasharray="5,4"/>
-  <text x="550" y="69" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Peer</text>
-  <text x="550" y="85" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
-  <text x="24" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">PLAN</text>
-  <text x="216" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">DEV</text>
-  <text x="556" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">REVIEW</text>
-  <text x="748" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">RELEASE</text>
-  <rect x="40" y="168" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="108" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Planner</text>
-  <text x="108" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
-  <rect x="232" y="168" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="300" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Backend builders</text>
-  <text x="300" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">2 × Claude Code</text>
-  <rect x="380" y="168" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="448" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Frontend builder</text>
-  <text x="448" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Claude Code</text>
-  <rect x="306" y="248" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="374" y="269" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">QA seats</text>
-  <text x="374" y="285" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">3 × Claude Code</text>
-  <rect x="572" y="168" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="640" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Reviewers</text>
-  <text x="640" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">2 × Claude Code</text>
-  <rect x="572" y="248" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="640" y="269" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Reviewers</text>
-  <text x="640" y="285" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">2 × Codex</text>
-  <rect x="764" y="168" width="136" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="832" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Release manager</text>
-  <text x="832" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">Codex</text>
-  <rect x="24" y="347" width="14" height="10" rx="2" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.4"/>
-  <text x="46" y="356" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">the seat you talk to</text>
-  <rect x="198.0" y="347" width="14" height="10" rx="2" fill="none" stroke="#bfc0c0" stroke-dasharray="3,2"/>
-  <text x="220.0" y="356" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">stands in while the lead is down</text>
+  <rect x="696" y="152" width="200" height="144" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="472" y="152" width="200" height="144" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="248" y="152" width="200" height="144" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="24" y="152" width="200" height="144" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <rect x="168" y="32" width="584" height="80" rx="8" fill="none" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <text x="168" y="24" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">ORCH</text>
+  <rect x="184" y="48" width="168" height="48" rx="6" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.6"/>
+  <text x="268" y="69" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f08a59" text-anchor="middle">Lead</text>
+  <text x="268" y="85" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">lead · Codex</text>
+  <rect x="376" y="48" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#bfc0c0" stroke-width="1.2" stroke-dasharray="5,4"/>
+  <text x="460" y="69" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Peer</text>
+  <text x="460" y="85" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">peer · Claude Code</text>
+  <rect x="568" y="48" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="652" y="69" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Planner</text>
+  <text x="652" y="85" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">planner-1 · Claude Code</text>
+  <text x="24" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">DEV</text>
+  <rect x="40" y="168" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="124" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Backend builder</text>
+  <text x="124" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">backend-1 · Claude Code</text>
+  <rect x="40" y="232" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="124" y="253" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Frontend builder</text>
+  <text x="124" y="269" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">frontend-1 · Claude Code</text>
+  <text x="248" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">QUALITY</text>
+  <rect x="264" y="168" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="348" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">QA</text>
+  <text x="348" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">qa-1 · Claude Code</text>
+  <rect x="264" y="232" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="348" y="253" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">QA</text>
+  <text x="348" y="269" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">qa-2 · Claude Code</text>
+  <text x="472" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">REVIEW</text>
+  <rect x="488" y="168" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="572" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Code reviewer</text>
+  <text x="572" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">reviewer-1 · Claude Code</text>
+  <rect x="488" y="232" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="572" y="253" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Code reviewer</text>
+  <text x="572" y="269" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">reviewer-2 · Codex</text>
+  <text x="696" y="144" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="start" letter-spacing="1">RELEASE</text>
+  <rect x="712" y="168" width="168" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="796" y="189" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Release manager</text>
+  <text x="796" y="205" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">manager-1 · Codex</text>
+  <rect x="24" y="331" width="14" height="10" rx="2" fill="rgba(240,138,89,0.12)" stroke="#f08a59" stroke-width="1.4"/>
+  <text x="46" y="340" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">the seat you talk to</text>
+  <rect x="198.0" y="331" width="14" height="10" rx="2" fill="none" stroke="#bfc0c0" stroke-dasharray="3,2"/>
+  <text x="220.0" y="340" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">stands in while the lead is down</text>
 </svg>

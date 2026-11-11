@@ -14,9 +14,12 @@ usage: scripts/check-team.py rigs/<team>
 - the role guidance carries the rules the team relies on, and none it has dropped, every
   `rig queue block` example names its `--on` blocker, and every
   role file has its seat add a retrospective note to the slice progress;
-- every seat this team added or renamed has a profile with its guidance, a member in
-  rig.yaml and runtimes in configurations.yaml, and the old names are gone;
-- startup/team-shape.md names every profile in agent.yaml, so each role says whether it can grow;
+- every profile this team added or renamed delivers its guidance; rig.yaml declares exactly the
+  seats in SEATS, each a member with its profile, runtimes in configurations.yaml and a row in
+  the README's seat table; the recommended preset keeps the code reviewers on two runtimes;
+  and the old names are gone;
+- startup/team-shape.md names every profile in agent.yaml, so each role says whether it can grow,
+  and says how a grown seat is numbered and added to a running rig;
 - the lead is the orchestrator (the only delegates_to source) of every seat but itself and its
   peer in rig.yaml, so every stuck queue row escalates to it;
 - `rig bundle check` passes, when `rig` is installed.
@@ -58,6 +61,12 @@ GUIDANCE_RULES = [
     ("startup/team-shape.md", "two free code reviewers on different", "a review pair is two code reviewers on different runtimes"),
     ("startup/team-shape.md", "rig seat launch <seat> --fresh", "worker seats start fresh for each piece of work"),
     ("startup/team-shape.md", "context-usage-threshold", "long-lived seats hand over at a context threshold"),
+    ("startup/team-shape.md", "the next number in its role's pod", "a grown seat takes the next number in its pod"),
+    ("startup/team-shape.md", "the same profile", "a grown seat keeps its role's profile"),
+    ("startup/team-shape.md", "the role's edges", "a grown seat gets its role's edges"),
+    ("startup/team-shape.md", "`rig add`", "a running rig grows a pod with rig add"),
+    ("startup/team-shape.md", "`rig expand`", "a running rig gains a pod with rig expand"),
+    ("startup/team-shape.md", "`rig grow` adds only OpenRig's default agent", "rig grow would drop the role and its model"),
     ("lead.md", "## Find work when asked", "the lead looks for work only when the person asks"),
     ("lead.md", "Don't go looking for work unless they ask", "with no goal, the lead waits"),
     ("lead.md", "## Close the mission", "the lead ends each mission once its last slice is delivered"),
@@ -115,22 +124,33 @@ PROFILE_GUIDANCE = {
     "builder-frontend": ["guidance/builder-backend.md", "guidance/builder-frontend.md"],
     "release-manager": ["guidance/release-manager.md"],
 }
-# Seats that hold each profile: pod.member in rig.yaml and configurations.yaml.
+# Every seat the team ships and the profile it holds: pod.member in rig.yaml and configurations.yaml, and pod-member in
+# the README's seat table. A role that can grow numbers its seats, so a grown seat takes the next number in its pod.
 SEATS = {
-    "dev.backend": "builder-backend", "dev.backend2": "builder-backend", "dev.frontend": "builder-frontend",
-    "dev.qa": "qa", "dev.qa2": "qa", "dev.qa3": "qa",
-    "review.r1": "code-reviewer", "review.r2": "code-reviewer", "review.r3": "code-reviewer", "review.r4": "code-reviewer",
+    "orch.lead": "lead", "orch.peer": "peer", "orch.planner-1": "planner",
+    "dev.backend-1": "builder-backend", "dev.frontend-1": "builder-frontend",
+    "quality.qa-1": "qa", "quality.qa-2": "qa",
+    "review.reviewer-1": "code-reviewer", "review.reviewer-2": "code-reviewer",
+    "release.manager-1": "release-manager",
 }
 # Names the team renamed, which no file in it may still use: (pattern, what replaced it).
 RETIRED_NAMES = [
-    (r"dev[.-]build\b", "the dev.backend seat (dev-backend)"),
+    (r"dev[.-]build\b", "the dev.backend-1 seat (dev-backend-1)"),
     # NOTICE.md still names Workshop's own guidance/builder.md, which is where ours came from.
     (r"profile: builder(?![\w-])|(?<!workshop/guidance/)(?<![\w-])builder\.md|: builder(?![\w-])", "the builder-backend profile and builder-backend.md"),
     (r"(?m)^  builder:$", "the builder-backend profile"),
     (r"(?<![\w-])backend-builder\b", "the builder-backend profile and builder-backend.md"),
     (r"(?<![\w-])frontend-builder\b", "the builder-frontend profile and builder-frontend.md"),
     # OpenRig's naming guide puts a role in its domain's pod, not a pod named for an operation.
-    (r"(?<![\w-])check[.-]qa\b", "the dev.qa seat (dev-qa)"),
+    (r"(?<![\w-])check[.-]qa\b", "the quality.qa-1 seat (quality-qa-1)"),
+    # The small team numbers the seats of a role that can grow, and gives the planner and QA new pods.
+    (r"(?<![\w-])plan[.-]planner\b", "the orch.planner-1 seat (orch-planner-1)"),
+    (r"(?<![\w-])dev[.-](?:backend|frontend)\d*(?![\w-])", "the numbered builder seats, such as dev.backend-1"),
+    (r"(?<![\w-])dev[.-]qa", "the quality pod's numbered QA seats, such as quality.qa-1"),
+    (r"(?<![\w-])review[.-]r\d\b|(?<![\w-])rev1-r\d\b", "the numbered reviewer seats, such as review.reviewer-1"),
+    # The bare release-manager is the profile; only the seat's names are retired.
+    (r"(?<![\w-])release\.manager(?![\w-])|(?<![\w-])release-manager@", "the release.manager-1 seat (release-manager-1)"),
+    (r"(?i)fourteen seats|14 seats", "the small team's seat count"),
 ]
 # Every seat writes a retrospective note in the slice progress before closing its row.
 RETRO_PHRASE = "rig scope slice progress"
@@ -155,18 +175,20 @@ OPENRIG_SKILLS = {
 # Lower-case names in backticks in the team's text that are not skills: seats, states,
 # branches, proof types, and impeccable's own commands.
 NOT_SKILLS = {
-    # the rig and its seats' sessions
-    "shipwrights", "orch-lead", "orch-peer", "plan-planner", "dev-backend", "dev-frontend", "dev-qa",
-    "review-r1", "review-r2", "release-manager", "dev-backend2", "dev-qa2", "dev-qa3", "review-r3", "review-r4",
+    # the rig, and a grown seat's name in the examples (the seats themselves are added from SEATS below)
+    "shipwrights", "backend-2", "dev-backend-2",
     # the pods and the profiles
-    "orch", "plan", "dev", "review", "release", "lead", "peer", "planner", "builder-backend", "builder-frontend", "qa",
-    "code-reviewer",
+    "orch", "dev", "quality", "review", "release", "lead", "peer", "planner", "builder-backend", "builder-frontend", "qa",
+    "code-reviewer", "release-manager",
     # commands, states, tiers, branches, proof types and roster fields
     "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
-    "planned", "active", "runtime", "release-candidate", "rev1-r1", "rev1-r2", "rev1-r3", "rev1-", "delegate", "capabilities", "why",
+    "planned", "active", "runtime", "release-candidate", "rev1-", "delegate", "capabilities", "why",
     # impeccable's own commands
     "shape", "critique", "audit", "polish", "harden", "typeset", "quieter", "distill", "layout", "init", "generate",
 }
+# Each seat by its member id (planner-1) and its name (orch-planner-1), and its reviews' proof type (rev1-reviewer-1).
+NOT_SKILLS |= {seat.split(".", 1)[1] for seat in SEATS} | {seat.replace(".", "-") for seat in SEATS}
+NOT_SKILLS |= {f"rev1-{seat.split('.', 1)[1]}" for seat, profile in SEATS.items() if profile == "code-reviewer"}
 
 
 def fail(problems, message):
@@ -411,8 +433,21 @@ def check_seats(team, problems):
             fail(problems, f"rig.yaml seats no member with the {profile!r} profile")
         if not re.search(rf"(?<![\w-]){re.escape(profile)}(?![\w-])", configured):
             fail(problems, f"configurations.yaml offers no runtime for the {profile!r} profile")
+    # A review pair is two code reviewers on different runtimes, so the recommended preset seats them on at least two.
+    preset = re.search(r"^\s*recommended:\s*\{([^}]*)\}", configured, re.MULTILINE)
+    picks = dict(re.findall(r"([\w.-]+):\s*([\w-]+)", preset.group(1))) if preset else {}
+    reviewers = {picks.get(seat) for seat, profile in SEATS.items() if profile == "code-reviewer"} - {None}
+    if len(reviewers) < 2:
+        fail(problems, "configurations.yaml's recommended preset puts the code reviewers on "
+                       f"{sorted(reviewers) or 'no runtime'}: a review pair needs two runtimes")
+    declared = set(member_ids(rig))
+    for seat in sorted(declared - SEATS.keys()):
+        fail(problems, f"rig.yaml declares {seat!r}, which the team doesn't ship: add it to SEATS, or remove it")
+    readme = (team / "README.md").read_text(encoding="utf-8") if (team / "README.md").is_file() else ""
     for seat, profile in SEATS.items():
-        member = seat.split(".", 1)[1]
+        member, name = seat.split(".", 1)[1], seat.replace(".", "-")
+        if not re.search(rf"^\|.*`{re.escape(name)}`.*\|", readme, re.MULTILINE):
+            fail(problems, f"README.md's seat table doesn't name {name!r}")
         if not re.search(rf"- id: {re.escape(member)}\n(?:\s+\w+: .*\n)*?\s+profile: {re.escape(profile)}\n", rig):
             fail(problems, f"rig.yaml has no member {member!r} with the {profile!r} profile")
         if not re.search(rf"^\s*{re.escape(seat)}:.*(?<![\w-]){re.escape(profile)}(?![\w-])", configured, re.MULTILINE):
@@ -426,6 +461,19 @@ def check_seats(team, problems):
             for match in re.finditer(pattern, text):
                 line = text.count("\n", 0, match.start()) + 1
                 fail(problems, f"{path}:{line}: {match.group(0)!r} was renamed to {replacement}")
+
+
+def member_ids(rig):
+    """Every seat in rig.yaml's pods, as pod.member."""
+    seats, pod = [], None
+    for line in rig.splitlines():
+        if m := re.match(r"^  - id: ([\w-]+)$", line):
+            pod = m.group(1)
+        elif line == "edges:":
+            pod = None
+        elif (m := re.match(r"^      - id: ([\w-]+)$", line)) and pod:
+            seats.append(f"{pod}.{m.group(1)}")
+    return seats
 
 
 LEAD = "orch.lead"
