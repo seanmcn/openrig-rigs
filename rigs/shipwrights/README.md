@@ -19,9 +19,9 @@ reviewers on different providers than from one, and changes the rest in four way
   `diagnosing-bugs` and others), with `impeccable` for UI work. [`skills.md`](skills.md) lists every skill and where
   it comes from.
 - **More than one stream of work, from a small start.** A backend builder and a frontend builder, each with its own QA
-  seat, and a review pair let two slices move at once. A rig grows the roles it needs by adding numbered seats
-  ("Growing the team", below). You could run copies of the team on more machines to go further, but nothing yet stops
-  two copies taking the same work: a way to claim work across copies is next.
+  seat, and a review pair let two slices move at once. A rig grows the roles it needs by adding numbered seats ("Growing
+  and shrinking the team", below). You could run copies of the team on more machines to go further, but nothing yet
+  stops two copies taking the same work: a way to claim work across copies is next.
 - **A seat for every step.** A clerk takes your goals and does the lead's routine coordination, a planner cuts each goal
   into slices, QA checks every commit before review, a judge judges each slice's proof, a release manager publishes and
   keeps each pull request mergeable, and a peer relaunches the lead if it goes down. The lead keeps only the work that
@@ -57,14 +57,15 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
 seat on the other one. Keep the code reviewers on at least two runtimes; the peer can go on either.
 
-### Growing the team
+### Growing and shrinking the team
 
 The team ships small: enough seats for two slices at once. A role that can grow numbers its seats, so a seat you add
 takes the next number in its role's pod, such as `dev-backend-2`, with the role's profile for its runtime and the role's
-edges. [`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats, what
-a new seat needs and how to add one to a running rig. Builders, QA seats and code reviewers grow with the work you run
-at once, a QA seat for each builder. A second planner, clerk, judge or release manager is rarely needed. Every seat
-reads that file at start, and finds the others by role, so a seat you add is used without changing any guidance.
+edges. [`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats or
+fewer, what a new seat needs, and how to add one to a running rig or remove one. Builders, QA seats and code reviewers
+grow with the work you run at once, a QA seat for each builder. A second planner, clerk, judge or release manager is
+rarely needed. Every seat reads that file at start, and finds the others by role, so a seat you add is used without
+changing any guidance.
 
 ## Models
 
@@ -304,8 +305,8 @@ approvals together").
 
 - **Twelve seats run at once,** so expect up to twelve seats' worth of provider usage, and more as you grow the team.
   The peer, the clerk, the planner, the judge and any seat without a slice are idle much of the time. To run fewer,
-  remove seats in an overlay ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one
-  QA seat still work, but a review needs two code reviewers on different runtimes.
+  remove seats in an overlay ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one frontend
+  builder and one QA seat still work, but a review needs two code reviewers on different runtimes.
 - **The peer notices a downed lead within minutes.** OpenRig has no event that fires when a seat goes down, so a
   watchdog wakes the peer every five minutes to look, and it relaunches the lead only once it has been down for 10
   minutes without a break. If the relaunch fails, the lead stays down until you act: the peer tells you and never
