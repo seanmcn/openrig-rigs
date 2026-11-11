@@ -98,6 +98,7 @@ GUIDANCE_RULES = [
     ("startup/review-pair-reviewer.md", "parked between commits", "a reviewer in a pair parks the lead's row between commits"),
     ("builder-backend.md", "block the lead's rebase row", "the builder parks the lead's rebase row while QA checks it"),
     ("planner.md", "rig queue handoff", "the planner's hand-off is linked, so its closed row has a successor"),
+    ("planner.md", "subagent on a cheaper model", "the planner hands reading-heavy side tasks to a cheaper subagent"),
 ]
 
 # (guidance file, phrase it must not contain, why)
