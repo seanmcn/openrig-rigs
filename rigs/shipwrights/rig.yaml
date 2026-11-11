@@ -101,9 +101,6 @@ pods:
       - kind: can_observe
         from: peer
         to: lead
-      - kind: can_observe
-        from: peer
-        to: planner-1
 
   - id: dev
     label: Development
@@ -235,7 +232,4 @@ edges:
     to: review.judge-1
   - kind: delegates_to
     from: orch.lead
-    to: release.manager-1
-  - kind: can_observe
-    from: orch.peer
     to: release.manager-1

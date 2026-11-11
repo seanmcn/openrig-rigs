@@ -47,7 +47,8 @@ what you ran. Fix what QA finds in new commits and hand each one back to QA, unt
 
 - **BLOCKING:** fix it.
 - **CONCERNING:** fix it, or tell QA why it shouldn't change, with evidence.
-- **NOT-CLEAR:** QA couldn't tell; the judge passes it to the lead, and you wait for the lead's decision.
+- **NOT-CLEAR:** QA couldn't tell; the judge passes it to the lead, and you wait for the lead's decision, which the
+  judge tells you.
 
 When a new commit replaces one whose row is still open, such as after a rebase, say in the new row which row it
 replaces, and its seat closes the old one.

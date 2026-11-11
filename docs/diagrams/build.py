@@ -206,23 +206,28 @@ def work(t: Tokens, slug: str) -> Canvas:
         "The lead takes on your goal and the clerk routes it to a planner, which cuts it; the lead locks each slice's "
         "spec and the clerk assigns it a builder and a QA seat; the judge judges the proof once it is built and "
         "reviewed, passing the hard or risky slices to the lead to decide, and hands it to the release manager, which "
-        "writes the description and opens the pull requests; a failing CI run or a conflict goes back through the lead, which decides the fix, "
-        "to the clerk to assign; you merge, the release manager approves delivery, the clerk records it, and the lead "
-        "closes your goal once its mission is complete.",
+        "writes the description and opens the pull requests; a failing CI run or a conflict goes back through the "
+        "lead, which decides the fix, to the clerk to assign; you merge, the release manager approves delivery, the "
+        "clerk records it, and the lead closes your goal once its mission is complete.",
         ["You", "Lead", "Judge", "Clerk", "Planner", "Release manager"], steps)
-    # A failing CI run or a conflict goes back, through the lead's decision, to the clerk, which assigns the fix or the
-    # rebase: up the release manager's lane, clear of the arrow coming in, and into the side of "Assign seats".
-    (ox, oy), (ax, ay) = box(8), box(5)
-    lx = ox + NODE_W / 2 + 40
-    c.arrow([(lx, oy), (lx, ay + NODE_H / 2), (ax + NODE_W, ay + NODE_H / 2)], "dashed")
-    c.label(lx - 8, (ay + NODE_H + oy) / 2 + 3, "ci, conflict", anchor="end")
     # The judge passes a hard or risky slice to the lead beside it, which decides and hands it back.
     jx, jy = box(7)
     dx = LANE_W + (LANE_W - NODE_W) // 2
-    c.node(dx, jy, NODE_W, NODE_H, "Decide", "hard or risky slices")
+    c.node(dx, jy, NODE_W, NODE_H, "Decide", "hard slices and fixes")
     c.arrow([(jx, jy + 16), (dx + NODE_W, jy + 16)], "dashed")
     c.arrow([(dx + NODE_W, jy + 32), (jx, jy + 32)], "dashed")
     c.label(2 * LANE_W, jy - 8, "passed up", anchor="middle")
+    # A failing CI run or a conflict goes back through the lead, which decides the fix or the rebase, to the clerk,
+    # which assigns it. Out of the top of "Open pull requests", left of the arrow coming in, across in the gap under
+    # "Judge proof" and up into the bottom of "Decide"; then up the lead's lane, clear of the passed-up arrows on its
+    # right, and into the side of "Assign seats", above the arrow leaving it for "Built and reviewed".
+    (ox, oy), (ax, ay) = box(8), box(5)
+    gap_y = jy + NODE_H + 16
+    dcx = dx + NODE_W / 2
+    c.arrow([(ox + 24, oy), (ox + 24, gap_y), (dcx, gap_y), (dcx, jy + NODE_H)], "dashed")
+    c.label(4 * LANE_W + LANE_W / 2, gap_y - 6, "ci, conflict", anchor="middle")
+    c.arrow([(dcx, jy), (dcx, ay + 8), (ax, ay + 8)], "dashed")
+    c.label(dcx + 8, (ay + NODE_H + jy) / 2 + 3, "fix, rebase", anchor="start")
     return c
 
 
