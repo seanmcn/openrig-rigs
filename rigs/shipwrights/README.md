@@ -41,7 +41,7 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 
 | Seat | Runtime | Does |
 |---|---|---|
-| `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs, decides the hard or risky slices the judge passes it and owns each PR description. Talk to this seat. |
+| `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs and decides the hard or risky slices the judge passes it. Talk to this seat. |
 | `orch-peer` | Claude Code | Watches the lead and restores it after a handover with a recap. When the lead's seat has been down for 10 minutes, relaunches it with that recap and tells you; if it is still down 10 minutes later, tells you and stops. Never drives, so it can run on either runtime. |
 | `orch-clerk-1` | Claude Code | Does the lead's routine coordination by fixed rules: routes work to a planner, gives each locked slice a builder, a QA seat and a review pair, relaunches seats when their part is done, keeps the roster, checks the slice time limit and records deliveries. Passes anything else to the lead. |
 | `orch-planner-1` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
@@ -51,7 +51,7 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 | `review-reviewer-1` | Claude Code | Reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
 | `review-reviewer-2` | Codex | The same, on the other runtime: the clerk pairs one reviewer from each runtime for each slice, and they review independently. |
 | `review-judge-1` | Claude Code | Judges each slice from the record against the spec and proof contract the lead locked: compares the pair's reviews, settles a disagreement's first fix round, judges each proof item at its commit and sends a routine slice straight to the release manager. Passes the lead a disagreement still unsettled after a fix round, QA's NOT-CLEAR, a proof item without direct evidence and a slice marked risky. |
-| `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
+| `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, writes each description from the record and keeps it true, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
 seat on the other one. Keep the code reviewers on at least two runtimes; the peer can go on either.
@@ -86,8 +86,7 @@ The suggestions use five tiers of models, by price and capability:
 | --- | --- | --- |
 | Lead, planner | upper (top on Codex, which has no upper) | `high` |
 | Code reviewers | one upper and one workhorse in each pair: upper on Claude Code, workhorse on Codex | `high` |
-| Judge, builders, QA | workhorse | `medium` |
-| Release manager | workhorse | `medium` |
+| Judge, builders, QA, release manager | workhorse | `medium` |
 | Clerk, peer | budget | `low` |
 
 The clerk pairs one code reviewer from each runtime, so every pair gets one upper and one workhorse model, at least one
@@ -104,7 +103,7 @@ an overlay.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-the-work-moves-dark.svg">
-  <img alt="How the work moves, in lanes for you, the lead, the judge, the clerk, the planner and the release manager: the lead takes on your goal and the clerk routes it to the planner, which cuts it; the lead locks each spec and the clerk assigns a builder and a QA seat; once the slice is built and reviewed, the judge judges its proof, passing the hard or risky slices to the lead to decide; the release manager opens the pull requests, and a failing CI run or a conflict goes back through the lead to the clerk to assign; you merge; the release manager approves delivery and the clerk records it; the lead closes your goal once its mission is complete." src="diagrams/how-the-work-moves.svg">
+  <img alt="How the work moves, in lanes for you, the lead, the judge, the clerk, the planner and the release manager: the lead takes on your goal and the clerk routes it to the planner, which cuts it; the lead locks each spec and the clerk assigns a builder and a QA seat; once the slice is built and reviewed, the judge judges its proof, passing the hard or risky slices to the lead to decide; the release manager writes the description and opens the pull requests, and a failing CI run or a conflict goes back through the lead to the clerk to assign; you merge; the release manager approves delivery and the clerk records it; the lead closes your goal once its mission is complete." src="diagrams/how-the-work-moves.svg">
 </picture>
 
 Inside "Built and reviewed", each slice goes through these steps:

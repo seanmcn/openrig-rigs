@@ -195,7 +195,7 @@ def work(t: Tokens, slug: str) -> Canvas:
         (3, "Assign seats", "builder and QA seat", "step"),
         (2, "Built and reviewed", "the next diagram", "step"),
         (2, "Judge proof", "at the reviewed commit", "step"),
-        (5, "Open pull requests", "with the merge gate", "step"),
+        (5, "Open pull requests", "description and gate", "step"),
         (0, "Merge", "your decision", "focal"),
         (5, "Approve delivery", "tells the clerk", "step"),
         (3, "Record delivery", "mission progress", "step"),
@@ -206,7 +206,7 @@ def work(t: Tokens, slug: str) -> Canvas:
         "The lead takes on your goal and the clerk routes it to a planner, which cuts it; the lead locks each slice's "
         "spec and the clerk assigns it a builder and a QA seat; the judge judges the proof once it is built and "
         "reviewed, passing the hard or risky slices to the lead to decide, and hands it to the release manager, which "
-        "opens the pull requests; a failing CI run or a conflict goes back through the lead, which decides the fix, "
+        "writes the description and opens the pull requests; a failing CI run or a conflict goes back through the lead, which decides the fix, "
         "to the clerk to assign; you merge, the release manager approves delivery, the clerk records it, and the lead "
         "closes your goal once its mission is complete.",
         ["You", "Lead", "Judge", "Clerk", "Planner", "Release manager"], steps)
@@ -270,7 +270,7 @@ def lifecycle(t: Tokens, slug: str) -> Canvas:
     rail_y = 104
     xs = [24 + i * (PW + GAP) for i in range(5)]
     phases = [("Spec locked", "lead"), ("Building", "builder and QA"), ("In review", "a review pair"),
-              ("Judged", "lead"), ("Published", "release manager")]
+              ("Judged", "judge"), ("Published", "release manager")]
     c.eyebrow(24, 20, "Phases", anchor="start")
     for x, (name, sub) in zip(xs, phases):
         c.node(x, rail_y, PW, NODE_H, name, sub)

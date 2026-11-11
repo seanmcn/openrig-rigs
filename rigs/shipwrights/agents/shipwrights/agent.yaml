@@ -43,7 +43,7 @@ resources:
 # its role's profile for the runtime it runs on, and a rig may override any seat's model.
 profiles:
   lead-claude:
-    summary: Turns the person's goal into scoped slices, locks their specs, decides the hard or risky slices the judge passes it and keeps the PR description true.
+    summary: Turns the person's goal into scoped slices, locks their specs and decides the hard or risky slices the judge passes it.
     preferences:
       runtime: claude-code
       model: claude-opus-5-5
@@ -60,7 +60,7 @@ profiles:
       actions: []
 
   lead-codex:
-    summary: Turns the person's goal into scoped slices, locks their specs, decides the hard or risky slices the judge passes it and keeps the PR description true.
+    summary: Turns the person's goal into scoped slices, locks their specs and decides the hard or risky slices the judge passes it.
     preferences:
       runtime: codex
       model: gpt-6-astra
@@ -355,7 +355,7 @@ profiles:
       actions: []
 
   release-manager-claude:
-    summary: Publishes each judged slice's pull request with its merge gate, watches CI and keeps the pull request mergeable until it is merged.
+    summary: Publishes each judged slice's pull request with its merge gate and a description written from the record, watches CI and keeps both true and mergeable until it is merged.
     preferences:
       runtime: claude-code
       model: claude-sonnet-5-5
@@ -372,7 +372,7 @@ profiles:
       actions: []
 
   release-manager-codex:
-    summary: Publishes each judged slice's pull request with its merge gate, watches CI and keeps the pull request mergeable until it is merged.
+    summary: Publishes each judged slice's pull request with its merge gate and a description written from the record, watches CI and keeps both true and mergeable until it is merged.
     preferences:
       runtime: codex
       model: gpt-6.1-sol

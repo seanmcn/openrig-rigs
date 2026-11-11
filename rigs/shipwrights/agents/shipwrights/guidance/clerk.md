@@ -183,7 +183,7 @@ and never replace one that exists:
      "curator": { "seat": "<your address>", "host": "<your host>" },
      "updated_at": "<YYYY-MM-DD>",
      "members": [
-       { "seat": "<lead>", "host": "<host>", "capabilities": ["proposing work", "locking specs", "hard or risky slices", "pull request descriptions"],
+       { "seat": "<lead>", "host": "<host>", "capabilities": ["proposing work", "locking specs", "hard or risky slices"],
          "engagement": ["consult", "delegate"], "use_when": "Giving this team work, or asking what it is doing",
          "why": "Leads this team, talks to the person and decides what is built" },
        { "seat": "<peer>", "host": "<host>", "capabilities": ["restoring the lead"],
@@ -210,7 +210,7 @@ and never replace one that exists:
        { "seat": "<judge>", "host": "<host>", "capabilities": ["judging proof", "comparing reviews"],
          "engagement": ["consult"], "use_when": "Asking how a slice was judged",
          "why": "Judges each slice's proof against its locked spec, and passes the hard or risky ones to the lead" },
-       { "seat": "<release manager>", "host": "<host>", "capabilities": ["pull requests", "CI"],
+       { "seat": "<release manager>", "host": "<host>", "capabilities": ["pull requests", "pull request descriptions", "CI"],
          "engagement": ["consult"], "use_when": "Asking about a pull request this team opened",
          "why": "Publishes each judged slice and keeps its pull request mergeable" }
      ]
