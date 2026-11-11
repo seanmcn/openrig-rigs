@@ -63,6 +63,10 @@ the lead.
 - **Review pair:** when QA first records PASS on the slice, the builder asks the clerk, which names two free code
   reviewers on different runtimes and sends each a row for the slice. They hold it, parked between commits, through
   every fix round, until both have recorded PASS at the same commit and the lead has compared their reviews.
+  When the team setting "One-runtime review pairs while a runtime is out" is on and one runtime's accounts have run
+  out, the clerk may pair two reviewers on the other runtime instead: two different models, one a tier above the
+  builder's. New pairs go back to one of each once the other runtime has room, and the slice progress records each
+  pair's models and why it shared a runtime.
 - **After publishing:** a failing CI run or a conflict goes to the lead, which decides the fix or when to rebase and
   sends it to the clerk. The clerk gives it to a free builder of the slice's kind and a free QA seat, the same ones
   when they are free, and to a free review pair again when the slice's own diff changes.

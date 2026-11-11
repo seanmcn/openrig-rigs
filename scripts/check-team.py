@@ -51,6 +51,7 @@ SETTINGS = {
     "Disagreement rounds before the person is asked": "2",
     "Confirm each triage result with the person": "off",
     "Slice time limit": "4 working hours",
+    "One-runtime review pairs while a runtime is out": "off",
 }
 
 # (guidance file, or startup/<file>, phrase it must contain, why)
@@ -64,6 +65,9 @@ GUIDANCE_RULES = [
     ("startup/team-shape.md", "## Which seats a slice holds", "the clerk assigns every seat a slice uses, from free seats"),
     ("startup/team-shape.md", "The clerk is the only role that assigns seats", "two seats never assign the same free seat"),
     ("startup/team-shape.md", "two free code reviewers on different", "a review pair is two code reviewers on different runtimes"),
+    ("startup/team-shape.md", "One-runtime review pairs while a runtime is out", "a pair may share a runtime only under the setting"),
+    ("startup/team-shape.md", "two different models, one a tier above the builder's", "a one-runtime pair keeps the review independent of the builder's model"),
+    ("startup/review-pair-lead.md", "One-runtime review pairs while a runtime is out", "with the setting off, No free pair works as before"),
     ("startup/team-shape.md", "rig seat launch <seat> --fresh", "worker seats start fresh for each piece of work"),
     ("startup/team-shape.md", "context-usage-threshold", "long-lived seats hand over at a context threshold"),
     ("startup/team-shape.md", "the next number in its role's pod", "a grown seat takes the next number in its pod"),
@@ -125,6 +129,18 @@ GUIDANCE_RULES = [
     ("clerk.md", "once the lead has locked its spec", "the clerk hands a slice on only after the lead locks its spec"),
     ("clerk.md", "--tier", "each build row carries the tier for the slice time limit"),
     ("clerk.md", "two free code reviewers on different runtimes", "the clerk names the review pair"),
+    # With the setting on, a review pair may share a runtime while the other runtime is out.
+    ("clerk.md", "One-runtime review pairs while a runtime is out", "the clerk reads the one-runtime pairing setting"),
+    ("clerk.md", "no reviewer on the other runtime has room", "a pair shares a runtime only while the other runtime is out"),
+    ("clerk.md", "different models", "a one-runtime pair runs two different models"),
+    ("clerk.md", "a tier above the builder's", "a one-runtime pair keeps one review stronger than the builder's model"),
+    ("clerk.md", "preferences.model", "the clerk reads a seat's model from its member or its profile"),
+    ("clerk.md", "\"Models\"", "the clerk takes a model's tier from the README's tier table"),
+    ("clerk.md", "one of each again", "new pairs go back to both runtimes once the other has room"),
+    ("clerk.md", "--add \"Review pair: <reviewer> (<runtime>, <model>)", "the clerk records each pair's models on the slice"),
+    ("clerk.md", "shared <runtime>: <other runtime> is out", "the clerk records why a pair shared a runtime"),
+    ("lead.md", "which review ran on which model", "the pull request says which review ran on which model"),
+    ("lead.md", "why the pair shared a runtime", "the pull request says why a pair shared a runtime"),
     ("clerk.md", "rig seat launch <seat> --fresh", "the clerk relaunches each freed seat fresh"),
     ("clerk.md", "## Publish the team's roster", "the clerk publishes the roster"),
     ("clerk.md", "## Keep the roster current", "the clerk keeps the roster current"),
@@ -265,8 +281,8 @@ NOT_SKILLS = {
     # the pods and the profiles
     "orch", "dev", "quality", "review", "release", "lead", "peer", "clerk", "planner", "builder-backend", "builder-frontend", "qa",
     "code-reviewer", "release-manager",
-    # commands, states, tiers, branches, proof types and roster fields
-    "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
+    # commands, states, tiers, branches, proof types, roster fields and a member's model field
+    "model", "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
     "planned", "active", "runtime", "release-candidate", "rev1-", "delegate", "capabilities", "why",
     # impeccable's own commands
     "shape", "critique", "audit", "polish", "harden", "typeset", "quieter", "distill", "layout", "init", "generate",
