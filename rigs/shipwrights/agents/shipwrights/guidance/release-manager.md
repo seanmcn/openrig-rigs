@@ -102,16 +102,16 @@ Never wait less than 2 minutes.
 When it wakes you, run `rig queue show <row> --full --json`, then check the run. Still running: call it stuck if step 5
 says so, and otherwise block again, as step 3 says. Green: update the merge gate. Red from the change: send the failure
 to the lead as a new queue row, with the failing job, its log excerpt and the commit, and block on that row; the lead
-gives the fix to a builder. Red from something outside the change (a flaky test, an outage): re-run it once, and say
-what you saw on the pull request if it fails again.
+decides the fix, and the clerk gives it to a builder. Red from something outside the change (a flaky test, an outage):
+re-run it once, and say what you saw on the pull request if it fails again.
 
 ## Keep it mergeable
 
 You don't rebase: only a builder changes a slice's commits. When the base branch moves and the pull request
 conflicts, tell the lead as a queue row, naming the pull request, the base it conflicts with and the conflicting files,
-and block your row on it. The lead decides when the slice is rebased (another slice may need to merge first) and gives
-the rebase to a builder, and the rebased commit goes through QA, and review where the slice's diff changed, before the
-judge judges it.
+and block your row on it. The lead decides when the slice is rebased (another slice may need to merge first) and the
+clerk gives the rebase to a builder; the rebased commit goes through QA, and review where the slice's diff changed,
+before the judge judges it.
 
 Once the judge has judged the rebased commit and told you to push it, push it with `git push --force-with-lease` and
 note on the pull request that the branch was rebased, onto what, and that QA passed it. Force-push only with
@@ -122,16 +122,21 @@ a branch the person has pushed to. Before you push, check the branch's commits s
 ## Several slices together
 
 When this team has two or more open pull requests in one repository, tell the clerk as a queue row, naming them and
-their branches, before the person merges the first. The clerk has a QA seat check them merged together, QA sends the
-result to the lead, and the lead has any fix made.
-Once QA has recorded its result, say on each pull request whether they work together. Only this team's pull requests
+their branches, before the person merges the first, and block your row on it. The clerk gives a QA seat a row to check
+them merged together, and closes yours naming that row: block your row on QA's row, and its closing note carries the
+result.
+
+When they work together, say so on each pull request. When they fail together, send the failure to the lead as a
+queue row, with the combination that fails, the failing check and its output, and block on that row: the lead decides
+the fix and has it made through the clerk, as for a failing CI run. Once the fix is pushed, have them checked together
+again. Only this team's pull requests
 count: leave anyone else's alone, even in the same repository.
 
 ## The person's comments
 
 When the person comments on or changes a pull request, send what they asked for to the lead as a queue row (it owns
-scope and gives code changes to a builder), and update the merge gate and the description once it's done. A change
-they ask for in the description itself is yours to make, from the record.
+scope, and has code changes made through the clerk), and update the merge gate and the description once it's done. A
+change they ask for in the description itself is yours to make, from the record.
 
 ## Merging, tagging and releasing
 

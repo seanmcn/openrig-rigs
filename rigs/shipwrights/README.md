@@ -51,7 +51,7 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 | `quality-qa-1`, `quality-qa-2` | Claude Code | One per builder: each runs the checks a slice calls for and records what each one proved. |
 | `review-reviewer-1` | Claude Code | Reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
 | `review-reviewer-2` | Codex | The same, on the other runtime: the clerk pairs one reviewer from each runtime for each slice, and they review independently. |
-| `review-judge-1` | Claude Code | Judges each slice from the record against the spec and proof contract the lead locked: compares the pair's reviews, settles a disagreement's first fix round, judges each proof item at its commit and sends a routine slice straight to the release manager. Passes the lead a disagreement still unsettled after a fix round, QA's NOT-CLEAR, a proof item the recorded proof doesn't show directly and a slice marked risky. |
+| `review-judge-1` | Claude Code | Judges each slice from the record against the spec and proof contract the lead locked: compares the pair's reviews, settles a disagreement's first fix round, judges each proof item at its commit and sends a routine slice straight to the release manager. Passes the lead the hard or risky slices that [`team-shape.md`](startup/team-shape.md) lists. |
 | `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, writes each description from the record and keeps it true, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
@@ -124,10 +124,9 @@ Inside "Built and reviewed", each slice goes through these steps:
    pairs two free reviewers on different runtimes, and both review that commit. A fix for their findings goes through QA
    again before they look again. QA and the reviewers each record their proof at the commit they checked.
 4. The judge compares the reviews and judges the proof at that commit, against the spec and proof contract the lead
-   locked, again after any rebase or fix. It sends a routine slice straight to the release manager, telling the lead,
-   and passes the lead a slice with a disagreement still unsettled after a fix round, a NOT-CLEAR from QA, a proof item
-   the recorded proof doesn't show directly, or one marked risky. The lead decides those, and may overrule the judge
-   with its reason.
+   locked, again after any rebase or fix. It sends a routine slice straight to the release manager, with no row to the
+   lead, and passes the lead the hard or risky slices that [`team-shape.md`](startup/team-shape.md) lists ("Slices the
+   judge passes to the lead"). The lead decides those, and may overrule the judge with its reason.
 5. The release manager publishes only proof judged at the commit it pushes, one pull request per repository, each opened
    with a merge gate. It watches CI, and tells the lead when CI fails or a branch conflicts with its base; the lead
    decides the fix or the rebase and the clerk gives it to a builder, and the new commit goes through QA and the judge

@@ -5,19 +5,24 @@ usage: scripts/check-team.py rigs/<team>
 
 - nothing in the team names a word from TEAM_BLOCKLIST, a comma-separated list in the
   environment (such as the people or organisation a team was first built for), case-insensitively;
+- no file uses a word in AVOIDED_WORDS, which GLOSSARY.md says to avoid, and each list in ONE_PLACE
+  appears only in its own file;
 - settings.md holds the team settings with their defaults;
 - the team ships no third-party skills: every skill a profile selects is declared, and
   every declared skill sits inside the team folder with its SKILL.md;
 - skills.md lists every skill the guidance names, each row with a source, a full commit,
-  a licence, the profiles that use it and whether it is required, and install-skills.sh
+  a licence, the profiles that use it and whether it is required, a required skill's seats being
+  exactly the roles whose guidance or start files name it, and install-skills.sh
   reads it (a dry run, into empty folders);
 - the role guidance carries the rules the team relies on, and none it has dropped, every
   `rig queue block` example names its `--on` blocker, and every
   role file has its seat add a retrospective note to the slice progress;
 - every role in ROLES has one profile per runtime in RUNTIMES, named <role>-<runtime>, each
   delivering the role's guidance and no other, and setting preferences.runtime, and the model
-  and effort SUGGESTED_MODEL_AND_EFFORT gives the role on that runtime; agent.yaml has no other profiles; the README's Models section
-  names every model the model tiers list and says a rig may override a seat's model;
+  and effort SUGGESTED_MODEL_AND_EFFORT gives the role on that runtime; agent.yaml has no other
+  profiles; the README's Models section names every model the model tiers list and says a rig
+  may override a seat's model;
+- rig.yaml's summary says the peer may run on either runtime;
 - rig.yaml declares exactly the seats in SEATS, each a member whose profile is its role's for the
   member's runtime, with each runtime in configurations.yaml mapped to the role's profile there,
   and a row in the README's seat table; the recommended preset keeps the code reviewers on two
@@ -57,7 +62,7 @@ SETTINGS = {
     "Risky slices": "`risky: true` in the spec",
 }
 
-# (guidance file, or startup/<file>, phrase it must contain, why)
+# (guidance file, startup/<file> or a doc at the team's root such as README.md, phrase it must contain, why)
 GUIDANCE_RULES = [
     ("clerk.md", "rig watchdog register", "the slice time limit wakes the clerk through a watchdog"),
     ("lead.md", "## Stop and pause", "stop and pause hold work without stopping sessions"),
@@ -78,6 +83,12 @@ GUIDANCE_RULES = [
     ("startup/team-shape.md", "**No free pair:**", "every seat, the clerk included, reads what happens with no free pair"),
     ("startup/team-shape.md", "rig seat launch <seat> --fresh", "worker seats start fresh for each piece of work"),
     ("startup/team-shape.md", "context-usage-threshold", "long-lived seats hand over at a context threshold"),
+    # How every seat waits is written once, in a start file every seat gets.
+    ("startup/team-shape.md", "## Waits", "every seat waits the same way"),
+    ("startup/team-shape.md", "never a loop of checks", "a wait is a queue block, never polling"),
+    ("clerk.md", "\"Waits\" in \"This team's shape\"", "the clerk waits as every seat does"),
+    ("judge.md", "\"Waits\" in \"This team's shape\"", "the judge waits as every seat does"),
+    ("lead.md", "\"Waits\" in \"This team's shape\"", "the lead waits as every seat does"),
     ("startup/team-shape.md", "the next number in its role's pod", "a grown seat takes the next number in its pod"),
     ("startup/team-shape.md", "the same profile", "a grown seat keeps its role's profile"),
     ("startup/team-shape.md", "the role's edges", "a grown seat gets its role's edges"),
@@ -143,6 +154,7 @@ GUIDANCE_RULES = [
     ("clerk.md", "different models", "a one-runtime pair runs two different models"),
     ("clerk.md", "a model tier above the builder's", "a one-runtime pair keeps one review stronger than the builder's model"),
     ("clerk.md", "preferences.model", "the clerk reads a seat's model from its member or its profile"),
+    ("clerk.md", "the `profile` it runs with", "the clerk reads the profile each seat runs with from OpenRig"),
     ("clerk.md", "\"Models\"", "the clerk takes a model's model tier from the README's table"),
     ("clerk.md", "one of each again", "new pairs go back to both runtimes once the other has room"),
     ("clerk.md", "At every new pairing", "the clerk checks the other runtime at each pairing, so pairs go back by themselves"),
@@ -165,6 +177,8 @@ GUIDANCE_RULES = [
     ("planner.md", "from the clerk", "the clerk routes work to the planner"),
     ("release-manager.md", "tell the clerk the slice is delivered", "delivery reports go to the clerk, not the lead"),
     ("release-manager.md", "send its link to the clerk", "pull-request links go to the clerk, not the lead"),
+    ("builder-backend.md", "rebase only when the clerk sends you a rebase row", "a rebase reaches the builder from the clerk"),
+    ("release-manager.md", "the clerk gives it to a builder", "the clerk, not the lead, gives a fix or a rebase to a builder"),
     ("clerk.md", "published: <pull request link>", "the clerk records each pull request the release manager opens"),
     ("lead.md", "pull requests when the clerk tells you", "the lead hears of a mission's pull requests once it completes"),
     # The judge judges each slice from the record, and passes only the hard or risky ones to the lead.
@@ -173,13 +187,21 @@ GUIDANCE_RULES = [
     ("judge.md", "Disagreement rounds before the person is asked", "the judge reads the disagreement-rounds setting"),
     ("judge.md", "## Pass it to the lead", "the judge passes the hard or risky slices to the lead"),
     ("judge.md", "still not settled after one fix round", "a disagreement that survives a fix round goes to the lead"),
-    ("judge.md", "QA records NOT-CLEAR", "a NOT-CLEAR goes to the lead"),
-    ("judge.md", "doesn't show an item of the proof contract directly", "a proof item the recorded proof doesn't show directly goes to the lead"),
-    ("judge.md", "the slice is marked risky", "a risky slice goes to the lead"),
-    ("judge.md", "Risky slices", "the judge reads how the rig marks a slice risky"),
+    # What the judge passes to the lead is listed once, in a start file both seats get.
+    ("startup/team-shape.md", "## Slices the judge passes to the lead", "one list the judge and the lead both read"),
+    ("startup/team-shape.md", "still not settled after one fix round", "a disagreement that survives a fix round goes to the lead"),
+    ("startup/team-shape.md", "QA records NOT-CLEAR", "a NOT-CLEAR goes to the lead"),
+    ("startup/team-shape.md", "doesn't show an item of the proof contract directly", "a proof item the recorded proof doesn't show directly goes to the lead"),
+    ("startup/team-shape.md", "the slice is marked risky", "a risky slice goes to the lead"),
+    ("judge.md", "\"Slices the judge passes to the lead\"", "the judge checks each slice against the one list"),
+    ("lead.md", "\"Slices the judge passes to the lead\"", "the lead reads the one list"),
+    ("startup/team-shape.md", "Risky slices", "the judge reads how the rig marks a slice risky"),
     ("judge.md", "straight to a release manager", "a routine judged slice never waits for the lead"),
-    ("judge.md", "tell the lead", "the lead hears of each routine slice the judge sends on"),
+    ("judge.md", "Judged routine at <commit>", "the judge records each routine judgement in the slice progress"),
+    ("lead.md", "your queue holds only decisions", "no routine slice puts a row on the lead's queue"),
     ("judge.md", "tell the clerk", "the judge releases the seats through the clerk"),
+    ("judge.md", "## Release the seats", "the judge hands off to the clerk's section of the same name"),
+    ("clerk.md", "## Release the seats", "the clerk takes on from the judge's section of the same name"),
     ("judge.md", "You never decide", "scope, the person and the hard cases stay with the lead"),
     ("startup/review-pair-judge.md", "Compare the two reviews", "the judge compares the pair's reviews"),
     ("startup/review-pair-judge.md", "Release the pair", "the judge releases the pair through the clerk"),
@@ -215,9 +237,15 @@ GUIDANCE_RULES = [
     ("release-manager.md", "## Keep the description true", "the release manager keeps the description true"),
     ("release-manager.md", "when the reviews, CI or the code change", "the description changes with the reviews, CI and code"),
     ("startup/review-pair-lead.md", "the release manager", "the release manager reports both reviews in the pull request"),
+    # The result of checking pull requests together goes back to the release manager that asked for it.
+    ("qa.md", "the release manager that asked", "QA's result on pull requests checked together reaches the release manager"),
+    ("clerk.md", "the release manager that asked", "the clerk tells QA who asked, and the release manager which row to wait on"),
+    ("release-manager.md", "block your row on QA's row", "the release manager waits for the result on QA's row"),
+    ("release-manager.md", "fail together, send the failure to the lead", "a failure goes to the lead, as after a CI run"),
+    ("lead.md", "fail together, the release manager tells you", "the lead hears of a failure from the release manager"),
 ]
 
-# (guidance file, phrase it must not contain, why)
+# (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)
 FORBIDDEN_RULES = [
     ("lead.md", "Push the builder's branch", "the release manager publishes, not the lead"),
     ("release-manager.md", "external:ci --wake-after 15m", "the CI wait comes from recent run times, not a fixed 15 minutes"),
@@ -235,7 +263,8 @@ FORBIDDEN_RULES = [
     ("lead.md", "--tier", "the clerk writes the build rows"),
     ("lead.md", "to a free planner", "the clerk routes work to a planner"),
     ("lead.md", "free code reviewers", "the clerk names the review pair"),
-    ("lead.md", "## Free the seats", "the clerk frees and relaunches seats"),
+    ("lead.md", "## Release the seats", "the clerk relaunches the seats the judge or the lead releases"),
+    ("clerk.md", "## Free the seats", "the clerk's section and the judge's share one name, \"Release the seats\""),
     ("lead.md", "relaunch <seat>", "the clerk relaunches freed seats"),
     ("lead.md", "metadata.status", "the clerk sets a mission active"),
     ("lead.md", "--status complete", "the clerk records a mission's completion"),
@@ -243,12 +272,19 @@ FORBIDDEN_RULES = [
     ("startup/review-pair-lead.md", "which you name for each slice", "the clerk names the review pair"),
     ("startup/team-shape.md", "the lead relaunches it", "the clerk relaunches freed seats"),
     ("release-manager.md", "tell the lead the slice is delivered", "delivery reports go to the clerk"),
+    ("builder-backend.md", "rebase only when the lead asks you to", "a rebase reaches the builder as a row from the clerk"),
+    ("release-manager.md", "the lead gives the fix to a builder", "the lead decides the fix and the clerk gives it to a builder"),
+    ("release-manager.md", "and gives the rebase to a builder", "the lead decides the rebase and the clerk gives it to a builder"),
+    ("release-manager.md", "gives code changes to a builder", "the lead has code changes made through the clerk"),
     ("release-manager.md", "Tell the lead the pull request's link", "pull-request links go to the clerk"),
     ("peer.md", "time-limit reminder", "the clerk registers the time-limit reminder, not the lead"),
     ("peer.md", "publishes the roster", "the clerk publishes the roster, not the lead"),
     ("peer.md", "The lead does all of that", "the clerk assigns and the judge judges, not the lead"),
     # The jobs that moved to the judge.
     ("lead.md", "## Judge the proof", "the judge judges the proof"),
+    ("clerk.md", "never a loop of checks", "how to wait is written once, in team-shape.md"),
+    ("judge.md", "never a loop of checks", "how to wait is written once, in team-shape.md"),
+    ("lead.md", "never a loop of checks", "how to wait is written once, in team-shape.md"),
     ("lead.md", "Compare the two reviews", "the judge compares the reviews"),
     ("lead.md", "Never judge without a commit", "the judge judges each slice at its commit"),
     ("lead.md", "judge the slice again", "the judge judges a fixed or rebased slice again"),
@@ -278,15 +314,24 @@ FORBIDDEN_RULES = [
     ("release-manager.md", "owns scope and the description", "the lead owns scope; the description is the release manager's"),
     ("startup/review-pair-lead.md", "Pull request description:", "the release manager writes the description"),
     ("startup/slice-spec.md", "personal data", "what makes a slice risky is listed once, in settings.md"),
-    # The glossary's words: a spec is locked, not approved; a model tier is not a tier; proof is not evidence.
+    ("clerk.md", "QA sends its result to the lead", "QA sends it to the release manager that asked"),
+    ("release-manager.md", "QA sends the result to the lead", "QA sends it to the release manager that asked"),
+    ("lead.md", "QA sends you the result", "QA sends it to the release manager that asked"),
+    # The lead hears of routine slices only through the clerk, when a mission completes.
+    ("judge.md", "Then tell the lead", "a routine slice puts no row on the lead's queue"),
+    ("lead.md", "close it once you've read it", "a routine slice puts no row on the lead's queue"),
+    ("lead.md", "tells you which one", "a routine slice puts no row on the lead's queue"),
+    ("lead.md", "The judge tells you of each routine slice", "the lead hears of routine slices through the clerk"),
+    ("lead.md", "release manager, telling you", "the judge doesn't tell the lead of each routine slice"),
+    ("README.md", "release manager, telling the lead", "the judge doesn't tell the lead of each routine slice"),
+    # The glossary's words: a spec is locked, not approved, and a model tier is not a tier.
     ("judge.md", "the lead approved", "the lead locks a spec; it doesn't approve it"),
     ("release-manager.md", "the lead approved", "the lead locks a spec; it doesn't approve it"),
-    ("judge.md", "direct evidence", "proof the record doesn't show directly, not evidence"),
-    ("lead.md", "direct evidence", "proof the record doesn't show directly, not evidence"),
     ("clerk.md", "a tier above", "a model tier, not a queue tier"),
     ("startup/team-shape.md", "a tier above", "a model tier, not a queue tier"),
     # One-runtime pairing starts and stops without the lead.
     ("clerk.md", "the lead tells you so", "the clerk sees a runtime out from the reviewers' own reports"),
+    ("clerk.md", "of its profile in `agents/shipwrights/agent.yaml`", "a seat moved to the other runtime has that runtime's profile"),
     ("clerk.md", "the other runtime is back", "the clerk sees a runtime back at its next pairing, without the lead"),
     ("clerk.md", "pass on to the lead", "a reviewer's usage limit doesn't wake the lead"),
     ("startup/review-pair-lead.md", "the slice waits for one to free up", "No free pair lives in team-shape.md, which the clerk reads"),
@@ -371,6 +416,16 @@ RETIRED_NAMES = [
     (r"(?<![\w-])release\.manager(?![\w-])|(?<![\w-])release-manager@", "the release.manager-1 seat (release-manager-1)"),
     (r"(?i)fourteen seats|14 seats", "the small team's seat count"),
 ]
+# Words GLOSSARY.md says to avoid, as (pattern, what it says instead). OpenRig's own flags, such as `--evidence` and
+# `--money-evidence`, keep their names.
+AVOIDED_WORDS = [
+    (r"(?i)(?<![-\w])evidence\b", "proof, or what a seat ran and saw"),
+]
+# Lists the team keeps in one file, which every other file points to rather than repeats: (a pattern only the list
+# matches, the file that holds it, what the list is). The whitespace of each file is collapsed before matching.
+ONE_PLACE = [
+    (r"doesn't show [^.]{0,60}directly", "startup/team-shape.md", "the slices the judge passes to the lead"),
+]
 # Every seat writes a retrospective note in the slice progress before closing its row.
 RETRO_PHRASE = "rig scope slice progress"
 
@@ -450,6 +505,29 @@ def check_names(team, problems):
         for number, line in enumerate(text.splitlines(), 1):
             if pattern.search(line):
                 fail(problems, f"{path}:{number}: names a blocked word")
+
+
+def check_one_place(team, problems):
+    """A list the team keeps in one file appears in no other, so the copies can't drift apart."""
+    for pattern, home, what in ONE_PLACE:
+        if not re.search(pattern, " ".join(text_of(team / home).split())):
+            fail(problems, f"{home} no longer lists {what}")
+        for path in sorted(team.rglob("*.md")):
+            if path != team / home and re.search(pattern, " ".join(path.read_text(encoding="utf-8").split())):
+                fail(problems, f"{path} repeats {what}: point to {home} instead")
+
+
+def check_glossary_words(team, problems):
+    """No file in the team uses a word the glossary says to avoid, other than in OpenRig's own flags."""
+    for path in sorted(team.rglob("*")):
+        try:
+            text = text_of(path)
+        except (UnicodeDecodeError, OSError):
+            continue
+        for pattern, instead in AVOIDED_WORDS:
+            for number, line in enumerate(text.splitlines(), 1):
+                for match in re.finditer(pattern, line):
+                    fail(problems, f"{path}:{number}: {match.group(0)!r}: the glossary says {instead}")
 
 
 def check_settings(team, problems):
@@ -565,6 +643,67 @@ def check_guidance_skills(team, rows, listed, problems):
             fail(problems, f"skills.md:{number}: {skill!r} is optional, but {named[skill]} names it")
 
 
+def start_files(rig):
+    """The start files rig.yaml gives every seat, and each seat's own, as paths in the team folder."""
+    shared, own, section, pod, seat = [], {}, None, None, None
+    for line in rig.splitlines():
+        if m := re.match(r"^(\w+):", line):
+            section, pod, seat = m.group(1), None, None
+        elif m := re.match(r"^  - id: ([\w-]+)$", line):
+            pod, seat = m.group(1), None
+        elif (m := re.match(r"^      - id: ([\w-]+)$", line)) and pod:
+            seat = f"{pod}.{m.group(1)}"
+            own[seat] = []
+        elif m := re.match(r"^\s+- path: (\S+)$", line):
+            if seat:
+                own[seat].append(m.group(1))
+            elif section == "startup":
+                shared.append(m.group(1))
+    return shared, own
+
+
+def skill_names(paths):
+    """The lower-case names in backticks in these files, each with the first file that names it."""
+    named = {}
+    for path in paths:
+        if path.is_file():
+            for name in re.findall(rf"`({SKILL_NAME})`", path.read_text(encoding="utf-8")):
+                named.setdefault(name, path.name)
+    return named
+
+
+def check_skill_seats(team, rows, problems):
+    """Each required skill's Seats are exactly the roles whose own files name it.
+
+    A role's own files are its guidance and its seats' start files. A role listed also passes when a start file every
+    seat gets names the skill, and `all` passes when one of those or CULTURE.md does; CULTURE.md doesn't count for a
+    single role, because it names skills only as examples.
+    """
+    agent_dirs = [path.parent for path in sorted(team.glob("agents/*/agent.yaml"))]
+    shared, own = start_files(text_of(team / "rig.yaml"))
+    everyone = skill_names([team / path for path in shared])
+    by_role = {
+        role: skill_names([folder / path for folder in agent_dirs for path in guidance]
+                          + [team / path for seat, seat_role in SEATS.items() if seat_role == role
+                             for path in own.get(seat, [])])
+        for role, guidance in ROLES.items()
+    }
+    for number, row in rows:
+        skill = row.get("Skill", "").strip("`")
+        seats = {seat.strip().strip("`") for seat in row.get("Seats", "").split(",") if seat.strip()}
+        if row.get("Need") != "required":
+            continue
+        for seat in sorted(seats):
+            if seat == "all":
+                if skill not in everyone and skill not in skill_names([team / "CULTURE.md"]):
+                    fail(problems, f"skills.md:{number}: {skill!r} lists all, but nothing every seat reads names it")
+            elif seat in by_role and skill not in by_role[seat] and skill not in everyone:
+                fail(problems, f"skills.md:{number}: {skill!r} lists {seat}, but nothing the {seat} reads names it")
+        for role, named in sorted(by_role.items()):
+            if skill in named and not seats & {role, "all"}:
+                fail(problems, f"skills.md:{number}: {skill!r} doesn't list {role}, though {named[skill]} names it")
+
+
 def check_install_script(team, listed, problems):
     """install-skills.sh reads skills.md: a dry run into empty folders installs every row and writes nothing."""
     script = team / "install-skills.sh"
@@ -613,6 +752,7 @@ def check_skills(team, problems):
     rows = read_skills_table(team, problems)
     listed = check_skills_table(rows, problems)
     check_guidance_skills(team, rows, listed, problems)
+    check_skill_seats(team, rows, problems)
     check_install_script(team, listed, problems)
     check_bundle_skills(team, listed, problems)
 
@@ -626,16 +766,25 @@ def check_guidance(team, problems):
     started = {
         f"startup/{path.name}": " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("startup/*.md")
     }
+    # The team's own docs, such as README.md and settings.md, carry rules too, for the person and for every seat.
+    docs = {path.name: " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("*.md")}
+
+    def lookup(name):
+        """Where a rule's file is, for messages, and its text, or None when there is no such file."""
+        for where, texts in ((name, started), (f"guidance/{name}", guidance), (name, docs)):
+            if name in texts:
+                return where, texts[name]
+        return name, None
+
     for name, phrase, why in GUIDANCE_RULES:
-        text = started.get(name, guidance.get(name))
-        where = name if name in started else f"guidance/{name}"
+        where, text = lookup(name)
         if text is None:
             fail(problems, f"{where} is missing")
         elif phrase not in text:
             fail(problems, f"{where} lacks {phrase!r}: {why}")
     for name, phrase, why in FORBIDDEN_RULES:
-        where = name if name in started else f"guidance/{name}"
-        if phrase in started.get(name, guidance.get(name, "")):
+        where, text = lookup(name)
+        if phrase in (text or ""):
             fail(problems, f"{where} still has {phrase!r}: {why}")
     # OpenRig refuses a block without --on, even with a wake, so every example names its blocker straight after the
     # row (a `\` line break may come between). The text's whitespace is collapsed, so a command is one line here, and
@@ -719,6 +868,14 @@ def check_members(team, problems):
         elif fields.get("profile") != profile_name(role, runtime):
             fail(problems, f"rig.yaml's {seat!r} has the {fields.get('profile')!r} profile, "
                            f"expected {profile_name(role, runtime)!r} for the {role!r} role on {runtime}")
+
+
+def check_summary(team, problems):
+    """rig.yaml's summary, which `rig bundle` listings show, says what the README's seat table does about the peer."""
+    block = re.search(r"^summary: >\n((?:  .*\n)+)", text_of(team / "rig.yaml"), re.MULTILINE)
+    summary = " ".join(block.group(1).split()) if block else ""
+    if not re.search(r"a peer [^,]*on either runtime", summary):
+        fail(problems, "rig.yaml's summary doesn't say the peer may run on either runtime")
 
 
 def check_seat_table(team, problems):
@@ -850,6 +1007,8 @@ def main():
     team = Path(sys.argv[1])
     problems = []
     check_names(team, problems)
+    check_glossary_words(team, problems)
+    check_one_place(team, problems)
     check_settings(team, problems)
     check_skills(team, problems)
     check_guidance(team, problems)
@@ -857,6 +1016,7 @@ def main():
     check_profiles(team, problems)
     check_review_runtimes(team, problems)
     check_members(team, problems)
+    check_summary(team, problems)
     check_seat_table(team, problems)
     check_configurations(team, problems)
     check_retired_names(team, problems)

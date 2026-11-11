@@ -10,6 +10,6 @@ Your role file applies unchanged. In addition:
 - Send your findings to the builder and your verdict to the judge, as your role file says. Name the commit you reviewed
   and the reviewer you are, so the judge can line up the two reports.
 - If the judge asks about a finding only you or only the other reviewer made, check it against the code and say whether
-  it holds, with the evidence.
+  it holds, and how you know.
 - Hold your row on the slice through every fix round, parked between commits as your role file says, until the clerk
   tells you to close it.

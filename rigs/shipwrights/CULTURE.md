@@ -119,5 +119,5 @@ its `SKILL.md` and follow it.
   Codex menu or a Claude Code warning.
 - **Don't restart or stop the OpenRig daemon that runs this team.** If the repository is OpenRig itself, test with
   its own harnesses, which start a private daemon.
-- **Keep credentials, private paths and personal details** out of commits, pull requests, issues and pasted evidence.
+- **Keep credentials, private paths and personal details** out of commits, pull requests, issues and pasted output.
   If one gets out anyway, tell the person at once, saying which one and where.

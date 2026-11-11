@@ -28,15 +28,16 @@ Code and Codex.
 
 **Required** skills are named in a step of the guidance, `CULTURE.md` included, since every seat reads it; a seat
 without one can't do that step as written. **Optional** ones help the seats listed but no step names them. **Seats** are
-the roles in `agents/shipwrights/agent.yaml`, each meaning both of the role's profiles; `all` is every seat. The commit
-is the one this team was last checked with; a newer one usually works. This table is the only list: the install script
-and `scripts/check-team.py` both read it.
+the roles in `agents/shipwrights/agent.yaml`, each meaning both of the role's profiles; `all` is every seat. A required
+skill's seats are the roles whose guidance or start files name it. The commit is the one this team was last checked
+with; a newer one usually works. This table is the only list: the install script and `scripts/check-team.py` both read
+it.
 
 | Skill | Source | Path | Commit | Licence | Seats | Need |
 | --- | --- | --- | --- | --- | --- | --- |
 | `ponytail` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | `skills/ponytail` | `7801d061243d7b753bad0e0b3c057cd250b11755` | MIT | all | required |
 | `ponytail-review` | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | `skills/ponytail-review` | `7801d061243d7b753bad0e0b3c057cd250b11755` | MIT | builder-backend, builder-frontend, code-reviewer | required |
-| `pr` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/pr` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead, release-manager | required |
+| `pr` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/pr` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | release-manager | required |
 | `retro` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/retro` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead | required |
 | `triage` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/triage` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |
 | `wayfinder` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/wayfinder` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | planner | required |

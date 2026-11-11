@@ -35,8 +35,8 @@ rig queue handoff <the lead's row> --to <a free planner> --body-file <file>
 ```
 
 "This team's shape" says how to find a role's seats and which are free. The planner hands its cut or its answer back
-to the lead, not to you. Give yourself a relaunch row for the planner straight away, blocked on its new row ("Free the
-seats").
+to the lead, not to you. Give yourself a relaunch row for the planner straight away, blocked on its new row
+("Release the seats").
 
 When no planner is free, block the lead's row on the open row of a busy planner
 (`rig queue block <row> --on <its row> --continuation "hand on to a free planner"`), and hand it on when that closes.
@@ -82,7 +82,10 @@ new slice, with a handoff that carries the lead's words and points at the slice'
 so a seat new to the slice can take it.
 
 When the release manager tells you the team has several open pull requests in one repository, give a free QA seat a
-row to check them merged together, naming the pull requests and their branches. QA sends its result to the lead.
+row to check them merged together, naming the pull requests, their branches and the release manager that asked. Then
+close the release manager's row with the QA seat's row in its note (`--note "QA's row: <row>"`): the release manager
+blocks on that row, and QA's closing it carries the result. Relaunch the QA seat once its row closes, as "Release the
+seats" says.
 
 ## Name the review pair
 
@@ -110,10 +113,13 @@ but only two that pass both checks:
 - they run different models;
 - at least one of them runs a model at least a model tier above the builder's.
 
-A seat's model is the member's `model` in this rig's `rig.yaml`, or, where the member has none, the `preferences.model`
-of its profile in `agents/shipwrights/agent.yaml`. The rig README's "Models" section gives each model's model tier;
-from the highest, the model tiers are top, upper, workhorse, lower and budget. If a model isn't in that table, hand it
-to the lead.
+Take each seat's model from what it runs with, not from the members in `rig.yaml`: a seat put on the other runtime
+runs that runtime's profile, which `configurations.yaml` chose. `rig ps --nodes --rig <rig> --json --full` gives each
+seat's `runtime`, the `profile` it runs with, and its `model` when one is set on the seat, such as a `model` on its
+member. A seat's model is that `model`, or, where it is empty, the `preferences.model` of the seat's `profile` in
+`agents/shipwrights/agent.yaml`. The rig README's "Models" section gives each model's model tier; from the highest,
+the model tiers are top, upper, workhorse, lower and budget. If a model isn't in that table, hand it to the lead.
+
 When no two free reviewers pass both checks, the slice waits as above.
 
 As soon as a reviewer on the other runtime has room again, name each new pair one of each again: your check at each
@@ -131,14 +137,15 @@ rig scope slice progress <slice> --mission <mission> \
 
 For a pair on one runtime, end the line with why: "shared <runtime>: <other runtime> is out".
 
-## Free the seats
+## Release the seats
 
 Each seat's part in a piece of work ends at a point you are told of:
 
 - a planner's when it hands its cut or its answer back to the lead: its row closes;
 - the review pair's when the judge tells you it has compared both PASSes;
 - the builder's and QA seat's when the judge tells you it has judged the slice, or the lead tells you it has stopped
-  it.
+  it;
+- a QA seat's that checked pull requests together when its row on them closes.
 
 Tell each seat the judge or the lead has released to close its row on the slice, which it does after its
 retrospective note. Don't wait by checking: give yourself a row for the relaunch, blocked on that seat's slice row,
@@ -273,9 +280,7 @@ mission is complete; a single pull request or delivery never wakes it.
 
 ## Waits
 
-Every wait is a queue block with a wake or on another row, never a loop of checks, as the lead's are: block on a seat's
-row (`--on <qitemId>`) to wait for it to close, and on `external:<what>` with `--wake-after` for anything else. When a
-wake fires, run `rig queue show <row> --full --json` first, then carry on.
+Wait as "Waits" in "This team's shape" says: on a queue block, never by checking again and again.
 
 ## Retrospectives
 

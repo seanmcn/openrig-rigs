@@ -82,12 +82,26 @@ from its own, and the lead sends each mission, from its goal on, to one clerk.
 - **Planner:** the lead sends the clerk each goal, slice to re-cut, survey for work and question that needs reading
   code, and the clerk hands it to a free planner.
 - **Judge:** the clerk names a slice's judge when it hands the slice on: with more than one judge, the one with the
-  fewest open rows. The judge passes the hard or risky slices to the lead.
+  fewest open rows. The judge passes the hard or risky slices to the lead (below).
 - **Release manager:** the judge, not the clerk, gives each judged slice to the release manager that already holds its
   mission's other slices, or else to the one with the fewest open rows, so one release manager sees each mission's merge
   order.
 
 A seat closes its row on a slice when the clerk tells it the judge, or the lead, has released it.
+
+## Slices the judge passes to the lead
+
+The judge sends a routine slice straight to a release manager. It passes a slice to the lead instead, with the proof
+and what it recommends, when any of these holds:
+
+- a disagreement between the builder and a reviewer or QA is still not settled after one fix round;
+- QA records NOT-CLEAR on one of the slice's commits: it couldn't tell;
+- the recorded proof doesn't show an item of the proof contract directly: nothing recorded shows it at the commit,
+  only a message, an inference or a check of something else;
+- the slice is marked risky, as the team settings' "Risky slices" says. By default its SPEC's frontmatter says
+  `risky: true`.
+
+The judge checks each slice against this list, and the lead decides the slices it passes; their role files say how.
 
 ## Fresh seats and long-lived seats
 
@@ -113,6 +127,16 @@ rig watchdog register --policy context-usage-threshold --target-session <your se
 
 When it fires, hand the seat to a fresh successor as OpenRig's `retiring-and-inheriting-a-seat` skill says, rather
 than waiting for compaction. The reminder covers one session, so the successor registers its own.
+
+## Waits
+
+Every wait is a queue block with a wake or on another row, never a loop of checks:
+
+- **On a seat:** block on its row (`--on <qitemId>`), which clears when that row closes. Claiming it doesn't.
+- **On anything else,** such as CI or another team:
+  `rig queue block <row> --on external:<what> --wake-after <time> --continuation "<what to check when it fires>"`.
+
+When a wake fires, run `rig queue show <row> --full --json` first, then check, and block again or carry on.
 
 ## Earlier sessions
 

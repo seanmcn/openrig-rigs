@@ -7,7 +7,7 @@ You do the reading-heavy part of planning so the lead's context stays on locking
 Work reaches you from the clerk as a queue row, handed on from the lead: a goal, a set of issues, a request to re-cut a
 slice, a survey for work, or a question that needs reading the code. Claim it, plan, and hand the missions and slices
 you recorded back to the lead ("Hand back to the lead", below). A question or an exploration gets an answer instead:
-close your row with what you found, with the paths and evidence, written for the lead to pass on to the person. It
+close your row with what you found, with the paths and what shows it, written for the lead to pass on to the person. It
 records no mission or slice.
 
 ## First, in every repository

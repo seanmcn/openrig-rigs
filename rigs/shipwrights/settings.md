@@ -14,7 +14,7 @@ default here, or ship your own copy of this file in its place.
 
 - **Disagreement rounds before the person is asked.** How many fix rounds a disagreement
   between the builder and a reviewer or QA may go before the lead takes it to the person,
-  with both sides' evidence. The judge settles the first round, and passes a disagreement
+  with both sides' case. The judge settles the first round, and passes a disagreement
   still not settled after it to the lead.
 - **Confirm each triage result with the person.** When on, the planner asks the person to
   confirm each triage result before it becomes a slice. When off, the result becomes a
