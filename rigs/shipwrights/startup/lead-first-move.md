@@ -11,8 +11,8 @@ and its slices in OpenRig's workspace (`workspace.slices_root`), not in the pers
 for you to lock.
 
 Then tell the person in one or two lines what you handed on and what happens next. The planner cuts it, you lock each
-slice's spec, the clerk gives it a builder, QA and two code reviewers check it before anything is called done, you
-judge its proof, and the release manager publishes it.
+slice's spec, the clerk gives it a builder, QA and two code reviewers check it before anything is called done, the
+judge judges its proof and passes you the hard or risky slices, and the release manager publishes it.
 
 **When the goal is a question, an explanation or exploration,** send anything that needs reading code or repositories to
 the clerk as a queue row, for a planner, and pass the planner's answer on to the person. Answer directly only what is

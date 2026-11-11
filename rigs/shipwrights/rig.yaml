@@ -2,9 +2,10 @@ version: "0.2"
 name: shipwrights
 summary: >
   An engineering team built on OpenRig's Workshop: a lead who turns your goal into
-  missions and slices and judges the proof, a peer that watches the lead and relaunches
+  missions and slices and decides the hard calls, a peer that watches the lead and relaunches
   it if it goes down, a clerk that does the lead's routine coordination, a planner, a backend builder and a frontend builder, a QA seat
   for each builder, two code reviewers who review each slice as a pair on different runtimes,
+  a judge that judges each slice's proof and passes the hard or risky ones to the lead,
   and a release manager who publishes and keeps each pull request mergeable. Enough for two
   streams of work; a rig grows the roles it needs. Launch it with --cwd in a clone of your
   repository, or in a folder that holds several clones.
@@ -53,7 +54,7 @@ non_interruptive: true
 pods:
   - id: orch
     label: Orchestration
-    summary: Turns your goal into missions and slices and judges their proof. The peer relaunches the lead if it goes down, the clerk assigns seats and relaunches them, and the planner cuts the work.
+    summary: Turns your goal into missions and slices and decides the hard calls. The peer relaunches the lead if it goes down, the clerk assigns seats and relaunches them, and the planner cuts the work.
     members:
       - id: lead
         agent_ref: "local:agents/shipwrights"
@@ -147,10 +148,11 @@ pods:
         cwd: "."
     edges: []
 
-  # The clerk pairs two reviewers on different runtimes for each slice; they review the same commit independently.
+  # The clerk pairs two reviewers on different runtimes for each slice; they review the same commit independently, and
+  # the judge compares their findings and judges the slice.
   - id: review
     label: Review
-    summary: Two reviewers on different runtimes check each slice's commit independently; the lead compares their findings.
+    summary: Two reviewers on different runtimes check each slice's commit independently; the judge compares their findings and judges each slice's proof.
     members:
       - id: reviewer-1
         agent_ref: "local:agents/shipwrights"
@@ -172,6 +174,20 @@ pods:
             - path: startup/review-pair-reviewer.md
               delivery_hint: send_text
               required: true
+      # Judges each slice's proof against its locked spec, and passes the hard or risky ones to the lead.
+      - id: judge-1
+        agent_ref: "local:agents/shipwrights"
+        profile: judge-claude
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-judge.md
+              delivery_hint: send_text
+              required: true
+            - path: startup/slice-spec.md
+              delivery_hint: send_text
+              required: true
     edges: []
 
   - id: release
@@ -187,8 +203,8 @@ pods:
 
 # OpenRig makes the source of a seat's delegates_to edge its orchestrator: the seat its stuck or unclaimed queue rows
 # escalate to, taking the latest-launched source when there are several. So the lead is the only delegates_to source,
-# and every seat reports back to it. The clerk acts through queue rows, not edges: it pairs builders, QA seats and
-# reviewers afresh for each slice, so no edges join them.
+# and every seat reports back to it. The clerk and the judge act through queue rows, not edges: the clerk pairs
+# builders, QA seats and reviewers afresh for each slice, so no edges join them.
 edges:
   - kind: delegates_to
     from: orch.lead
@@ -214,6 +230,9 @@ edges:
   - kind: delegates_to
     from: orch.lead
     to: review.reviewer-2
+  - kind: delegates_to
+    from: orch.lead
+    to: review.judge-1
   - kind: delegates_to
     from: orch.lead
     to: release.manager-1

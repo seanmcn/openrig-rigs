@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 568" width="880" height="568" role="img" aria-labelledby="how-a-slice-is-built-dark-title how-a-slice-is-built-dark-desc">
   <title id="how-a-slice-is-built-dark-title">How a slice is built</title>
-  <desc id="how-a-slice-is-built-dark-desc">The clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the clerk then names a review pair on two runtimes, whose findings go back to the builder and through QA again; once both pass, the lead compares their reviews and judges.</desc>
+  <desc id="how-a-slice-is-built-dark-desc">The clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the clerk then names a review pair on two runtimes, whose findings go back to the builder and through QA again; once both pass, the judge compares their reviews and judges.</desc>
   <defs><marker id="how-a-slice-is-built-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="how-a-slice-is-built-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
   <line x1="176" y1="12" x2="176" y2="520" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
   <line x1="352" y1="12" x2="352" y2="520" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
@@ -18,7 +18,7 @@
   <text x="264" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">BUILDER</text>
   <text x="440" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">QA</text>
   <text x="616" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">REVIEWERS</text>
-  <text x="792" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">LEAD</text>
+  <text x="792" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">JUDGE</text>
   <rect x="16" y="56" width="144" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="88" y="77" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Assign</text>
   <text x="88" y="93" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">builder and QA seat</text>

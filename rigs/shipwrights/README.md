@@ -23,8 +23,8 @@ reviewers on different providers than from one, and changes the rest in four way
   ("Growing the team", below). You could run copies of the team on more machines to go further, but nothing yet stops
   two copies taking the same work: a way to claim work across copies is next.
 - **A seat for every step.** A planner cuts each goal into slices, a clerk does the lead's routine coordination, QA
-  checks every commit before review, a release manager publishes and keeps each pull request mergeable, and a peer
-  relaunches the lead if it goes down. The lead keeps only the work that needs judgement. Workers start fresh for each
+  checks every commit before review, a judge judges each slice's proof, a release manager publishes and keeps each pull
+  request mergeable, and a peer relaunches the lead if it goes down. The lead keeps only the work that needs judgement. Workers start fresh for each
   slice, so what carries over between slices is the record: the spec, the slice progress and the proof.
 
 The runtime each seat uses is my current suggestion. I'm trying different mixes and measuring them, and the
@@ -36,12 +36,12 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seats-dark.svg">
-  <img alt="Shipwrights' eleven seats in five pods: in orch, the lead (Codex), which you talk to, its peer (Claude Code), which watches it and relaunches it when it is down, a clerk (Claude Code), which assigns seats and relaunches them, and a planner (Claude Code); in dev, a backend builder and a frontend builder (Claude Code); in quality, two QA seats (Claude Code); in review, two code reviewers, one on Claude Code and one on Codex; and in release, a release manager (Codex)." src="diagrams/seats.svg">
+  <img alt="Shipwrights' twelve seats in five pods: in orch, the lead (Codex), which you talk to, its peer (Claude Code), which watches it and relaunches it when it is down, a clerk (Claude Code), which assigns seats and relaunches them, and a planner (Claude Code); in dev, a backend builder and a frontend builder (Claude Code); in quality, two QA seats (Claude Code); in review, two code reviewers, one on Claude Code and one on Codex, and a judge (Claude Code); and in release, a release manager (Codex)." src="diagrams/seats.svg">
 </picture>
 
 | Seat | Runtime | Does |
 |---|---|---|
-| `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs, judges their proof and owns each PR description. Talk to this seat. |
+| `orch-lead` | Codex | Starts from your goal, has it cut into slices, locks their specs, decides the hard or risky slices the judge passes it and owns each PR description. Talk to this seat. |
 | `orch-peer` | Claude Code | Watches the lead and restores it after a handover with a recap. When the lead's seat has been down for 10 minutes, relaunches it with that recap and tells you; if it is still down 10 minutes later, tells you and stops. Never drives, so it can run on either runtime. |
 | `orch-clerk-1` | Claude Code | Does the lead's routine coordination by fixed rules: routes work to a planner, gives each locked slice a builder, a QA seat and a review pair, relaunches seats when their part is done, keeps the roster, checks the slice time limit and records deliveries. Passes anything else to the lead. |
 | `orch-planner-1` | Claude Code | Turns goals and issues into missions and slices, with triage, specs, dependencies and a build order. |
@@ -50,6 +50,7 @@ The words these docs use, such as seat, slice and proof, are in the repository's
 | `quality-qa-1`, `quality-qa-2` | Claude Code | One per builder: each runs the checks a slice calls for and records what each one proved. |
 | `review-reviewer-1` | Claude Code | Reviews the handed-off commit with the named review skills, and runs the tests that bear on it. |
 | `review-reviewer-2` | Codex | The same, on the other runtime: the clerk pairs one reviewer from each runtime for each slice, and they review independently. |
+| `review-judge-1` | Claude Code | Judges each slice from the record against the spec and proof contract the lead locked: compares the pair's reviews, settles a disagreement's first fix round, judges each proof item at its commit and sends a routine slice straight to the release manager. Passes the lead a disagreement still unsettled after a fix round, QA's NOT-CLEAR, a proof item without direct evidence and a slice marked risky. |
 | `release-manager-1` | Codex | Publishes each judged slice's pull requests with their merge gate, watches CI, pushes rebased commits with lease and approves each merged slice for delivery. |
 
 These are the runtimes of the `recommended` preset, and [`configurations.yaml`](configurations.yaml) lets you put any
@@ -61,7 +62,7 @@ The team ships small: enough seats for two slices at once. A role that can grow 
 takes the next number in its role's pod, such as `dev-backend-2`, with the role's profile for its runtime and the role's
 edges. [`startup/team-shape.md`](startup/team-shape.md) is the one place that says which roles can have more seats, what
 a new seat needs and how to add one to a running rig. Builders, QA seats and code reviewers grow with the work you run
-at once, a QA seat for each builder. A second planner, clerk or release manager is rarely needed. Every seat reads that
+at once, a QA seat for each builder. A second planner, clerk, judge or release manager is rarely needed. Every seat reads that
 file at start, and finds the others by role, so a seat you add is used without changing any guidance.
 
 ## Models
@@ -85,7 +86,7 @@ The suggestions use five tiers of models, by price and capability:
 | --- | --- | --- |
 | Lead, planner | upper (top on Codex, which has no upper) | `high` |
 | Code reviewers | one upper and one workhorse in each pair: upper on Claude Code, workhorse on Codex | `high` |
-| Builders, QA | workhorse | `medium` |
+| Judge, builders, QA | workhorse | `medium` |
 | Release manager | workhorse | `medium` |
 | Clerk, peer | budget | `low` |
 
@@ -103,14 +104,14 @@ an overlay.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-the-work-moves-dark.svg">
-  <img alt="How the work moves, in lanes for you, the lead, the clerk, the planner and the release manager: the lead takes on your goal and the clerk routes it to the planner, which cuts it; the lead locks each spec and the clerk assigns a builder and a QA seat; once the slice is built and reviewed, the lead judges its proof; the release manager opens the pull requests, and a failing CI run or a conflict goes back through the lead to the clerk to assign; you merge; the release manager approves delivery and the clerk records it; the lead closes your goal once its mission is complete." src="diagrams/how-the-work-moves.svg">
+  <img alt="How the work moves, in lanes for you, the lead, the judge, the clerk, the planner and the release manager: the lead takes on your goal and the clerk routes it to the planner, which cuts it; the lead locks each spec and the clerk assigns a builder and a QA seat; once the slice is built and reviewed, the judge judges its proof, passing the hard or risky slices to the lead to decide; the release manager opens the pull requests, and a failing CI run or a conflict goes back through the lead to the clerk to assign; you merge; the release manager approves delivery and the clerk records it; the lead closes your goal once its mission is complete." src="diagrams/how-the-work-moves.svg">
 </picture>
 
 Inside "Built and reviewed", each slice goes through these steps:
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/how-a-slice-is-built-dark.svg">
-  <img alt="How a slice is built, in lanes for the clerk, the builder, QA, the reviewers and the lead: the clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the clerk names a review pair on two runtimes; their findings go back to the builder and through QA again; once both pass, the lead compares the reviews and judges." src="diagrams/how-a-slice-is-built.svg">
+  <img alt="How a slice is built, in lanes for the clerk, the builder, QA, the reviewers and the judge: the clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the clerk names a review pair on two runtimes; their findings go back to the builder and through QA again; once both pass, the judge compares the reviews and judges." src="diagrams/how-a-slice-is-built.svg">
 </picture>
 
 1. The planner records your goal or issues as a mission in OpenRig's work tree (`rig scope`), with its slices and the
@@ -122,12 +123,14 @@ Inside "Built and reviewed", each slice goes through these steps:
 3. The builder hands each commit to the slice's QA seat, and they go back and forth until QA passes one. Then the clerk
    pairs two free reviewers on different runtimes, and both review that commit. A fix for their findings goes through QA
    again before they look again. QA and the reviewers each record their proof at the commit they checked.
-4. The lead compares the reviews and judges the proof at that commit, again after any rebase or fix, then hands the
-   slice to the release manager.
+4. The judge compares the reviews and judges the proof at that commit, against the spec and proof contract the lead
+   locked, again after any rebase or fix. It sends a routine slice straight to the release manager, telling the lead,
+   and passes the lead a slice with a disagreement still unsettled after a fix round, a NOT-CLEAR from QA, a proof item
+   without direct evidence, or one marked risky. The lead decides those, and may overrule the judge with its reason.
 5. The release manager publishes only proof judged at the commit it pushes, one pull request per repository, each
    opened with a merge gate. It watches CI, and tells the lead when CI fails or a branch conflicts with its base; the
-   lead decides the fix or the rebase and the clerk gives it to a builder, and the new commit goes through QA and is
-   judged again. A slice you
+   lead decides the fix or the rebase and the clerk gives it to a builder, and the new commit goes through QA and the
+   judge judges it again. A slice you
    gave the team is your word to open its pull requests. Merging, tagging and releasing still need yours, unless the
    repository's `AGENTS.md` allows an agent to merge in its `### Merging` section and the merge gate is all green
    ([`release-manager.md`](agents/shipwrights/guidance/release-manager.md)). After you merge, it approves the slice for
@@ -137,7 +140,7 @@ Inside "Built and reviewed", each slice goes through these steps:
    the problems that came up more than once.
 
 The clerk relaunches each builder, QA seat, code reviewer and planner once its part of a slice is done, so each starts
-the next one fresh. The lead, its peer, the clerk and the release manager are long-lived, and hand over to a fresh
+the next one fresh. The lead, its peer, the clerk, the judge and the release manager are long-lived, and hand over to a fresh
 session near a full context ([`team-shape.md`](startup/team-shape.md)).
 
 A seat that has to wait blocks its queue row with a wake and stays idle until it fires. An OpenRig watchdog wakes the
@@ -161,6 +164,13 @@ a rebase. From any phase you can hold it or drop it, and neither stops a seat's 
 
 [`settings.md`](settings.md) holds the team settings and their defaults. Every seat reads it at start and refocus. To
 change one, edit it in your installed copy, or ship your own copy in an overlay (below).
+
+The judge reads two of them. "Disagreement rounds before the person is asked" sets how far a disagreement between the
+builder and a reviewer or QA goes: the judge settles the first fix round, the lead decides it after that, and the lead
+takes it to you once it has gone that many rounds. "Risky slices" says how a slice is marked risky, so the judge
+passes it to the lead whatever its proof shows. By default it is `risky: true` in the slice's spec, which the planner
+adds when a slice changes authentication, permissions, secrets, payments, personal data, a data migration or
+deletion, or a deploy or CI workflow; you may choose another mark, such as a label.
 
 ## Skills
 
@@ -282,8 +292,8 @@ select sandbox and approvals together").
 
 ## Limits
 
-- **Eleven seats run at once,** so expect up to eleven seats' worth of provider usage, and more as you grow the team.
-  The peer, the clerk, the planner and any seat without a slice are idle much of the time. To run fewer, remove seats in
+- **Twelve seats run at once,** so expect up to twelve seats' worth of provider usage, and more as you grow the team.
+  The peer, the clerk, the planner, the judge and any seat without a slice are idle much of the time. To run fewer, remove seats in
   an overlay ([`team-shape.md`](startup/team-shape.md) says which roles can shrink): one builder and one QA seat still
   work, but a review needs two code reviewers on different runtimes.
 - **The peer notices a downed lead within minutes.** OpenRig has no event that fires when a seat goes down, so a

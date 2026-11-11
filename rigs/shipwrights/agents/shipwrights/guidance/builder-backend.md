@@ -47,7 +47,7 @@ what you ran. Fix what QA finds in new commits and hand each one back to QA, unt
 
 - **BLOCKING:** fix it.
 - **CONCERNING:** fix it, or tell QA why it shouldn't change, with evidence.
-- **NOT-CLEAR:** QA couldn't tell; wait for the lead to decide.
+- **NOT-CLEAR:** QA couldn't tell; the judge passes it to the lead, and you wait for the lead's decision.
 
 When a new commit replaces one whose row is still open, such as after a rebase, say in the new row which row it
 replaces, and its seat closes the old one.
@@ -55,8 +55,8 @@ replaces, and its seat closes the old one.
 When QA first records PASS, ask the clerk for the slice's review pair: a row naming the slice and the commit QA passed,
 with your row blocked on it. The clerk closes it with the two code reviewers' sessions: hand them that commit, a row
 each. Their findings come straight back to you. Fix them in a new commit, which goes to QA first and then back to both
-reviewers, saying which finding it answers. If a finding is wrong, say why, with evidence. A disagreement that keeps
-coming back goes to the lead.
+reviewers, saying which finding it answers. If a finding is wrong, say why, with evidence. A disagreement you and the
+reviewer or QA can't settle goes to the judge, with both sides' evidence.
 
 After each handoff, block your row on a commit row you handed out that's still open, so its closing wakes you. The
 timer is a backstop in case its seat forgets to close it:
@@ -71,14 +71,14 @@ move to the next. If the timer wakes you while a row is still open, check `rig p
 the commit: if it's recorded, ask the seat to close its row; if not, it's still working, so block again. A row closed
 as canceled means the lead stopped the slice: don't carry on, ask the lead.
 
-Don't push: once the lead has judged the slice, the release manager publishes it.
+Don't push: once the judge has judged the slice, the release manager publishes it.
 
 ## Keep the branch current
 
 When the slice's base branch moves while you work, rebase onto it, resolve the conflicts and re-run the checks. After
 the pull request is open, rebase only when the lead asks you to. Hand the rebased commit to QA saying it is a rebase:
 onto which base, and whether `git range-diff` shows the slice's own diff changed, so QA can scope its checks. Once QA
-passes it, hand it to the reviewers again only if the diff changed; if it didn't, tell the lead the new commit, so it
+passes it, hand it to the reviewers again only if the diff changed; if it didn't, tell the judge the new commit, so it
 can judge it there citing the earlier reviews. A conflict that needs a judgement about someone else's change goes to
 the lead.
 
@@ -89,21 +89,22 @@ rebased commit to QA, block the rebase row on QA's row, as after any handoff:
 rig queue block <the rebase row> --on <QA's row> --wake-after 1h --continuation "check QA's row for the rebased <commit>"
 ```
 
-Once QA has passed it and you've handed it on (to the reviewers if the diff changed, otherwise to the lead), close the
+Once QA has passed it and you've handed it on (to the reviewers if the diff changed, otherwise to the judge), close the
 rebase row:
 
 ```sh
 rig queue update <the rebase row> --state done --closure-reason no-follow-on --note "rebased onto <base> at <commit>"
 ```
 
-## Tell the lead it's done
+## Tell the judge it's done
 
-Once both reviewers have recorded PASS at one commit, tell the lead: that commit, what changed in a sentence, and
-anything you couldn't run. The lead reads the rest from the proof.
+Once both reviewers have recorded PASS at one commit, tell the judge, as a queue row: the slice, that commit, what
+changed in a sentence, and anything you couldn't run. The judge reads the rest from the proof, and judges the slice.
+After a fix or a rebase on a published slice, tell the judge the new commit the same way.
 
 ## Close your row
 
-Close your row when the clerk tells you the lead has released you. If something on the slice cost you time, first
+Close your row when the clerk tells you the judge has released you. If something on the slice cost you time, first
 add a retrospective note, as the rig's culture says ("Leave the next run better"):
 
 ```sh

@@ -13,6 +13,7 @@ seats. Seats are found by role, never by a name you remember: the team may have 
 | Frontend builder | `builder-frontend-claude`, `builder-frontend-codex` | `dev` | `frontend-1` | Yes |
 | QA | `qa-claude`, `qa-codex` | `quality` | `qa-1`, `qa-2`, one for each builder | Yes, with the builders |
 | Code reviewer | `code-reviewer-claude`, `code-reviewer-codex` | `review` | `reviewer-1`, `reviewer-2`, one on each runtime | Yes, keeping both runtimes |
+| Judge | `judge-claude`, `judge-codex` | `review` | `judge-1` | Yes, rarely needed |
 | Release manager | `release-manager-claude`, `release-manager-codex` | `release` | `manager-1` | Yes, rarely needed |
 
 Each role has one profile per runtime: the `-claude` one for a seat on Claude Code, the `-codex` one for a seat on
@@ -37,8 +38,8 @@ edges:
 - a `delegates_to` edge from `orch.lead`, so its stuck rows escalate to the lead;
 - a line for it in `configurations.yaml`, mapping each runtime to the role's profile there, as the role's other seats
   do;
-- for a builder, the `startup/review-pair-builder.md` start file, and for a code reviewer,
-  `startup/review-pair-reviewer.md`.
+- for a builder, the `startup/review-pair-builder.md` start file, for a code reviewer,
+  `startup/review-pair-reviewer.md`, and for a judge, `startup/review-pair-judge.md` and `startup/slice-spec.md`.
 
 Add a QA seat with each builder, so every builder can build at once. Keep code reviewers on at least two runtimes, so
 every review pair can have one of each.
@@ -58,11 +59,11 @@ the lead.
 - **Free:** a seat is free when it holds no open row on another slice
   (`rig queue list --destination <seat> --state pending,in-progress,blocked`).
 - **Builder and QA:** once the lead has locked a slice's spec and the slice is ready, the clerk names one free builder
-  of the slice's kind and one free QA seat, and sends each a row for the slice. Both hold the slice until the lead has
-  judged it, QA parking its row between commits.
+  of the slice's kind and one free QA seat, and sends each a row for the slice, naming its judge. Both hold the slice
+  until the judge has judged it, QA parking its row between commits.
 - **Review pair:** when QA first records PASS on the slice, the builder asks the clerk, which names two free code
   reviewers on different runtimes and sends each a row for the slice. They hold it, parked between commits, through
-  every fix round, until both have recorded PASS at the same commit and the lead has compared their reviews.
+  every fix round, until both have recorded PASS at the same commit and the judge has compared their reviews.
   When the team setting "One-runtime review pairs while a runtime is out" is on and one runtime's accounts have run
   out, the clerk may pair two reviewers on the other runtime instead: two different models, one a tier above the
   builder's. New pairs go back to one of each once the other runtime has room, and the slice progress records each
@@ -72,10 +73,12 @@ the lead.
   when they are free, and to a free review pair again when the slice's own diff changes.
 - **Planner:** the lead sends the clerk each goal, slice to re-cut, survey for work and question that needs reading
   code, and the clerk hands it to a free planner.
-- **Release manager:** the lead gives each judged slice to the release manager that already holds its mission's other
+- **Judge:** the clerk names a slice's judge when it hands the slice on: with more than one judge, the one with the
+  fewest open rows. The judge passes the hard or risky slices to the lead.
+- **Release manager:** the judge gives each judged slice to the release manager that already holds its mission's other
   slices, or else to the one with the fewest open rows, so one release manager sees each mission's merge order.
 
-A seat closes its row on a slice when the clerk tells it the lead has released it.
+A seat closes its row on a slice when the clerk tells it the judge, or the lead, has released it.
 
 ## Fresh seats and long-lived seats
 
@@ -90,8 +93,8 @@ It keeps its address and gets its start steps again, but remembers nothing of th
 put whatever the next seat would need into the record: the slice progress, the spec or the proof. A seat never
 relaunches itself.
 
-**The lead, its peer, the clerk and the release manager are long-lived:** they hold work across slices. Each registers
-one reminder on its own session when it starts, unless `rig watchdog list` already shows it:
+**The lead, its peer, the clerk, the judge and the release manager are long-lived:** they hold work across slices.
+Each registers one reminder on its own session when it starts, unless `rig watchdog list` already shows it:
 
 ```sh
 rig watchdog register --policy context-usage-threshold --target-session <your session> --registered-by <your session> \
