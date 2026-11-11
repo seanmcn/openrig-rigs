@@ -3,13 +3,13 @@ name: shipwrights
 summary: >
   An engineering team built on OpenRig's Workshop: a lead who turns your goal into
   missions and slices and decides the hard calls, a peer on either runtime that watches the
-  lead and relaunches it if it goes down, a clerk that does the lead's routine coordination,
-  a planner, a backend builder and a frontend builder, a QA seat for each builder, two code
-  reviewers who review each slice as a pair on different runtimes, a judge that judges each
-  slice's proof and passes the hard or risky ones to the lead, and a release manager who
-  publishes and keeps each pull request mergeable. Enough for two streams of work; a rig
-  grows the roles it needs. Launch it with --cwd in a clone of your repository, or in a
-  folder that holds several clones.
+  lead and relaunches it if it goes down, a clerk that takes your goals and does the lead's
+  routine coordination, a planner, a backend builder and a frontend builder, a QA seat for
+  each builder, two code reviewers who review each slice as a pair on different runtimes, a
+  judge that judges each slice's proof and passes the hard or risky ones to the lead, and a
+  release manager who publishes and keeps each pull request mergeable. Enough for two
+  streams of work; a rig grows the roles it needs. Launch it with --cwd in a clone of your
+  repository, or in a folder that holds several clones.
 
 culture_file: CULTURE.md
 
@@ -80,8 +80,9 @@ pods:
         profile: peer-claude
         runtime: claude-code
         cwd: "."
-      # Does the lead's routine coordination by fixed rules: routes work to planners, assigns each locked slice its
-      # seats, relaunches freed seats, keeps the roster, checks the slice time limit and records deliveries.
+      # Does the lead's routine coordination by fixed rules: takes the person's goals, routes work to planners, assigns
+      # each locked slice its seats, relaunches freed seats, keeps the roster, checks the slice time limit and records
+      # deliveries.
       - id: clerk-1
         agent_ref: "local:agents/shipwrights"
         profile: clerk-claude

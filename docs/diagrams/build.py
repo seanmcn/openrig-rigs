@@ -188,10 +188,9 @@ def swimlane(t: Tokens, slug: str, title: str, desc: str, lanes: list[str],
 def work(t: Tokens, slug: str) -> Canvas:
     steps = [  # (lane, name, sublabel, kind), one per row
         (0, "Your goal", "an issue or a request", "step"),
-        (1, "Take it on", "goal to the clerk", "step"),
-        (3, "Route the work", "to a free planner", "step"),
+        (3, "Route the goal", "to a free planner", "step"),
         (4, "Cut the work", "mission, slices, specs", "step"),
-        (1, "Lock specs", "each slice's SPEC", "step"),
+        (1, "Lock specs", "takes the work on", "step"),
         (3, "Assign seats", "builder and QA seat", "step"),
         (2, "Built and reviewed", "the next diagram", "step"),
         (2, "Judge proof", "at the reviewed commit", "step"),
@@ -203,15 +202,15 @@ def work(t: Tokens, slug: str) -> Canvas:
     ]
     c, box, _ = swimlane(
         t, slug, "How the work moves",
-        "The lead takes on your goal and the clerk routes it to a planner, which cuts it; the lead locks each slice's "
-        "spec and the clerk assigns it a builder and a QA seat; the judge judges the proof once it is built and "
-        "reviewed, passing the hard or risky slices to the lead to decide, and hands it to the release manager, which "
-        "writes the description and opens the pull requests; a failing CI run or a conflict goes back through the "
+        "The clerk takes your goal and routes it to a planner, which cuts it; the lead takes the work on by locking "
+        "each slice's spec, and the clerk assigns it a builder and a QA seat; the judge judges the proof once it is "
+        "built and reviewed, passing the hard or risky slices to the lead to decide, and hands it to the release "
+        "manager, which writes the description and opens the pull requests; a failing CI run or a conflict goes back through the "
         "lead, which decides the fix, to the clerk to assign; you merge, the release manager approves delivery, the "
         "clerk records it, and the lead closes your goal once its mission is complete.",
         ["You", "Lead", "Judge", "Clerk", "Planner", "Release manager"], steps)
     # The judge passes a hard or risky slice to the lead beside it, which decides and hands it back.
-    jx, jy = box(7)
+    jx, jy = box(6)
     dx = LANE_W + (LANE_W - NODE_W) // 2
     c.node(dx, jy, NODE_W, NODE_H, "Decide", "hard slices and fixes")
     c.arrow([(jx, jy + 16), (dx + NODE_W, jy + 16)], "dashed")
@@ -221,7 +220,7 @@ def work(t: Tokens, slug: str) -> Canvas:
     # which assigns it. Out of the top of "Open pull requests", left of the arrow coming in, across in the gap under
     # "Judge proof" and up into the bottom of "Decide"; then up the lead's lane, clear of the passed-up arrows on its
     # right, and into the side of "Assign seats", above the arrow leaving it for "Built and reviewed".
-    (ox, oy), (ax, ay) = box(8), box(5)
+    (ox, oy), (ax, ay) = box(7), box(4)
     gap_y = jy + NODE_H + 16
     dcx = dx + NODE_W / 2
     c.arrow([(ox + 24, oy), (ox + 24, gap_y), (dcx, gap_y), (dcx, jy + NODE_H)], "dashed")

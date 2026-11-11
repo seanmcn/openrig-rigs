@@ -46,9 +46,11 @@ down. It never drives.
 _Avoid_: peer (for any other seat; say "the other seats")
 
 **Clerk**:
-The seat that does the lead's routine coordination by fixed rules, such as `orch-clerk-1`: it routes work to a free
-planner, gives each slice its seats once the lead locks its spec, relaunches seats when their part is done, keeps the
-roster and records deliveries. When unsure, it hands the question to the lead.
+The seat that takes the person's goals and does the lead's routine coordination by fixed rules, such as
+`orch-clerk-1`: it routes each clear goal, and the lead's work for a planner, to a free planner, gives each slice its
+seats once the lead locks its spec, relaunches seats when their part is done, keeps the roster and records deliveries.
+When unsure, it hands the question to the lead, as it does a goal that is unclear, a question, or one it can't tell
+the team should take on.
 _Avoid_: coordinator, dispatcher
 
 **Judge**:
