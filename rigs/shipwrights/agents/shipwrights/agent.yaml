@@ -2,9 +2,10 @@ name: shipwrights
 version: "1.0"
 description: >
   A seat on the shipwrights rig, which works in a clone of a repository, or in a folder
-  that holds several clones. The rig member's profile picks the role: lead, peer, planner,
-  builder-backend, builder-frontend, qa, code-reviewer or release-manager. (An OpenRig profile
-  selects resources and startup files; it is not a Codex permission profile.)
+  that holds several clones. The rig member's profile picks the role and the runtime: each of
+  lead, peer, planner, builder-backend, builder-frontend, qa, code-reviewer and release-manager
+  has a profile for Claude Code and one for Codex, such as lead-claude and lead-codex. (An
+  OpenRig profile selects resources and startup files; it is not a Codex permission profile.)
 
 # Claude Code and Codex seats select OpenRig's own openrig-core plugin from the daemon's
 # OpenRig home, so they get the OpenRig skills (and the plugin's hooks) that match the
@@ -34,11 +35,19 @@ resources:
 
 # Every profile selects only what OpenRig provides. The skills each seat uses beyond these
 # are installed at user level; ../../skills.md says which seat uses which.
+#
+# Each role has one profile per runtime, <role>-claude and <role>-codex. The two deliver the
+# same guidance files and select the same resources; they differ only in the runtime and in
+# the model and effort the README's "Models" section suggests for the role on it. Change a
+# role's guidance, skills or start files in both. ../../configurations.yaml gives each seat
+# its role's profile for the runtime it runs on, and a rig may override any seat's model.
 profiles:
-  lead:
+  lead-claude:
     summary: Turns the person's goal into scoped slices, assigns them, judges their proof and keeps the PR description true.
     preferences:
-      runtime: codex
+      runtime: claude-code
+      model: claude-opus-5-5
+      effort: high
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -50,10 +59,29 @@ profiles:
           required: true
       actions: []
 
-  peer:
-    summary: Runs the lead's guidance on the other runtime, follows the lead's work, and drives only while the lead's seat is down.
+  lead-codex:
+    summary: Turns the person's goal into scoped slices, assigns them, judges their proof and keeps the PR description true.
+    preferences:
+      runtime: codex
+      model: gpt-6-astra
+      effort: high
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/lead.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  peer-claude:
+    summary: The lead's watchdog. Watches the lead, restores it after a handover, relaunches it when it is down and never drives.
     preferences:
       runtime: claude-code
+      model: claude-haiku-5-5
+      effort: low
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -68,10 +96,32 @@ profiles:
           required: true
       actions: []
 
-  planner:
+  peer-codex:
+    summary: The lead's watchdog. Watches the lead, restores it after a handover, relaunches it when it is down and never drives.
+    preferences:
+      runtime: codex
+      model: gpt-6-luna
+      effort: low
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/lead.md
+          delivery_hint: send_text
+          required: true
+        - path: guidance/peer.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  planner-claude:
     summary: Turns goals and issues into missions and slices with specs, dependencies and a build order.
     preferences:
       runtime: claude-code
+      model: claude-opus-5-5
+      effort: high
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -83,10 +133,29 @@ profiles:
           required: true
       actions: []
 
-  builder-backend:
+  planner-codex:
+    summary: Turns goals and issues into missions and slices with specs, dependencies and a build order.
+    preferences:
+      runtime: codex
+      model: gpt-6-astra
+      effort: high
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/planner.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  builder-backend-claude:
     summary: Takes backend slices. Makes the change in its own worktree, reviews its own diff and proves it by effect.
     preferences:
       runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -98,10 +167,29 @@ profiles:
           required: true
       actions: []
 
-  builder-frontend:
+  builder-backend-codex:
+    summary: Takes backend slices. Makes the change in its own worktree, reviews its own diff and proves it by effect.
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/builder-backend.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  builder-frontend-claude:
     summary: Builds on the backend builder's guidance. It takes UI slices end to end, checks them in a real browser and runs impeccable's reviews and detector.
     preferences:
       runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -116,10 +204,32 @@ profiles:
           required: true
       actions: []
 
-  qa:
+  builder-frontend-codex:
+    summary: Builds on the backend builder's guidance. It takes UI slices end to end, checks them in a real browser and runs impeccable's reviews and detector.
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/builder-backend.md
+          delivery_hint: send_text
+          required: true
+        - path: guidance/builder-frontend.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  qa-claude:
     summary: Runs the test layers the change calls for and records what each one proved.
     preferences:
       runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -131,10 +241,29 @@ profiles:
           required: true
       actions: []
 
-  code-reviewer:
+  qa-codex:
+    summary: Runs the test layers the change calls for and records what each one proved.
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/qa.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  code-reviewer-claude:
     summary: Reviews the handed-off commit with the named review skills and runs the tests that bear on it.
     preferences:
       runtime: claude-code
+      model: claude-opus-5-5
+      effort: high
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]
@@ -146,10 +275,46 @@ profiles:
           required: true
       actions: []
 
-  release-manager:
+  code-reviewer-codex:
+    summary: Reviews the handed-off commit with the named review skills and runs the tests that bear on it.
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: high
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/code-reviewer.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  release-manager-claude:
+    summary: Publishes each judged slice's pull request with its merge gate, watches CI and keeps the pull request mergeable until it is merged.
+    preferences:
+      runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
+    uses:
+      skills: [using-the-tui-together]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/release-manager.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  release-manager-codex:
     summary: Publishes each judged slice's pull request with its merge gate, watches CI and keeps the pull request mergeable until it is merged.
     preferences:
       runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
     uses:
       skills: [using-the-tui-together]
       plugins: [openrig-core]

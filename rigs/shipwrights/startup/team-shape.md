@@ -3,18 +3,20 @@
 Every seat reads this. It names the team's roles, which of them can have more than one seat, and how to find a role's
 seats. Seats are found by role, never by a name you remember: the team may have grown since this file was written.
 
-| Role | Profile | Pod | Seats in the default team | Can grow |
+| Role | Profiles | Pod | Seats in the default team | Can grow |
 | --- | --- | --- | --- | --- |
-| Lead | `lead` | `orch` | `lead` | No |
-| Peer | `peer` | `orch` | `peer`, on either runtime | No |
-| Planner | `planner` | `orch` | `planner-1` | Yes, rarely needed |
-| Backend builder | `builder-backend` | `dev` | `backend-1` | Yes |
-| Frontend builder | `builder-frontend` | `dev` | `frontend-1` | Yes |
-| QA | `qa` | `quality` | `qa-1`, `qa-2`, one for each builder | Yes, with the builders |
-| Code reviewer | `code-reviewer` | `review` | `reviewer-1`, `reviewer-2`, one on each runtime | Yes, keeping both runtimes |
-| Release manager | `release-manager` | `release` | `manager-1` | Yes, rarely needed |
+| Lead | `lead-claude`, `lead-codex` | `orch` | `lead` | No |
+| Peer | `peer-claude`, `peer-codex` | `orch` | `peer`, on either runtime | No |
+| Planner | `planner-claude`, `planner-codex` | `orch` | `planner-1` | Yes, rarely needed |
+| Backend builder | `builder-backend-claude`, `builder-backend-codex` | `dev` | `backend-1` | Yes |
+| Frontend builder | `builder-frontend-claude`, `builder-frontend-codex` | `dev` | `frontend-1` | Yes |
+| QA | `qa-claude`, `qa-codex` | `quality` | `qa-1`, `qa-2`, one for each builder | Yes, with the builders |
+| Code reviewer | `code-reviewer-claude`, `code-reviewer-codex` | `review` | `reviewer-1`, `reviewer-2`, one on each runtime | Yes, keeping both runtimes |
+| Release manager | `release-manager-claude`, `release-manager-codex` | `release` | `manager-1` | Yes, rarely needed |
 
-The default team has enough seats for two slices at once. A rig grows the roles its work needs.
+Each role has one profile per runtime: the `-claude` one for a seat on Claude Code, the `-codex` one for a seat on
+Codex. Both carry the same guidance; they differ only in the model and effort they suggest. The default team has
+enough seats for two slices at once. A rig grows the roles its work needs.
 
 ## Find a role's seats
 
@@ -22,16 +24,18 @@ The default team has enough seats for two slices at once. A rig grows the roles 
 rig ps --nodes --rig <rig> --json --fields canonicalSessionName,profile,runtime
 ```
 
-lists every seat with its profile and runtime. A role's seats are the ones with its profile; use the addresses it
-gives (`canonicalSessionName`).
+lists every seat with its profile and runtime. A role's seats are the ones with either of its profiles; use the
+addresses it gives (`canonicalSessionName`).
 
 ## Add a seat
 
 Only a role marked "Yes" above grows. A grown seat takes the next number in its role's pod, such as `backend-2` in
-`dev` after `backend-1`, the same profile and start files as the role's other seats, and the role's edges:
+`dev` after `backend-1`, the same profile and start files as the role's other seats on its runtime, and the role's
+edges:
 
 - a `delegates_to` edge from `orch.lead`, so its stuck rows escalate to the lead;
-- a runtime for it in `configurations.yaml`, from the same choices as the role's other seats;
+- a line for it in `configurations.yaml`, mapping each runtime to the role's profile there, as the role's other seats
+  do;
 - for a builder, the `startup/review-pair-builder.md` start file, and for a code reviewer,
   `startup/review-pair-reviewer.md`.
 
@@ -41,7 +45,7 @@ every review pair can have one of each.
 To grow a team you haven't launched, add the member to its pod in `rig.yaml`. To grow a running rig, use OpenRig's
 `rig add`, which adds a member to an existing pod, or `rig expand`, which adds a new pod; both take the full member
 definition, as `rig.yaml` writes it. Don't use `rig grow`: `rig grow` adds only OpenRig's default agent, so the new
-seat would lose its role's profile and runtime choices. Put the same member in your copy of `rig.yaml` too, so the
+seat would lose its role's profile, model and runtime choices. Put the same member in your copy of `rig.yaml` too, so the
 seat comes back the next time the rig starts.
 
 ## Which seats a slice holds

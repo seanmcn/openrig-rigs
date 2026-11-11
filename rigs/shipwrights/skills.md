@@ -28,7 +28,7 @@ Code and Codex.
 
 **Required** skills are named in a step of the guidance, `CULTURE.md` included, since every seat reads it; a seat
 without one can't do that step as written. **Optional** ones help the seats listed but no step names them. **Seats** are
-the profiles in `agents/shipwrights/agent.yaml`; `all` is every seat. The commit is the one this team was last checked
+the roles in `agents/shipwrights/agent.yaml`, each meaning both of the role's profiles; `all` is every seat. The commit is the one this team was last checked
 with; a newer one usually works. This table is the only list: the install script and `scripts/check-team.py` both read
 it.
 

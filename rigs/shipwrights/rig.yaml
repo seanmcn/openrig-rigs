@@ -48,7 +48,7 @@ permission_policy: builtin:yolo
 non_interruptive: true
 
 # Pods group seats by role. A role that can grow numbers its seats: a grown seat takes the next number in its role's
-# pod, the same profile and start files, and a delegates_to edge from orch.lead (see the edges at the end), with a
+# pod, the same profile for its runtime and start files, and a delegates_to edge from orch.lead (see the edges at the end), with a
 # runtime in configurations.yaml. startup/team-shape.md says which roles can grow.
 pods:
   - id: orch
@@ -57,7 +57,7 @@ pods:
     members:
       - id: lead
         agent_ref: "local:agents/shipwrights"
-        profile: lead
+        profile: lead-codex
         runtime: codex
         cwd: "."
         startup:
@@ -74,7 +74,7 @@ pods:
       # The lead's watchdog, on either runtime. It relaunches a down lead and never drives.
       - id: peer
         agent_ref: "local:agents/shipwrights"
-        profile: peer
+        profile: peer-claude
         runtime: claude-code
         cwd: "."
         startup:
@@ -91,7 +91,7 @@ pods:
       # Cuts goals and issues into missions and slices with specs, dependencies and a build order.
       - id: planner-1
         agent_ref: "local:agents/shipwrights"
-        profile: planner
+        profile: planner-claude
         runtime: claude-code
         cwd: "."
         startup:
@@ -113,7 +113,7 @@ pods:
     members:
       - id: backend-1
         agent_ref: "local:agents/shipwrights"
-        profile: builder-backend
+        profile: builder-backend-claude
         runtime: claude-code
         cwd: "."
         startup:
@@ -124,7 +124,7 @@ pods:
       # Takes slices tagged UI or both.
       - id: frontend-1
         agent_ref: "local:agents/shipwrights"
-        profile: builder-frontend
+        profile: builder-frontend-claude
         runtime: claude-code
         cwd: "."
         startup:
@@ -140,12 +140,12 @@ pods:
     members:
       - id: qa-1
         agent_ref: "local:agents/shipwrights"
-        profile: qa
+        profile: qa-claude
         runtime: claude-code
         cwd: "."
       - id: qa-2
         agent_ref: "local:agents/shipwrights"
-        profile: qa
+        profile: qa-claude
         runtime: claude-code
         cwd: "."
     edges: []
@@ -157,7 +157,7 @@ pods:
     members:
       - id: reviewer-1
         agent_ref: "local:agents/shipwrights"
-        profile: code-reviewer
+        profile: code-reviewer-claude
         runtime: claude-code
         cwd: "."
         startup:
@@ -167,7 +167,7 @@ pods:
               required: true
       - id: reviewer-2
         agent_ref: "local:agents/shipwrights"
-        profile: code-reviewer
+        profile: code-reviewer-codex
         runtime: codex
         cwd: "."
         startup:
@@ -183,7 +183,7 @@ pods:
     members:
       - id: manager-1
         agent_ref: "local:agents/shipwrights"
-        profile: release-manager
+        profile: release-manager-codex
         runtime: codex
         cwd: "."
     edges: []
