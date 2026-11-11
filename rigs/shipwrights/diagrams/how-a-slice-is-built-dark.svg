@@ -1,22 +1,24 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 704 568" width="704" height="568" role="img" aria-labelledby="how-a-slice-is-built-dark-title how-a-slice-is-built-dark-desc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 568" width="880" height="568" role="img" aria-labelledby="how-a-slice-is-built-dark-title how-a-slice-is-built-dark-desc">
   <title id="how-a-slice-is-built-dark-title">How a slice is built</title>
-  <desc id="how-a-slice-is-built-dark-desc">The lead assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the lead then names a review pair on two runtimes, whose findings go back to the builder and through QA again, and compares their reviews once both pass.</desc>
+  <desc id="how-a-slice-is-built-dark-desc">The clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder until it passes; the clerk then names a review pair on two runtimes, whose findings go back to the builder and through QA again; once both pass, the lead compares their reviews and judges.</desc>
   <defs><marker id="how-a-slice-is-built-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="how-a-slice-is-built-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
   <line x1="176" y1="12" x2="176" y2="520" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
   <line x1="352" y1="12" x2="352" y2="520" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
   <line x1="528" y1="12" x2="528" y2="520" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <line x1="0" y1="40" x2="704" y2="40" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <line x1="704" y1="12" x2="704" y2="520" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
+  <line x1="0" y1="40" x2="880" y2="40" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
   <path d="M160,80 L256,80 Q264,80 264,88 L264,136" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
   <path d="M336,160 L432,160 Q440,160 440,168 L440,216" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
   <path d="M368,240 L96,240 Q88,240 88,248 L88,296" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
   <path d="M160,320 L608,320 Q616,320 616,328 L616,376" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
-  <path d="M544,400 L96,400 Q88,400 88,408 L88,456" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
+  <path d="M688,400 L784,400 Q792,400 792,408 L792,456" fill="none" stroke="#bfc0c0" stroke-width="1.4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
   <path d="M464,216 L464,156 Q464,148 456,148 L336,148" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
   <path d="M640,376 L640,128 Q640,120 632,120 L296,120 Q288,120 288,128 L288,136" fill="none" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4" marker-end="url(#how-a-slice-is-built-dark-arrow-muted)"/>
-  <text x="88" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">LEAD</text>
+  <text x="88" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">CLERK</text>
   <text x="264" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">BUILDER</text>
   <text x="440" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">QA</text>
   <text x="616" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">REVIEWERS</text>
+  <text x="792" y="28" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle" letter-spacing="1">LEAD</text>
   <rect x="16" y="56" width="144" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="88" y="77" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Assign</text>
   <text x="88" y="93" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">builder and QA seat</text>
@@ -32,13 +34,13 @@
   <rect x="544" y="376" width="144" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
   <text x="616" y="397" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Review</text>
   <text x="616" y="413" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">a pair, apart</text>
-  <rect x="16" y="456" width="144" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
-  <text x="88" y="477" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Compare reviews</text>
-  <text x="88" y="493" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">then judge</text>
+  <rect x="720" y="456" width="144" height="48" rx="6" fill="rgba(255,255,255,0.05)" stroke="#f5f5f5" stroke-width="1.2"/>
+  <text x="792" y="477" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="middle">Compare reviews</text>
+  <text x="792" y="493" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="middle">then judge</text>
   <text x="472" y="203" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">FAILS</text>
   <text x="648" y="259" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">FINDINGS</text>
   <text x="360" y="232" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">PASSES</text>
-  <text x="536" y="392" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">BOTH PASS</text>
+  <text x="696" y="392" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">BOTH PASS</text>
   <line x1="16" y1="544" x2="32" y2="544" stroke="#bfc0c0" stroke-width="1.4" stroke-dasharray="5,4"/>
   <text x="38" y="548" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" fill="#949eb2">back to the builder</text>
 </svg>

@@ -4,16 +4,13 @@ You are the lead's peer: the second seat in the orchestration pod, on either run
 exist so a lead whose seat goes down is restored, not replaced: you watch it, restore it after a handover, and
 relaunch it when it has been down for 10 minutes.
 
-You never drive. The lead's guidance comes with this file so you know what the lead holds and what a restored lead
-needs; you never act on it. Where it and this file disagree, this file wins.
+You never drive. You don't carry the lead's guidance: what a restored lead needs is in the record, and this file says
+where to read it.
 
 ## While the lead is up, you watch
 
 - **Assign nothing.** Don't create, claim, hand off or close rows for the lead's work, don't judge proof, and don't
   talk to the person about the team's work. The lead does all of that.
-- **Skip the lead's start-up jobs.** The lead publishes the roster and registers the time-limit reminder. Don't do them
-  as well: two seats doing them is how they get done twice. Your own context reminder ("This team's shape") is yours to
-  register.
 - **Keep your own picture current, lightly.** When something wakes you, read what changed since you last looked, from
   the record rather than from messages:
   - the lead's open rows: `rig queue list --destination <lead> --state pending,in-progress,blocked --json`;
@@ -38,6 +35,7 @@ rig watchdog register --policy periodic-reminder --target-session <your session>
 ```
 
 `rig whoami --json` gives your session and the lead's (`orch-lead` in this rig). Between reminders, idle is fine.
+Register your own context reminder too, as "This team's shape" says for long-lived seats.
 
 ## Is the lead down?
 

@@ -31,7 +31,7 @@ your `rig` commands fail in the sandbox, say so instead.
 
 Then the lead starts from the person's goal, usually delivered in the kernel operator's queue row, and follows its "Your
 first move" startup guidance. It does not ask for that goal again. With no goal, it waits for one, and looks for work
-only when the person asks it to. Everyone else waits for work. The lead brings it as queue rows, and an idle seat is
-fine.
+only when the person asks it to. Everyone else waits for work. The lead and the clerk bring it as queue rows, and an
+idle seat is fine.
 
 Need expertise your team lacks? `rig roster find <topic>` lists who to ask and why.

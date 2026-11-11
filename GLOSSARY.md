@@ -44,6 +44,12 @@ A named choice of runtime for every seat, from a team's `configurations.yaml`, s
 The `orch-peer` seat, the lead's watchdog: it restores the lead after a handover and relaunches it when its seat is down. It never drives.
 _Avoid_: peer (for any other seat; say "the other seats")
 
+**Clerk**:
+The seat that does the lead's routine coordination by fixed rules, such as `orch-clerk-1`: it routes work to a free
+planner, gives each slice its seats once the lead locks its spec, relaunches seats when their part is done, keeps the
+roster and records deliveries. When unsure, it hands the question to the lead.
+_Avoid_: coordinator, dispatcher
+
 **Overlay**:
 A person's own changes on top of a pinned team: their settings, their skills in place of some of the team's, and
 their own startup files.
@@ -84,13 +90,13 @@ can go on. **CONCERNING**: it passes, but something should change, or be argued.
 and the lead decides.
 
 **Fresh seat**:
-A builder, QA seat, code reviewer or planner, which the lead relaunches with a new session after each piece of work:
-it keeps its address and remembers nothing of earlier slices. The lead, its peer and the release manager are
-**long-lived** instead, and hand over to a fresh successor near a full context.
+A builder, QA seat, code reviewer or planner, which the clerk relaunches with a new session after each piece of work:
+it keeps its address and remembers nothing of earlier slices. The lead, its peer, the clerk and the release manager
+are **long-lived** instead, and hand over to a fresh successor near a full context.
 _Avoid_: reset, recycled seat
 
 **Review pair**:
-The two code reviewers the lead names for a slice, on different runtimes, who review the same commits independently.
+The two code reviewers the clerk names for a slice, on different runtimes, who review the same commits independently.
 _Avoid_: reviewer pair, review team
 
 **Proof contract**:
@@ -139,7 +145,7 @@ _Avoid_: handoff (for the row itself; say "queue row")
 
 **Roster**:
 A team's published list of its seats, each with what its role does and when to ask it, which anyone finds with
-`rig roster find`. The lead curates it.
+`rig roster find`. The clerk curates it.
 _Avoid_: directory
 
 **Tier**:

@@ -188,25 +188,30 @@ def swimlane(t: Tokens, slug: str, title: str, desc: str, lanes: list[str],
 def work(t: Tokens, slug: str) -> Canvas:
     steps = [  # (lane, name, sublabel, kind), one per row
         (0, "Your goal", "an issue or a request", "step"),
-        (2, "Cut the work", "mission, slices, specs", "step"),
-        (1, "Lock and assign", "builder and QA seat", "step"),
+        (1, "Take it on", "goal to the clerk", "step"),
+        (2, "Route the work", "to a free planner", "step"),
+        (3, "Cut the work", "mission, slices, specs", "step"),
+        (1, "Lock specs", "each slice's SPEC", "step"),
+        (2, "Assign seats", "builder and QA seat", "step"),
         (1, "Built and reviewed", "the next diagram", "step"),
         (1, "Judge proof", "at the reviewed commit", "step"),
-        (3, "Open pull requests", "with the merge gate", "step"),
+        (4, "Open pull requests", "with the merge gate", "step"),
         (0, "Merge", "your decision", "focal"),
-        (3, "Approve delivery", "tells the lead", "step"),
-        (1, "Close the mission", "and your goal", "step"),
+        (4, "Approve delivery", "tells the clerk", "step"),
+        (2, "Record delivery", "mission progress", "step"),
+        (1, "Close your goal", "mission complete", "step"),
     ]
     c, box, _ = swimlane(
         t, slug, "How the work moves",
-        "Your goal goes to the planner, which cuts it; the lead locks each slice's spec and assigns it a builder and a "
-        "QA seat, judges the proof once it is built and reviewed, and hands it to the release manager, which opens "
-        "the pull requests; a failing CI run or a conflict goes back to the lead to assign; you merge, the release "
-        "manager approves delivery, and the lead closes the mission.",
-        ["You", "Lead", "Planner", "Release manager"], steps)
-    # A failing CI run or a conflict goes back to the lead, which assigns the fix or the rebase: up the release
-    # manager's lane, clear of the arrow coming in, and into the side of "Lock and assign".
-    (ox, oy), (ax, ay) = box(5), box(2)
+        "The lead takes on your goal and the clerk routes it to a planner, which cuts it; the lead locks each slice's "
+        "spec and the clerk assigns it a builder and a QA seat; the lead judges the proof once it is built and "
+        "reviewed, and hands it to the release manager, which opens the pull requests; a failing CI run or a "
+        "conflict goes back through the lead, which decides the fix, to the clerk to assign; you merge, the release "
+        "manager approves delivery, the clerk records it, and the lead closes your goal once its mission is complete.",
+        ["You", "Lead", "Clerk", "Planner", "Release manager"], steps)
+    # A failing CI run or a conflict goes back, through the lead's decision, to the clerk, which assigns the fix or the
+    # rebase: up the release manager's lane, clear of the arrow coming in, and into the side of "Assign seats".
+    (ox, oy), (ax, ay) = box(8), box(5)
     lx = ox + NODE_W / 2 + 40
     c.arrow([(lx, oy), (lx, ay + NODE_H / 2), (ax + NODE_W, ay + NODE_H / 2)], "dashed")
     c.label(lx - 8, (ay + NODE_H + oy) / 2 + 3, "ci, conflict", anchor="end")
@@ -220,14 +225,14 @@ def building(t: Tokens, slug: str) -> Canvas:
         (2, "QA checks", "at that commit", "step"),
         (0, "Name a pair", "on two runtimes", "step"),
         (3, "Review", "a pair, apart", "step"),
-        (0, "Compare reviews", "then judge", "step"),
+        (4, "Compare reviews", "then judge", "step"),
     ]
     c, box, _ = swimlane(
         t, slug, "How a slice is built",
-        "The lead assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder "
-        "until it passes; the lead then names a review pair on two runtimes, whose findings go back to the builder "
-        "and through QA again, and compares their reviews once both pass.",
-        ["Lead", "Builder", "QA", "Reviewers"], steps)
+        "The clerk assigns a builder and a QA seat; the builder builds a commit and QA checks it, back to the builder "
+        "until it passes; the clerk then names a review pair on two runtimes, whose findings go back to the builder "
+        "and through QA again; once both pass, the lead compares their reviews and judges.",
+        ["Clerk", "Builder", "QA", "Reviewers", "Lead"], steps)
     (bx, by), (qx, qy), (rx, ry) = box(1), box(2), box(4)
     qcx, rcx = qx + NODE_W / 2, rx + NODE_W / 2
     # QA's failures go back to the builder: up from QA's top and into the builder's side above the arrow going out.
@@ -237,9 +242,9 @@ def building(t: Tokens, slug: str) -> Canvas:
     c.arrow([(rcx + 24, ry), (rcx + 24, by - 16), (bx + NODE_W / 2 + 24, by - 16), (bx + NODE_W / 2 + 24, by)],
             "dashed")
     c.label(rcx + 32, (by + ry) / 2 + 3, "findings", anchor="start")
-    # The two hand-backs to the lead, labelled above their runs across the lanes.
+    # QA's pass goes back to the clerk, and both reviewers' to the lead, labelled above their runs across the lanes.
     c.label(qx - 8, qy + NODE_H / 2 - 8, "passes", anchor="end")
-    c.label(rx - 8, ry + NODE_H / 2 - 8, "both pass", anchor="end")
+    c.label(rx + NODE_W + 8, ry + NODE_H / 2 - 8, "both pass", anchor="start")
     return c
 
 
@@ -402,15 +407,15 @@ def seats(t: Tokens, slug: str) -> Canvas:
     ]
     width = gap + len(pods) * (side + gap)
 
-    # The orch pod on top, centred: the lead, which you talk to, its peer, which watches the lead and relaunches it, and
-    # the planner.
+    # The orch pod on top, centred: the lead, which you talk to, its peer, which watches the lead and relaunches it, the
+    # clerk, which does the lead's routine coordination, and the planner.
     orch = [("Lead", "lead", "Codex", "focal"), ("Peer", "peer", "Claude Code", "held"),
-            ("Planner", "planner-1", "Claude Code", "step")]
+            ("Clerk", "clerk-1", "Claude Code", "step"), ("Planner", "planner-1", "Claude Code", "step")]
     orch_w = len(orch) * w + (len(orch) - 1) * gap + 2 * pad
     orch_x, orch_y = (width - orch_w) // 2, 32
     zone_y, zone_h = orch_y + h + 2 * pad + 40, 2 * h + 3 * pad
     c = Canvas(t, slug, width, zone_y + zone_h + 64, "Shipwrights' seats",
-               "Shipwrights' ten seats in five pods: in orch, the lead, its peer and a planner; in dev, a backend "
+               "Shipwrights' eleven seats in five pods: in orch, the lead, its peer, a clerk and a planner; in dev, a backend "
                "builder and a frontend builder; in quality, two QA seats; in review, two code reviewers, one on each "
                "runtime; and in release, a release manager. A role that can grow numbers its seats.")
     c.legend_x = 24
