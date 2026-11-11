@@ -15,8 +15,8 @@ usage: scripts/check-team.py rigs/<team>
   `rig queue block` example names its `--on` blocker, and every
   role file has its seat add a retrospective note to the slice progress;
 - every role in ROLES has one profile per runtime in RUNTIMES, named <role>-<runtime>, each
-  delivering the role's guidance and no other, and setting preferences.runtime, the model SUGGESTED for the role
-  on that runtime and its effort; agent.yaml has no other profiles; the README's Models section
+  delivering the role's guidance and no other, and setting preferences.runtime, and the model
+  and effort SUGGESTED_MODEL_AND_EFFORT gives the role on that runtime; agent.yaml has no other profiles; the README's Models section
   names every model the model tiers list and says a rig may override a seat's model;
 - rig.yaml declares exactly the seats in SEATS, each a member whose profile is its role's for the
   member's runtime, with each runtime in configurations.yaml mapped to the role's profile there,
@@ -45,6 +45,7 @@ import subprocess
 import sys
 import tempfile
 from pathlib import Path
+from typing import NamedTuple
 
 
 SETTINGS = {
@@ -307,22 +308,33 @@ ROLES = {
 # planner-claude and planner-codex, so a seat gets the model suggested for its role on whichever runtime it runs.
 RUNTIMES = {"claude-code": "claude", "codex": "codex"}
 # The models the README's Models section names, by model tier.
-CLAUDE = {"top": "claude-fable-5-2", "upper": "claude-opus-5-5", "workhorse": "claude-sonnet-5-5", "budget": "claude-haiku-5-5"}
-CODEX = {"top": "gpt-6-astra", "workhorse": "gpt-6.1-sol", "lower": "gpt-6.1-terra", "budget": "gpt-6-luna"}
-# The model each role's profiles suggest on each runtime, and their effort. Codex has no upper model tier, so the lead and
-# planner take its top one there. The clerk pairs one code reviewer from each runtime, so the Claude reviewer is upper
-# and the Codex one workhorse, and every pair has one of each.
-SUGGESTED = {
-    "lead": ({"claude-code": CLAUDE["upper"], "codex": CODEX["top"]}, "high"),
-    "clerk": ({"claude-code": CLAUDE["budget"], "codex": CODEX["budget"]}, "low"),
-    "peer": ({"claude-code": CLAUDE["budget"], "codex": CODEX["budget"]}, "low"),
-    "planner": ({"claude-code": CLAUDE["upper"], "codex": CODEX["top"]}, "high"),
-    "builder-backend": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
-    "builder-frontend": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
-    "qa": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
-    "code-reviewer": ({"claude-code": CLAUDE["upper"], "codex": CODEX["workhorse"]}, "high"),
-    "release-manager": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
-    "judge": ({"claude-code": CLAUDE["workhorse"], "codex": CODEX["workhorse"]}, "medium"),
+CLAUDE_MODELS = {
+    "top": "claude-fable-5-2", "upper": "claude-opus-5-5", "workhorse": "claude-sonnet-5-5", "budget": "claude-haiku-5-5",
+}
+CODEX_MODELS = {"top": "gpt-6-astra", "workhorse": "gpt-6.1-sol", "lower": "gpt-6.1-terra", "budget": "gpt-6-luna"}
+# The model each role's profiles suggest on each runtime, as a model tier, and their effort. Codex has no upper model
+# tier, so the lead and planner take its top one there. The clerk pairs one code reviewer from each runtime, so the Claude
+# reviewer is upper and the Codex one workhorse, and every pair has one of each.
+class Suggested(NamedTuple):
+    claude: str  # the model tier on Claude Code, a key of CLAUDE_MODELS
+    codex: str  # the model tier on Codex, a key of CODEX_MODELS
+    effort: str
+
+    def model(self, runtime):
+        return CLAUDE_MODELS[self.claude] if runtime == "claude-code" else CODEX_MODELS[self.codex]
+
+
+SUGGESTED_MODEL_AND_EFFORT = {
+    "lead": Suggested("upper", "top", "high"),
+    "clerk": Suggested("budget", "budget", "low"),
+    "peer": Suggested("budget", "budget", "low"),
+    "planner": Suggested("upper", "top", "high"),
+    "builder-backend": Suggested("workhorse", "workhorse", "medium"),
+    "builder-frontend": Suggested("workhorse", "workhorse", "medium"),
+    "qa": Suggested("workhorse", "workhorse", "medium"),
+    "code-reviewer": Suggested("upper", "workhorse", "high"),
+    "release-manager": Suggested("workhorse", "workhorse", "medium"),
+    "judge": Suggested("workhorse", "workhorse", "medium"),
 }
 # Every seat the team ships and its role: pod.member in rig.yaml and configurations.yaml, and pod-member in the
 # README's seat table. A role that can grow numbers its seats, so a grown seat takes the next number in its pod.
@@ -400,6 +412,11 @@ NOT_SKILLS |= {f"rev1-{seat.split('.', 1)[1]}" for seat, role in SEATS.items() i
 
 def fail(problems, message):
     problems.append(message)
+
+
+def text_of(path):
+    """A file's text, or "" when there is no file there, so a missing file fails the checks that need it."""
+    return path.read_text(encoding="utf-8") if path.is_file() else ""
 
 
 def check_names(team, problems):
@@ -638,53 +655,66 @@ def check_profiles(team, problems):
         for path in sorted(set(re.findall(r"path: (guidance/\S+)", block)) - set(ROLES[role])):
             fail(problems, f"the {profile!r} profile delivers {path}, which isn't the {role!r} role's guidance")
         preferences = dict(re.findall(r"^      (runtime|model|effort):\s*(\S+)", block, re.MULTILINE))
-        models, effort = SUGGESTED[role]
-        for key, value in (("runtime", runtime), ("model", models[runtime]), ("effort", effort)):
+        suggested = SUGGESTED_MODEL_AND_EFFORT[role]
+        for key, value in (("runtime", runtime), ("model", suggested.model(runtime)), ("effort", suggested.effort)):
             if preferences.get(key) != value:
                 fail(problems, f"the {profile!r} profile's preferences.{key} is {preferences.get(key)!r}, expected {value!r}")
-    readme = (team / "README.md").read_text(encoding="utf-8") if (team / "README.md").is_file() else ""
+    readme = text_of(team / "README.md")
     section = re.search(r"^## Models\n(.*?)(?=^## |\Z)", readme, re.MULTILINE | re.DOTALL)
     if not section:
         fail(problems, "README.md has no Models section")
         return
-    for model in sorted({*CLAUDE.values(), *CODEX.values()}):
+    for model in sorted({*CLAUDE_MODELS.values(), *CODEX_MODELS.values()}):
         if f"`{model}`" not in section.group(1):
             fail(problems, f"README.md's Models section doesn't name `{model}`")
     if "override" not in section.group(1):
         fail(problems, "README.md's Models section doesn't say a rig may override a seat's model")
 
 
-def check_seats(team, problems):
-    rig = (team / "rig.yaml").read_text(encoding="utf-8") if (team / "rig.yaml").is_file() else ""
-    configured = (team / "configurations.yaml").read_text(encoding="utf-8") if (team / "configurations.yaml").is_file() else ""
-    offered = {
-        seat: dict(re.findall(r"([\w-]+):\s*([\w-]+)", runtimes))
-        for seat, runtimes in re.findall(r"^  ([\w.-]+):\s*\{\s*runtimes:\s*\{([^}]*)\}", configured, re.MULTILINE)
-    }
-    # A review pair is two code reviewers on different runtimes, so the recommended preset seats them on at least two.
-    preset = re.search(r"^\s*recommended:\s*\{([^}]*)\}", configured, re.MULTILINE)
+def check_review_runtimes(team, problems):
+    """A review pair is two code reviewers on different runtimes, so the recommended preset seats them on at least two."""
+    preset = re.search(r"^\s*recommended:\s*\{([^}]*)\}", text_of(team / "configurations.yaml"), re.MULTILINE)
     picks = dict(re.findall(r"([\w.-]+):\s*([\w-]+)", preset.group(1))) if preset else {}
     reviewers = {picks.get(seat) for seat, role in SEATS.items() if role == "code-reviewer"} - {None}
     if len(reviewers) < 2:
         fail(problems, "configurations.yaml's recommended preset puts the code reviewers on "
                        f"{sorted(reviewers) or 'no runtime'}: a review pair needs two runtimes")
-    declared = members(rig)
+
+
+def check_members(team, problems):
+    """rig.yaml declares exactly the seats in SEATS, each with its role's profile for the runtime it runs on."""
+    declared = members(text_of(team / "rig.yaml"))
     for seat in sorted(declared.keys() - SEATS.keys()):
         fail(problems, f"rig.yaml declares {seat!r}, which the team doesn't ship: add it to SEATS, or remove it")
-    readme = (team / "README.md").read_text(encoding="utf-8") if (team / "README.md").is_file() else ""
     for seat, role in SEATS.items():
-        member, name = seat.split(".", 1)[1], seat.replace(".", "-")
-        if not re.search(rf"^\|.*`{re.escape(name)}`.*\|", readme, re.MULTILINE):
-            fail(problems, f"README.md's seat table doesn't name {name!r}")
         fields = declared.get(seat)
         runtime = fields and fields.get("runtime")
         if fields is None:
-            fail(problems, f"rig.yaml has no member {member!r} in its pod")
+            fail(problems, f"rig.yaml has no member {seat.split('.', 1)[1]!r} in its pod")
         elif runtime not in RUNTIMES:
             fail(problems, f"rig.yaml's {seat!r} runs on {runtime!r}, which is none of {sorted(RUNTIMES)}")
         elif fields.get("profile") != profile_name(role, runtime):
             fail(problems, f"rig.yaml's {seat!r} has the {fields.get('profile')!r} profile, "
                            f"expected {profile_name(role, runtime)!r} for the {role!r} role on {runtime}")
+
+
+def check_seat_table(team, problems):
+    """The README's seat table names every seat the team ships."""
+    readme = text_of(team / "README.md")
+    for seat in SEATS:
+        name = seat.replace(".", "-")
+        if not re.search(rf"^\|.*`{re.escape(name)}`.*\|", readme, re.MULTILINE):
+            fail(problems, f"README.md's seat table doesn't name {name!r}")
+
+
+def check_configurations(team, problems):
+    """configurations.yaml maps each seat on each runtime to its role's profile there, and offers no other runtime."""
+    configured = text_of(team / "configurations.yaml")
+    offered = {
+        seat: dict(re.findall(r"([\w-]+):\s*([\w-]+)", runtimes))
+        for seat, runtimes in re.findall(r"^  ([\w.-]+):\s*\{\s*runtimes:\s*\{([^}]*)\}", configured, re.MULTILINE)
+    }
+    for seat, role in SEATS.items():
         runtimes = offered.get(seat, {})
         for runtime in RUNTIMES:
             if runtimes.get(runtime) != profile_name(role, runtime):
@@ -692,9 +722,13 @@ def check_seats(team, problems):
                                f"expected {profile_name(role, runtime)!r}")
         for runtime in sorted(runtimes.keys() - RUNTIMES.keys()):
             fail(problems, f"configurations.yaml offers {seat!r} {runtime!r}, which the team has no profiles for")
+
+
+def check_retired_names(team, problems):
+    """No file in the team still uses a name the team renamed."""
     for path in sorted(team.rglob("*")):
         try:
-            text = path.read_text(encoding="utf-8") if path.is_file() else ""
+            text = text_of(path)
         except (UnicodeDecodeError, OSError):
             continue
         for pattern, replacement in RETIRED_NAMES:
@@ -721,7 +755,7 @@ def members(rig):
 
 LEAD = "orch.lead"
 # The peer watches the lead and relaunches it when it is down, so its rows mustn't escalate to the lead: with no
-# orchestrator, OpenRig sends them to its operator instead.
+# orchestrator, OpenRig sends them to its kernel operator instead.
 PEER = "orch.peer"
 
 
@@ -797,7 +831,11 @@ def main():
     check_skills(team, problems)
     check_guidance(team, problems)
     check_profiles(team, problems)
-    check_seats(team, problems)
+    check_review_runtimes(team, problems)
+    check_members(team, problems)
+    check_seat_table(team, problems)
+    check_configurations(team, problems)
+    check_retired_names(team, problems)
     check_team_shape(team, problems)
     check_delegation(team, problems)
     check_bundle(team, problems)
