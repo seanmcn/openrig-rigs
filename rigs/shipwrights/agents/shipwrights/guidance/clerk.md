@@ -171,8 +171,8 @@ and never replace one that exists:
 2. Run `rig roster list`. If it shows a roster with id `<rig>`, stop here.
 3. The file is `<workspace.root>/rosters/<rig>.json`; `rig config get workspace.root` gives the root. If the file
    exists, stop here too. Create the `rosters/` folder if it is missing.
-4. Run `rig ps --nodes --rig <rig> --json --fields canonicalSessionName,hostSelfId,profile`. It gives each seat's
-   exact address, the host that serves it and its profile.
+4. Run `rig ps --nodes --rig <rig> --json --full`. It gives each seat's exact address (`canonicalSessionName`), the
+   host that serves it (`hostSelfId`) and its `profile`.
 5. Give each seat its own member entry, with the capabilities, engagement, `use_when` and `why` of its role, found by
    its profile ("This team's shape" lists the roles). The example below shows one entry for each role; a role with
    several seats repeats its entry for each. Work for the team goes through the lead, so only its entry offers

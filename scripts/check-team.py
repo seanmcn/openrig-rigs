@@ -26,6 +26,7 @@ usage: scripts/check-team.py rigs/<team>
   and says how a grown seat is numbered and added to a running rig;
 - the lead is the orchestrator (the only delegates_to source) of every seat but itself and its
   peer in rig.yaml, so every stuck queue row escalates to it, and the peer observes only the lead;
+- every `rig ps --nodes --fields` example asks only for keys OpenRig accepts;
 - `rig bundle check` passes, when `rig` is installed.
 
 A skill the guidance "names" is any lower-case name in backticks in the guidance, the
@@ -373,6 +374,18 @@ RETIRED_NAMES = [
 # Every seat writes a retrospective note in the slice progress before closing its row.
 RETRO_PHRASE = "rig scope slice progress"
 
+# The keys `rig ps --nodes --fields` accepts (OpenRig 0.7.11, packages/cli/src/commands/ps.ts), which refuses any
+# other. A seat's profile isn't one of them: `rig ps --nodes --json --full` gives it.
+PS_NODE_FIELDS = {
+    "rigId", "rigName", "logicalId", "podId", "podNamespace", "hostSelfId", "canonicalSessionName", "nodeKind",
+    "runtime", "communityHarness", "launchWrapper", "model", "modelObservation", "sessionStatus",
+    "intentionallyStopped", "startupStatus", "restoreOutcome", "oriented", "lifecycleState", "tmuxAttachCommand",
+    "resumeCommand", "latestError", "terminalActive", "hasAssignedWork", "assignedWorkCount", "pendingWorkCount",
+    "inProgressWorkCount", "blockedWorkCount", "agentActivity", "needsAttention", "arbitratedNeedsInput",
+    "needsInputEvidence", "contextUsage", "heldReason", "startedWithoutRequired", "storedSessionStatus",
+    "identityVerdict",
+}
+
 SKILL_NAME = r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*"
 
 # What OpenRig provides itself, which skills.md doesn't list: the Workshop skill this team
@@ -398,9 +411,9 @@ NOT_SKILLS = {
     # the pods and the profiles
     "orch", "dev", "quality", "review", "release", "lead", "peer", "clerk", "planner", "builder-backend", "builder-frontend", "qa",
     "code-reviewer", "release-manager", "judge",
-    # commands, states, tiers, branches, proof types, roster fields and a member's model field
+    # commands, states, tiers, branches, proof types, roster fields, and a member's model and profile fields
     "model", "rig", "gh", "cd", "routine", "deep", "running", "stopped", "recoverable", "unknown", "main",
-    "planned", "active", "runtime", "release-candidate", "rev1-", "delegate", "capabilities", "why",
+    "planned", "active", "runtime", "profile", "release-candidate", "rev1-", "delegate", "capabilities", "why",
     # impeccable's own commands
     "shape", "critique", "audit", "polish", "harden", "typeset", "quieter", "distill", "layout", "init", "generate",
 }
@@ -636,6 +649,16 @@ def check_guidance(team, problems):
             fail(problems, f"guidance/{name} lacks {RETRO_PHRASE!r}: every seat writes a retrospective note")
 
 
+def check_ps_fields(team, problems):
+    """Every `rig ps --nodes ... --fields` example asks only for keys OpenRig accepts, so it doesn't fail as written."""
+    for path in sorted(team.rglob("*.md")):
+        text = " ".join(path.read_text(encoding="utf-8").split())
+        for command in re.findall(r"rig ps --nodes[^`]*?--fields ([\w,]+)", text):
+            for key in sorted(set(command.split(",")) - PS_NODE_FIELDS):
+                fail(problems, f"{path}: `rig ps --nodes --fields` has no {key!r} key, so the command fails; "
+                               "`--json --full` gives every field")
+
+
 def check_profiles(team, problems):
     """Each role has one profile per runtime, with the role's guidance and the model and effort suggested for it."""
     blocks = {}
@@ -830,6 +853,7 @@ def main():
     check_settings(team, problems)
     check_skills(team, problems)
     check_guidance(team, problems)
+    check_ps_fields(team, problems)
     check_profiles(team, problems)
     check_review_runtimes(team, problems)
     check_members(team, problems)

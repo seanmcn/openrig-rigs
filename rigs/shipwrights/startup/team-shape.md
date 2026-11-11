@@ -23,11 +23,12 @@ enough seats for two slices at once. A rig grows the roles its work needs.
 ## Find a role's seats
 
 ```sh
-rig ps --nodes --rig <rig> --json --fields canonicalSessionName,profile,runtime
+rig ps --nodes --rig <rig> --json --full
 ```
 
-lists every seat with its profile and runtime. A role's seats are the ones with either of its profiles; use the
-addresses it gives (`canonicalSessionName`).
+lists every seat with its `profile` and `runtime`, among its other fields. (`--fields` can't ask for a seat's
+profile, so take it from `--full`.) A role's seats are the ones with either of its profiles; use the addresses it gives
+(`canonicalSessionName`).
 
 ## Add a seat
 
