@@ -27,8 +27,9 @@ usage: scripts/check-team.py rigs/<team>
   member's runtime, with each runtime in configurations.yaml mapped to the role's profile there,
   and a row in the README's seat table; the recommended preset keeps the code reviewers on two
   runtimes; and the old names are gone;
-- startup/team-shape.md names every profile in agent.yaml, so each role says whether it can grow,
-  and says how a grown seat is numbered and added to a running rig;
+- startup/team-shape.md names every profile in agent.yaml, and its table gives each role whether
+  it can grow and the fewest seats it can shrink to, and it says how a grown seat is numbered and
+  how a seat is added to or removed from a running rig;
 - the lead is the orchestrator (the only delegates_to source) of every seat but itself and its
   peer in rig.yaml, so every stuck queue row escalates to it, and the peer observes only the lead;
 - every `rig ps --nodes --fields` example asks only for keys OpenRig accepts;
@@ -108,6 +109,12 @@ GUIDANCE_RULES = [
     ("startup/team-shape.md", "`rig add`", "a running rig grows a pod with rig add"),
     ("startup/team-shape.md", "`rig expand`", "a running rig gains a pod with rig expand"),
     ("startup/team-shape.md", "`rig grow` adds only OpenRig's default agent", "rig grow would drop the role and its model"),
+    # A rig shrinks a role no further than its fewest seats, and empties a seat before removing it.
+    ("startup/team-shape.md", "## Remove a seat", "team-shape.md says how a rig shrinks, not only how it grows"),
+    ("startup/team-shape.md", "`rig remove`", "a running rig loses a seat with rig remove"),
+    ("startup/team-shape.md", "--fallback", "rig remove refuses a seat with open rows unless they are rerouted"),
+    ("startup/team-shape.md", "the worker seats it owns", "a clerk's seats and missions go to another clerk before it goes"),
+    ("clerk.md", "a seat is leaving", "the clerk assigns nothing new to a seat that is leaving"),
     ("lead.md", "## Find work when asked", "the lead looks for work only when the person asks"),
     ("lead.md", "Don't go looking for work unless they ask", "with no goal, the lead waits"),
     ("lead.md", "## Close the mission", "the lead closes the person's goal once the clerk says its mission is complete"),
@@ -953,6 +960,9 @@ def members(rig):
     return seats
 
 
+# The columns startup/team-shape.md's table fills for every role: whether it can grow, and how far it can shrink.
+SHAPE_COLUMNS = ["Can grow", "Fewest seats"]
+
 LEAD = "orch.lead"
 # The peer watches the lead and relaunches it when it is down, so its rows mustn't escalate to the lead: with no
 # orchestrator, OpenRig sends them to its kernel operator instead.
@@ -960,7 +970,8 @@ PEER = "orch.peer"
 
 
 def check_team_shape(team, problems):
-    """startup/team-shape.md is the one place that says which roles can grow, so it names every profile."""
+    """startup/team-shape.md is the one place that says which roles can grow or shrink, so it names every profile, and
+    its table gives every role whether it can grow and the fewest seats it can shrink to."""
     path = team / "startup" / "team-shape.md"
     if not path.is_file():
         fail(problems, "startup/team-shape.md is missing")
@@ -970,6 +981,16 @@ def check_team_shape(team, problems):
         for profile in profile_blocks(agent_yaml):
             if f"`{profile}`" not in text:
                 fail(problems, f"startup/team-shape.md doesn't name the {profile!r} profile")
+    rows = [[cell.strip() for cell in line.strip().strip("|").split("|")]
+            for line in text.splitlines() if line.startswith("|") and not set(line) <= set("|-: ")]
+    header, roles = (rows[0], rows[1:]) if rows else ([], [])
+    for column in SHAPE_COLUMNS:
+        if column not in header:
+            fail(problems, f"startup/team-shape.md's table has no {column!r} column")
+            continue
+        for row in roles:
+            if len(row) <= header.index(column) or not row[header.index(column)]:
+                fail(problems, f"startup/team-shape.md's table gives the {row[0]!r} role no {column!r}")
 
 
 def check_delegation(team, problems):

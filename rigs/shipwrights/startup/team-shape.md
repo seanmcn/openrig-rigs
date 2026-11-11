@@ -1,24 +1,24 @@
 # This team's shape
 
-Every seat reads this. It names the team's roles, which of them can have more than one seat, and how to find a role's
+Every seat reads this. It names the team's roles, which of them can have more seats or fewer, and how to find a role's
 seats. Seats are found by role, never by a name you remember: the team may have grown since this file was written.
 
-| Role | Profiles | Pod | Seats in the default team | Can grow |
-| --- | --- | --- | --- | --- |
-| Lead | `lead-claude`, `lead-codex` | `orch` | `lead` | No |
-| Peer | `peer-claude`, `peer-codex` | `orch` | `peer`, on either runtime | No |
-| Clerk | `clerk-claude`, `clerk-codex` | `orch` | `clerk-1` | Yes, rarely needed |
-| Planner | `planner-claude`, `planner-codex` | `orch` | `planner-1` | Yes, rarely needed |
-| Backend builder | `builder-backend-claude`, `builder-backend-codex` | `dev` | `backend-1` | Yes |
-| Frontend builder | `builder-frontend-claude`, `builder-frontend-codex` | `dev` | `frontend-1` | Yes |
-| QA | `qa-claude`, `qa-codex` | `quality` | `qa-1`, `qa-2`, one for each builder | Yes, with the builders |
-| Code reviewer | `code-reviewer-claude`, `code-reviewer-codex` | `review` | `reviewer-1`, `reviewer-2`, one on each runtime | Yes, keeping both runtimes |
-| Judge | `judge-claude`, `judge-codex` | `review` | `judge-1` | Yes, rarely needed |
-| Release manager | `release-manager-claude`, `release-manager-codex` | `release` | `manager-1` | Yes, rarely needed |
+| Role | Profiles | Pod | Seats in the default team | Can grow | Fewest seats |
+| --- | --- | --- | --- | --- | --- |
+| Lead | `lead-claude`, `lead-codex` | `orch` | `lead` | No | 1 |
+| Peer | `peer-claude`, `peer-codex` | `orch` | `peer`, on either runtime | No | 1 |
+| Clerk | `clerk-claude`, `clerk-codex` | `orch` | `clerk-1` | Yes, rarely needed | 1 |
+| Planner | `planner-claude`, `planner-codex` | `orch` | `planner-1` | Yes, rarely needed | 1 |
+| Backend builder | `builder-backend-claude`, `builder-backend-codex` | `dev` | `backend-1` | Yes | 0, while a frontend builder is left |
+| Frontend builder | `builder-frontend-claude`, `builder-frontend-codex` | `dev` | `frontend-1` | Yes | 1 |
+| QA | `qa-claude`, `qa-codex` | `quality` | `qa-1`, `qa-2`, one for each builder | Yes, with the builders | 1 |
+| Code reviewer | `code-reviewer-claude`, `code-reviewer-codex` | `review` | `reviewer-1`, `reviewer-2`, one on each runtime | Yes, keeping both runtimes | 2, one on each runtime |
+| Judge | `judge-claude`, `judge-codex` | `review` | `judge-1` | Yes, rarely needed | 1 |
+| Release manager | `release-manager-claude`, `release-manager-codex` | `release` | `manager-1` | Yes, rarely needed | 1 |
 
 Each role has one profile per runtime: the `-claude` one for a seat on Claude Code, the `-codex` one for a seat on
 Codex. Both carry the same guidance; they differ only in the model and effort they suggest. The default team has
-enough seats for two slices at once. A rig grows the roles its work needs.
+enough seats for two slices at once. A rig grows the roles its work needs, and can shrink a role to its fewest seats.
 
 ## Find a role's seats
 
@@ -50,6 +50,38 @@ To grow a team you haven't launched, add the member to its pod in `rig.yaml`. To
 definition, as `rig.yaml` writes it. Don't use `rig grow`: `rig grow` adds only OpenRig's default agent, so the new seat
 would lose its role's profile, model and runtime choices. Put the same member in your copy of `rig.yaml` too, so the
 seat comes back the next time the rig starts.
+
+## Remove a seat
+
+A role shrinks no further than its fewest seats above: with fewer, some part of a slice has no seat to do it. The lead,
+the peer, the clerk, the planner, the frontend builder, QA, the judge and the release manager keep at least one seat
+each, and the code reviewers one on each runtime, so every slice can still get a review pair. A rig with no backend
+builder still works, because frontend builders take backend slices too. Remove the highest-numbered seat in a pod
+first, so a seat added later takes the next number.
+
+Empty the seat first:
+
+1. Tell the lead which seat is going. The lead tells the clerk that owns it, which assigns it nothing new from then on
+   and tells the lead once it holds no open row
+   (`rig queue list --destination <seat> --state pending,in-progress,blocked`). A builder, QA seat or code reviewer
+   finishes its slice first; don't take a slice from it.
+2. **A clerk:** before it goes, the lead gives the worker seats it owns, and the missions it holds, to another clerk.
+   The roster's curator moves those seats to that clerk's entry ("Owns: <seats>"), and the clerk taking them becomes
+   the curator if the one going was. Its open rows, such as its relaunch rows and the lead's rows for its missions, go
+   to that clerk with `--fallback` below.
+3. **The judge or a release manager:** wait until it holds no open row, or move its rows with `--fallback` to another
+   seat of its role, which carries on from the slice progress.
+
+To shrink a running rig, use OpenRig's `rig remove`, which takes the member out of its pod and ends its session:
+
+```sh
+rig remove <rig> <pod.member>
+```
+
+It refuses while the seat holds open rows, unless `--fallback <session>` moves them to another running seat first;
+name only a seat of the same role. Take the member, its `delegates_to` edge and its line in `configurations.yaml`,
+presets included, out of your copies too, so the seat doesn't come back the next time the rig starts, and the clerk
+takes its entry out of the roster. To shrink a team you haven't launched, make only those edits.
 
 ## Which seats a slice holds
 

@@ -261,6 +261,9 @@ leave the team, add or remove their entries the same way, set the roster's `upda
 `rig roster list` to check it still lists. When the lead splits the worker seats between clerks, end each clerk's
 `why` with the seats it owns ("Owns: <seats>"). Starting again never replaces the file; only these edits change it.
 
+When the lead tells you a seat is leaving, assign it nothing new from then on, and tell the lead once it holds no open
+row, as "Remove a seat" in "This team's shape" says. Once it is gone, take its entry out of the roster.
+
 ## The slice time limit
 
 The team settings set a slice time limit. Each build row carries the queue tier you chose for it, so `rig queue overdue`

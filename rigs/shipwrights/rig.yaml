@@ -50,8 +50,9 @@ permission_policy: builtin:yolo
 non_interruptive: true
 
 # Pods group seats by role. A role that can grow numbers its seats: a grown seat takes the next number in its role's
-# pod, the same profile for its runtime and start files, and a delegates_to edge from orch.lead (see the edges at the end), with a
-# runtime in configurations.yaml. startup/team-shape.md says which roles can grow.
+# pod, the same profile for its runtime and start files, and a delegates_to edge from orch.lead (see the edges at the
+# end), with a runtime in configurations.yaml. startup/team-shape.md says which roles can grow, and how far each can
+# shrink.
 pods:
   - id: orch
     label: Orchestration
