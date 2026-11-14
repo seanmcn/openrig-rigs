@@ -27,13 +27,14 @@ usage: scripts/check-team.py rigs/<team>
 - rig.yaml declares exactly the seats in SEATS, each a member whose profile is its role's for the
   member's runtime, with each runtime in configurations.yaml mapped to the role's profile there,
   and a row in the README's seat table; the recommended preset keeps the code reviewers on two
-  runtimes; and the old names are gone;
+  runtimes; the old names are gone, and every pod-prefixed name in the team's text is a seat's;
 - startup/team-shape.md names every profile in agent.yaml, and its table gives each role whether
   it can grow and the fewest seats it can shrink to, and it says how a grown seat is numbered and
   how a seat is added to or removed from a running rig;
 - the lead is the orchestrator (the only delegates_to source) of every seat but itself and its
   peer in rig.yaml, so every stuck queue row escalates to it, and the peer observes only the lead;
-- every `rig ps --nodes --fields` example asks only for keys OpenRig accepts;
+- every `rig` command in the team's text uses only flags OpenRig accepts for it, and only the values
+  OpenRig accepts for a flag that takes a fixed set, such as `--status` or `--fields` (RIG_COMMANDS);
 - `rig bundle check` passes, when `rig` is installed.
 
 A skill the guidance "names" is any lower-case name in backticks in the guidance, the
@@ -413,20 +414,25 @@ ROLES = {
 # planner-claude and planner-codex, so a seat gets the model suggested for its role on whichever runtime it runs.
 RUNTIMES = {"claude-code": "claude", "codex": "codex"}
 # The models the README's Models section names, by model tier.
-CLAUDE_MODELS = {
-    "top": "claude-fable-5-2", "upper": "claude-opus-5-5", "workhorse": "claude-sonnet-5-5", "budget": "claude-haiku-5-5",
+MODELS = {
+    "claude-code": {
+        "top": "claude-fable-5-2", "upper": "claude-opus-5-5", "workhorse": "claude-sonnet-5-5",
+        "budget": "claude-haiku-5-5",
+    },
+    "codex": {"top": "gpt-6-astra", "workhorse": "gpt-6.1-sol", "lower": "gpt-6.1-terra", "budget": "gpt-6-luna"},
 }
-CODEX_MODELS = {"top": "gpt-6-astra", "workhorse": "gpt-6.1-sol", "lower": "gpt-6.1-terra", "budget": "gpt-6-luna"}
 # The model each role's profiles suggest on each runtime, as a model tier, and their effort. Codex has no upper model
 # tier, so the lead and planner take its top one there. The clerk pairs one code reviewer from each runtime, so the
 # Claude reviewer is upper and the Codex one workhorse, and every pair has one of each.
 class Suggested(NamedTuple):
-    claude: str  # the model tier on Claude Code, a key of CLAUDE_MODELS
-    codex: str  # the model tier on Codex, a key of CODEX_MODELS
+    # Each field but effort is named for a runtime's short name in RUNTIMES, and holds a model tier in MODELS.
+    claude: str
+    codex: str
     effort: str
 
     def model(self, runtime):
-        return CLAUDE_MODELS[self.claude] if runtime == "claude-code" else CODEX_MODELS[self.codex]
+        """The suggested model on a runtime. A runtime with no models, or no field here, raises."""
+        return MODELS[runtime][getattr(self, RUNTIMES[runtime])]
 
 
 SUGGESTED_MODEL_AND_EFFORT = {
@@ -456,25 +462,25 @@ def profile_name(role, runtime):
     return f"{role}-{RUNTIMES[runtime]}"
 
 
-# Names the team renamed, which no file in it may still use: (pattern, what replaced it).
+# Names the team renamed, which no file in it may still use: (pattern, what replaced it). A renamed seat needs no
+# pattern here: check_seat_names catches any pod-prefixed name that is no seat.
 RETIRED_NAMES = [
-    (r"dev[.-]build\b", "the dev.backend-1 seat (dev-backend-1)"),
     # NOTICE.md still names Workshop's own guidance/builder.md, which is where ours came from.
     (r"profile: builder(?![\w-])|(?<!workshop/guidance/)(?<![\w-])builder\.md|: builder(?![\w-])", "the builder-backend profile and builder-backend.md"),
     (r"(?m)^  builder:$", "the builder-backend profile"),
     (r"(?<![\w-])backend-builder\b", "the builder-backend profile and builder-backend.md"),
     (r"(?<![\w-])frontend-builder\b", "the builder-frontend profile and builder-frontend.md"),
-    # OpenRig's naming guide puts a role in its domain's pod, not a pod named for an operation.
-    (r"(?<![\w-])check[.-]qa\b", "the quality.qa-1 seat (quality-qa-1)"),
-    # The small team numbers the seats of a role that can grow, and gives the planner and QA new pods.
-    (r"(?<![\w-])plan[.-]planner\b", "the orch.planner-1 seat (orch-planner-1)"),
-    (r"(?<![\w-])dev[.-](?:backend|frontend)\d*(?![\w-])", "the numbered builder seats, such as dev.backend-1"),
-    (r"(?<![\w-])dev[.-]qa", "the quality pod's numbered QA seats, such as quality.qa-1"),
-    (r"(?<![\w-])review[.-]r\d\b|(?<![\w-])rev1-r\d\b", "the numbered reviewer seats, such as review.reviewer-1"),
-    # The bare release-manager is the profile; only the seat's names are retired.
-    (r"(?<![\w-])release\.manager(?![\w-])|(?<![\w-])release-manager@", "the release.manager-1 seat (release-manager-1)"),
+    # A review's proof type is rev1- and the reviewer's member id.
+    (r"(?<![\w-])rev1-r\d\b", "the numbered reviewer seats' proof types, such as rev1-reviewer-1"),
     (r"(?i)fourteen seats|14 seats", "the small team's seat count"),
 ]
+# Pods the team once used, which no seat name may start with: OpenRig's naming guide puts a role in its domain's pod,
+# not a pod named for an operation.
+RETIRED_PODS = {"check", "plan"}
+# Words that start like a seat's name but name no seat: a role, a profile, the review-pair start files, and a mission
+# status.
+NOT_SEAT_NAMES = {"review-pair", "release-candidate"}
+NOT_SEAT_NAMES |= set(ROLES) | {profile_name(role, runtime) for role in ROLES for runtime in RUNTIMES}
 # Words GLOSSARY.md says to avoid, as (pattern, what it says instead). OpenRig's own flags, such as `--evidence` and
 # `--money-evidence`, keep their names.
 AVOIDED_WORDS = [
@@ -489,7 +495,7 @@ ONE_PLACE = [
 RETRO_PHRASE = "rig scope slice progress"
 
 # The keys `rig ps --nodes --fields` accepts (OpenRig 0.7.11, packages/cli/src/commands/ps.ts), which refuses any
-# other. A seat's profile isn't one of them: `rig ps --nodes --json --full` gives it.
+# other. A seat's profile isn't one of them: `rig ps --nodes --json --full` gives it. FLAG_VALUES below uses them.
 PS_NODE_FIELDS = {
     "rigId", "rigName", "logicalId", "podId", "podNamespace", "hostSelfId", "canonicalSessionName", "nodeKind",
     "runtime", "communityHarness", "launchWrapper", "model", "modelObservation", "sessionStatus",
@@ -498,6 +504,75 @@ PS_NODE_FIELDS = {
     "inProgressWorkCount", "blockedWorkCount", "agentActivity", "needsAttention", "arbitratedNeedsInput",
     "needsInputEvidence", "contextUsage", "heldReason", "startedWithoutRequired", "storedSessionStatus",
     "identityVerdict",
+}
+
+# The flags each `rig` command the team's text runs accepts (OpenRig 0.7.11, packages/cli/src/commands), so an example
+# that would fail as written fails here. A command not listed here isn't checked.
+RIG_COMMANDS = {
+    "queue create": "--alert --body --body-context --body-file --destination --evidence-ref --expires-at --full --gate "
+                    "--host --human-detail-file --human-intent --human-questions-file --id --json --mission --no-nudge "
+                    "--priority --reply-to --slice --source --summary --tags --target-repo --tier --verify",
+    "queue claim": "--destination --full --json",
+    "queue update": "--actor --blocked-on --closure-reason --closure-required-at --closure-target --evidence-ref --full "
+                    "--host --json --note --reopen --resolution --state --summary --wake-after --wake-watchdog",
+    "queue block": "--actor --continuation --evidence-ref --full --host --json --note --on --summary --wake-after "
+                   "--wake-watchdog",
+    "queue resolve": "--actor --bearer --decision --json --no-notify",
+    "queue handoff": "--alert --body --body-file --evidence-ref --from --full --gate --host --json --no-nudge --note "
+                     "--priority --summary --tags --target-repo --tier --to",
+    "queue handoff-and-complete": "--alert --body --body-file --evidence-ref --from --full --gate --host --json "
+                                  "--no-nudge --note --priority --summary --tags --target-repo --tier --to",
+    "queue show": "--full --host --json",
+    "queue list": "--all --all-rigs --destination --full --host --json --limit --mine --owned --source --state "
+                  "--target-repo",
+    "queue overdue": "--all-rigs --full --json --limit --rig",
+    "scope slice progress": "--add --json --mission --section --set --status",
+    "scope mission progress": "--add --json --section --set --status",
+    "scope slice approve": "--actor --json --locked-artifacts --mission --on-behalf-of --re-approve --reason --scope",
+    "scope slice close": "--json --mission --note --reason",
+    "scope slice create": "--depends-on --id --intent --json --no-mission-notes --no-notes --template --title",
+    "scope mission create": "--depends-on --intent --json --readme-only --template --title",
+    "scope mission graph": "--json",
+    "scope mission show": "--json",
+    "scope mission ls": "--json",
+    "proof show": "--json --project",
+    "proof judge": "--comparison --evidence --json --operation-id --project --reason --replace --revision --subject "
+                   "--verdict",
+    "proof add": "--artifact-type --body --candidate-sha --evidences --file --json --media --mission --money-evidence "
+                 "--name --replace --self-check --slice-id --verdict",
+    "seat launch": "--fresh --json --operator --plan --reason --stop",
+    "seat stop": "--json --operator --reason",
+    "seat status": "--json",
+    "send": "--context --dangerously-interact --force --from --host --json --pod --raw --reason --rig --to "
+            "--type-without-checking --urgent --verify --wait-for-idle",
+    "capture": "--history-plus-pane --host --json --lines --pod --readable --rig --size",
+    "watchdog register": "--active-wake-interval-seconds --interval-seconds --json --message --policy --registered-by "
+                         "--requires-job --scan-interval-seconds --spec --target-session --threshold-bytes "
+                         "--threshold-mb --threshold-percent --threshold-tokens --watched-file",
+    "watchdog list": "--all --full --json --limit",
+    "watchdog stop": "--json --reason",
+    "ps": "--active --all-hosts --all-rigs --fields --filter --full --host --hosts --include-archived --json --limit "
+          "--no-cleanup --nodes --resources --rig --running --session --summary --verbose",
+    "remove": "--fallback --json",
+    "whoami": "--all-hosts --all-peers --full --host --hosts --json --node-id --session --verbose",
+}
+RIG_COMMANDS = {command: set(flags.split()) for command, flags in RIG_COMMANDS.items()}
+QUEUE_STATES = {"pending", "in-progress", "done", "blocked", "failed", "denied", "canceled", "handed-off"}
+PROGRESS_STATUSES = {"active", "done", "blocked"}
+# The values OpenRig accepts for a flag that takes a fixed set, as (command, flag): values. A comma-separated value,
+# such as `--state pending,blocked` or `--fields runtime,model`, is checked one item at a time.
+FLAG_VALUES = {
+    ("queue update", "--state"): QUEUE_STATES,
+    ("queue list", "--state"): QUEUE_STATES,
+    ("queue update", "--closure-reason"): {"handed_off_to", "denied", "canceled", "no-follow-on", "escalation",
+                                           "superseded"},
+    ("scope slice progress", "--status"): PROGRESS_STATUSES,
+    ("scope mission progress", "--status"): PROGRESS_STATUSES,
+    ("proof judge", "--verdict"): {"accept", "reject", "withdraw"},
+    ("proof add", "--verdict"): {"CLEAR", "BLOCKING", "CONCERNING", "PASS", "NOT-CLEAR"},
+    ("watchdog register", "--policy"): {"periodic-reminder", "artifact-pool-ready", "edge-artifact-required",
+                                        "workflow-keepalive", "idle-gate-qitem", "context-usage-threshold"},
+    ("ps", "--fields"): PS_NODE_FIELDS,
 }
 
 SKILL_NAME = r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*"
@@ -541,9 +616,26 @@ def fail(problems, message):
     problems.append(message)
 
 
-def text_of(path):
-    """A file's text, or "" when there is no file there, so a missing file fails the checks that need it."""
-    return path.read_text(encoding="utf-8") if path.is_file() else ""
+def markdown(files):
+    """The team's Markdown files and their text."""
+    return {path: text for path, text in files.items() if path.suffix == ".md" and text is not None}
+
+
+def table(text, first):
+    """The rows of the Markdown table whose header's first cell is `first`, each as (line number, {column: cell}). The
+    table ends at the first line that isn't a table row, so another table in the same file is never read as part of
+    it."""
+    rows, header = [], None
+    for number, line in enumerate(text.splitlines(), 1):
+        if not line.lstrip().startswith("|"):
+            header = None
+            continue
+        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
+        if cells[0] == first:
+            header = cells
+        elif header and not set(cells[0]) <= set("-: "):
+            rows.append((number, dict(zip(header, cells))))
+    return rows
 
 
 def check_names(team, problems):
@@ -552,16 +644,10 @@ def check_names(team, problems):
         print("not run: the blocked-words check (TEAM_BLOCKLIST is empty)")
         return
     pattern = re.compile("|".join(re.escape(word) for word in words), re.IGNORECASE)
-    for path in sorted(team.rglob("*")):
-        if not path.is_file():
-            continue
-        if pattern.search(str(path.relative_to(team))):
+    for path, text in team.files.items():
+        if pattern.search(str(path.relative_to(team.root))):
             fail(problems, f"{path}: its path names a blocked word")
-        try:
-            text = path.read_text(encoding="utf-8")
-        except (UnicodeDecodeError, OSError):
-            continue
-        for number, line in enumerate(text.splitlines(), 1):
+        for number, line in enumerate((text or "").splitlines(), 1):
             if pattern.search(line):
                 fail(problems, f"{path}:{number}: names a blocked word")
 
@@ -569,33 +655,29 @@ def check_names(team, problems):
 def check_one_place(team, problems):
     """A list the team keeps in one file appears in no other, so the copies can't drift apart."""
     for pattern, home, what in ONE_PLACE:
-        if not re.search(pattern, " ".join(text_of(team / home).split())):
+        if not re.search(pattern, " ".join(team.text(home).split())):
             fail(problems, f"{home} no longer lists {what}")
-        for path in sorted(team.rglob("*.md")):
-            if path != team / home and re.search(pattern, " ".join(path.read_text(encoding="utf-8").split())):
+        for path, text in markdown(team.files).items():
+            if path != team.root / home and re.search(pattern, " ".join(text.split())):
                 fail(problems, f"{path} repeats {what}: point to {home} instead")
 
 
 def check_glossary_words(team, problems):
     """No file in the team uses a word the glossary says to avoid, other than in OpenRig's own flags."""
-    for path in sorted(team.rglob("*")):
-        try:
-            text = text_of(path)
-        except (UnicodeDecodeError, OSError):
-            continue
+    for path, text in team.files.items():
         for pattern, instead in AVOIDED_WORDS:
-            for number, line in enumerate(text.splitlines(), 1):
+            for number, line in enumerate((text or "").splitlines(), 1):
                 for match in re.finditer(pattern, line):
                     fail(problems, f"{path}:{number}: {match.group(0)!r}: the glossary says {instead}")
 
 
 def check_settings(team, problems):
-    path = team / "settings.md"
-    if not path.is_file():
-        fail(problems, f"{path} is missing")
+    text = team.text("settings.md")
+    if not text:
+        fail(problems, "settings.md is missing")
         return
     rows = {}
-    for line in path.read_text(encoding="utf-8").splitlines():
+    for line in text.splitlines():
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         if line.lstrip().startswith("|") and len(cells) >= 2:
             rows[cells[0]] = cells[1]
@@ -606,8 +688,8 @@ def check_settings(team, problems):
             fail(problems, f"settings.md: {setting!r} defaults to {rows[setting]!r}, expected {default!r}")
 
 
-def parse_agent(agent_yaml):
-    text = agent_yaml.read_text(encoding="utf-8")
+def parse_agent(text):
+    """An agent.yaml's declared skills, as id: path, and the skills its profiles select."""
     declared = dict(re.findall(r"-\s*\{\s*id:\s*([\w.-]+),\s*path:\s*([^\s,}]+)", text))
     selected = set()
     for items in re.findall(r"^\s*skills:\s*\[([^\]]*)\]", text, re.MULTILINE):
@@ -615,32 +697,21 @@ def parse_agent(agent_yaml):
     return declared, selected
 
 
-def profile_blocks(agent_yaml):
-    """Each profile's own text, keyed by name, from the two-space-indented keys under `profiles:`."""
-    text = agent_yaml.read_text(encoding="utf-8")
+def profile_blocks(text):
+    """Each profile's own text in an agent.yaml, keyed by name, from the two-space-indented keys under `profiles:`."""
     body = text.split("\nprofiles:\n", 1)[1] if "\nprofiles:\n" in text else ""
     return dict(re.findall(r"^  ([\w-]+):\n((?:(?:    .*)?\n)*)", body, re.MULTILINE))
 
 
 def read_skills_table(team, problems):
     """skills.md's rows, from the table whose header starts `| Skill |`, with their line numbers."""
-    path = team / "skills.md"
-    if not path.is_file():
-        fail(problems, f"{path} is missing")
+    text = team.text("skills.md")
+    if not text:
+        fail(problems, "skills.md is missing")
         return []
-    rows = []
-    header = None
-    for number, line in enumerate(path.read_text(encoding="utf-8").splitlines(), 1):
-        if not line.lstrip().startswith("|"):
-            header = None
-            continue
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if cells[0] == "Skill":
-            header = cells
-        elif header and not set(cells[0]) <= set("-: "):
-            rows.append((number, dict(zip(header, cells))))
+    rows = table(text, "Skill")
     if not rows:
-        fail(problems, f"{path} has no table of skills")
+        fail(problems, "skills.md has no table of skills")
     return rows
 
 
@@ -678,14 +749,8 @@ def check_skills_table(rows, problems):
 
 def named_in_text(team):
     """Lower-case names in backticks in the guidance, start steps, culture and settings."""
-    files = sorted(team.glob("agents/*/guidance/*.md")) + sorted(team.glob("startup/*.md"))
-    files += [team / "CULTURE.md", team / "settings.md"]
-    named = {}
-    for path in files:
-        if path.is_file():
-            for name in re.findall(rf"`({SKILL_NAME})`", path.read_text(encoding="utf-8")):
-                named.setdefault(name, path.name)
-    return named
+    paths = sorted(team.root.glob("agents/*/guidance/*.md")) + sorted(team.root.glob("startup/*.md"))
+    return skill_names(team, paths + [team.root / "CULTURE.md", team.root / "settings.md"])
 
 
 def check_guidance_skills(team, rows, listed, problems):
@@ -702,32 +767,87 @@ def check_guidance_skills(team, rows, listed, problems):
             fail(problems, f"skills.md:{number}: {skill!r} is optional, but {named[skill]} names it")
 
 
-def start_files(rig):
-    """The start files rig.yaml gives every seat, and each seat's own, as paths in the team folder."""
-    shared, own, section, pod, seat = [], {}, None, None, None
-    for line in rig.splitlines():
+class Seat(NamedTuple):
+    fields: dict  # its one-line keys, such as profile and runtime
+    files: list  # its own start files
+
+
+class Rig(NamedTuple):
+    shared: list  # the start files every seat gets
+    seats: dict  # pod.member: Seat, in rig.yaml's order
+    edges: list  # (kind, source, target), with a pod's own edges named pod.member
+
+
+def parse_rig(text):
+    """rig.yaml's start files, seats and edges, read by indentation: a top-level key at column 0, a pod at 2 (`- id`),
+    its `members:` and `edges:` at 4, a member at 6 (`- id`) and the member's keys at 8. Standard library only, so no
+    YAML parser: this holds because the team writes rig.yaml in that one layout."""
+    shared, seats, edges = [], {}, []
+    section, pod, part, seat, edge = None, None, None, None, None
+    for line in text.splitlines():
         if m := re.match(r"^(\w+):", line):
-            section, pod, seat = m.group(1), None, None
-        elif m := re.match(r"^  - id: ([\w-]+)$", line):
-            pod, seat = m.group(1), None
-        elif (m := re.match(r"^      - id: ([\w-]+)$", line)) and pod:
+            section, pod, part, seat, edge = m.group(1), None, None, None, None
+        elif section == "pods" and (m := re.match(r"^  - id: ([\w-]+)$", line)):
+            pod, part, seat = m.group(1), None, None
+        elif pod and (m := re.match(r"^    (\w+):", line)):
+            part, seat = m.group(1), None
+        elif part == "members" and (m := re.match(r"^      - id: ([\w-]+)$", line)):
             seat = f"{pod}.{m.group(1)}"
-            own[seat] = []
+            seats[seat] = Seat({}, [])
+        elif seat and (m := re.match(r"^        (\w+): (\S.*)$", line)):
+            seats[seat].fields[m.group(1)] = m.group(2).strip('"')
         elif m := re.match(r"^\s+- path: (\S+)$", line):
             if seat:
-                own[seat].append(m.group(1))
+                seats[seat].files.append(m.group(1))
             elif section == "startup":
                 shared.append(m.group(1))
-    return shared, own
+        elif (section == "edges" or part == "edges") and (m := re.match(r"^\s+- kind: (\w+)$", line)):
+            edge = {"kind": m.group(1)}
+        elif edge is not None and (m := re.match(r"^\s+(from|to): (\S+)$", line)):
+            edge[m.group(1)] = f"{pod}.{m.group(2)}" if part == "edges" else m.group(2)
+            if "from" in edge and "to" in edge:
+                edges.append((edge["kind"], edge["from"], edge["to"]))
+                edge = None
+    return Rig(shared, seats, edges)
 
 
-def skill_names(paths):
+class Team(NamedTuple):
+    """The team folder, read once: each file's text, rig.yaml parsed, and every profile's own text."""
+    root: Path
+    files: dict  # path: its text, or None for a file that isn't UTF-8 text
+    rig: Rig
+    profiles: dict  # profile name: its own text, from every agent.yaml
+
+    def text(self, name):
+        """The text of a file by its path in the team folder, or "" when there is none, so a missing file fails the
+        checks that need it."""
+        return self.files.get(self.root / name) or ""
+
+    def texts(self, pattern):
+        """The text of each file matching a glob in the team folder, by path."""
+        return {path: self.files[path] for path in sorted(self.root.glob(pattern)) if self.files.get(path) is not None}
+
+
+def read_team(root):
+    files = {}
+    for path in sorted(root.rglob("*")):
+        if path.is_file():
+            try:
+                files[path] = path.read_text(encoding="utf-8")
+            except (UnicodeDecodeError, OSError):
+                files[path] = None
+    profiles = {}
+    for agent_yaml in sorted(root.glob("agents/*/agent.yaml")):
+        profiles.update(profile_blocks(files.get(agent_yaml) or ""))
+    return Team(root, files, parse_rig(files.get(root / "rig.yaml") or ""), profiles)
+
+
+def skill_names(team, paths):
     """The lower-case names in backticks in these files, each with the first file that names it."""
     named = {}
     for path in paths:
-        if path.is_file():
-            for name in re.findall(rf"`({SKILL_NAME})`", path.read_text(encoding="utf-8")):
-                named.setdefault(name, path.name)
+        for name in re.findall(rf"`({SKILL_NAME})`", team.files.get(path) or ""):
+            named.setdefault(name, path.name)
     return named
 
 
@@ -738,13 +858,13 @@ def check_skill_seats(team, rows, problems):
     seat gets names the skill, and `all` passes when one of those or CULTURE.md does; CULTURE.md doesn't count for a
     single role, because it names skills only as examples.
     """
-    agent_dirs = [path.parent for path in sorted(team.glob("agents/*/agent.yaml"))]
-    shared, own = start_files(text_of(team / "rig.yaml"))
-    everyone = skill_names([team / path for path in shared])
+    agent_dirs = [path.parent for path in sorted(team.root.glob("agents/*/agent.yaml"))]
+    rig = team.rig
+    everyone = skill_names(team, [team.root / path for path in rig.shared])
     by_role = {
-        role: skill_names([folder / path for folder in agent_dirs for path in guidance]
-                          + [team / path for seat, seat_role in SEATS.items() if seat_role == role
-                             for path in own.get(seat, [])])
+        role: skill_names(team, [folder / path for folder in agent_dirs for path in guidance]
+                          + [team.root / path for seat, seat_role in SEATS.items() if seat_role == role
+                             for path in (rig.seats[seat].files if seat in rig.seats else [])])
         for role, guidance in ROLES.items()
     }
     for number, row in rows:
@@ -754,7 +874,7 @@ def check_skill_seats(team, rows, problems):
             continue
         for seat in sorted(seats):
             if seat == "all":
-                if skill not in everyone and skill not in skill_names([team / "CULTURE.md"]):
+                if skill not in everyone and skill not in skill_names(team, [team.root / "CULTURE.md"]):
                     fail(problems, f"skills.md:{number}: {skill!r} lists all, but nothing every seat reads names it")
             elif seat in by_role and skill not in by_role[seat] and skill not in everyone:
                 fail(problems, f"skills.md:{number}: {skill!r} lists {seat}, but nothing the {seat} reads names it")
@@ -765,7 +885,7 @@ def check_skill_seats(team, rows, problems):
 
 def check_install_script(team, listed, problems):
     """install-skills.sh reads skills.md: a dry run into empty folders installs every row and writes nothing."""
-    script = team / "install-skills.sh"
+    script = team.root / "install-skills.sh"
     if not script.is_file():
         fail(problems, f"{script} is missing")
         return
@@ -786,25 +906,25 @@ def check_install_script(team, listed, problems):
 
 def check_bundle_skills(team, listed, problems):
     """Profiles select only skills that ship in the team folder, and none skills.md lists."""
-    agents = sorted(team.glob("agents/*/agent.yaml"))
+    agents = team.texts("agents/*/agent.yaml")
     if not agents:
-        fail(problems, f"{team} has no agents/*/agent.yaml")
+        fail(problems, f"{team.root} has no agents/*/agent.yaml")
         return
-    for agent_yaml in agents:
-        declared, selected = parse_agent(agent_yaml)
+    for agent_yaml, text in agents.items():
+        declared, selected = parse_agent(text)
         for skill in sorted(selected - declared.keys()):
             fail(problems, f"{agent_yaml}: a profile selects {skill!r}, which no skill resource in the team declares")
         for skill, rel in sorted(declared.items()):
             folder = (agent_yaml.parent / rel).resolve()
-            if not folder.is_relative_to(team.resolve()):
+            if not folder.is_relative_to(team.root.resolve()):
                 fail(problems, f"{agent_yaml}: {skill!r} is outside the team folder")
             elif not (folder / "SKILL.md").is_file():
                 fail(problems, f"{folder}: no SKILL.md")
             if skill in listed:
                 fail(problems, f"{agent_yaml}: ships {skill!r}, which skills.md says the person installs")
     for leftover in ("skills.lock", "skills.sources"):
-        if (team / leftover).exists():
-            fail(problems, f"{team / leftover}: the team no longer pins vendored skills")
+        if (team.root / leftover).exists():
+            fail(problems, f"{team.root / leftover}: the team no longer pins vendored skills")
 
 
 def check_skills(team, problems):
@@ -818,15 +938,11 @@ def check_skills(team, problems):
 
 def check_guidance(team, problems):
     # Whitespace is collapsed, so a phrase still matches where the text wraps it.
-    guidance = {
-        path.name: " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("agents/*/guidance/*.md")
-    }
+    guidance = {path.name: " ".join(text.split()) for path, text in team.texts("agents/*/guidance/*.md").items()}
     # Start files carry rules too, but no retrospective of their own, so they join only the rule checks.
-    started = {
-        f"startup/{path.name}": " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("startup/*.md")
-    }
+    started = {f"startup/{path.name}": " ".join(text.split()) for path, text in team.texts("startup/*.md").items()}
     # The team's own docs, such as README.md and settings.md, carry rules too, for the person and for every seat.
-    docs = {path.name: " ".join(path.read_text(encoding="utf-8").split()) for path in team.glob("*.md")}
+    docs = {path.name: " ".join(text.split()) for path, text in team.texts("*.md").items()}
 
     def lookup(name):
         """Where a rule's file is, for messages, and its text, or None when there is no such file."""
@@ -857,21 +973,60 @@ def check_guidance(team, problems):
             fail(problems, f"guidance/{name} lacks {RETRO_PHRASE!r}: every seat writes a retrospective note")
 
 
-def check_ps_fields(team, problems):
-    """Every `rig ps --nodes ... --fields` example asks only for keys OpenRig accepts, so it doesn't fail as written."""
-    for path in sorted(team.rglob("*.md")):
-        text = " ".join(path.read_text(encoding="utf-8").split())
-        for command in re.findall(r"rig ps --nodes[^`]*?--fields ([\w,]+)", text):
-            for key in sorted(set(command.split(",")) - PS_NODE_FIELDS):
-                fail(problems, f"{path}: `rig ps --nodes --fields` has no {key!r} key, so the command fails; "
-                               "`--json --full` gives every field")
+def rig_commands(text):
+    """Each `rig` command in a Markdown text: a line of a code block, with its `\\` continuations joined, or a span in
+    backticks, which may wrap across lines."""
+    commands, prose, in_block, joined = [], [], False, ""
+    for line in text.splitlines():
+        if line.lstrip().startswith("```"):
+            in_block, joined = not in_block, ""
+            continue
+        if not in_block:
+            prose.append(line)
+            continue
+        joined += line.strip()
+        if joined.endswith("\\"):
+            joined = joined[:-1] + " "
+            continue
+        if joined.startswith("rig "):
+            commands.append(joined)
+        joined = ""
+    commands += re.findall(r"`(rig [^`]+)`", " ".join(" ".join(prose).split()))
+    return commands
+
+
+def check_commands(team, problems):
+    """Every `rig` command in the team's text uses only flags OpenRig accepts for it, and only the values it accepts for
+    a flag that takes a fixed set, so no example fails as written. A placeholder such as `<state>` isn't checked."""
+    for path, text in markdown(team.files).items():
+        for command in rig_commands(text):
+            # A quoted string and a <placeholder> are one word each, though they may hold spaces.
+            words = re.findall(r'"[^"]*"|<[^>]*>|\S+', command)[1:]
+            name = next((" ".join(words[:n]) for n in (3, 2, 1) if " ".join(words[:n]) in RIG_COMMANDS), None)
+            if name is None:
+                continue
+            for i, word in enumerate(words):
+                if not word.startswith("--"):
+                    continue
+                # A value may follow the flag as the next word, or after an = in the same one.
+                flag, joined, value = word.partition("=")
+                if flag not in RIG_COMMANDS[name]:
+                    fail(problems, f"{path}: `rig {name}` has no {flag} flag, so `{command}` fails")
+                    continue
+                allowed = FLAG_VALUES.get((name, flag))
+                if not joined:
+                    value = words[i + 1] if i + 1 < len(words) else ""
+                if allowed is None or not value or value.startswith(("--", "<")):
+                    continue
+                for item in value.strip('"').split(","):
+                    if item not in allowed:
+                        fail(problems, f"{path}: `rig {name} {flag}` doesn't take {item!r} "
+                                       f"(it takes {', '.join(sorted(allowed))}), so `{command}` fails")
 
 
 def check_profiles(team, problems):
     """Each role has one profile per runtime, with the role's guidance and the model and effort suggested for it."""
-    blocks = {}
-    for agent_yaml in sorted(team.glob("agents/*/agent.yaml")):
-        blocks.update(profile_blocks(agent_yaml))
+    blocks = team.profiles
     wanted = {profile_name(role, runtime): (role, runtime) for role in ROLES for runtime in RUNTIMES}
     for profile in sorted(blocks.keys() - wanted.keys()):
         fail(problems, f"agent.yaml's {profile!r} profile is no role's profile for a runtime: name it <role>-<runtime>")
@@ -890,12 +1045,12 @@ def check_profiles(team, problems):
         for key, value in (("runtime", runtime), ("model", suggested.model(runtime)), ("effort", suggested.effort)):
             if preferences.get(key) != value:
                 fail(problems, f"the {profile!r} profile's preferences.{key} is {preferences.get(key)!r}, expected {value!r}")
-    readme = text_of(team / "README.md")
+    readme = team.text("README.md")
     section = re.search(r"^## Models\n(.*?)(?=^## |\Z)", readme, re.MULTILINE | re.DOTALL)
     if not section:
         fail(problems, "README.md has no Models section")
         return
-    for model in sorted({*CLAUDE_MODELS.values(), *CODEX_MODELS.values()}):
+    for model in sorted({model for tiers in MODELS.values() for model in tiers.values()}):
         if f"`{model}`" not in section.group(1):
             fail(problems, f"README.md's Models section doesn't name `{model}`")
     if "override" not in section.group(1):
@@ -904,7 +1059,7 @@ def check_profiles(team, problems):
 
 def check_review_runtimes(team, problems):
     """A review pair is two code reviewers on different runtimes, so the recommended preset seats them on two."""
-    preset = re.search(r"^\s*recommended:\s*\{([^}]*)\}", text_of(team / "configurations.yaml"), re.MULTILINE)
+    preset = re.search(r"^\s*recommended:\s*\{([^}]*)\}", team.text("configurations.yaml"), re.MULTILINE)
     picks = dict(re.findall(r"([\w.-]+):\s*([\w-]+)", preset.group(1))) if preset else {}
     reviewers = {picks.get(seat) for seat, role in SEATS.items() if role == "code-reviewer"} - {None}
     if len(reviewers) < 2:
@@ -914,12 +1069,12 @@ def check_review_runtimes(team, problems):
 
 def check_members(team, problems):
     """rig.yaml declares exactly the seats in SEATS, each with its role's profile for the runtime it runs on."""
-    declared = members(text_of(team / "rig.yaml"))
+    declared = {seat: member.fields for seat, member in team.rig.seats.items()}
     for seat in sorted(declared.keys() - SEATS.keys()):
         fail(problems, f"rig.yaml declares {seat!r}, which the team doesn't ship: add it to SEATS, or remove it")
     for seat, role in SEATS.items():
         fields = declared.get(seat)
-        runtime = fields and fields.get("runtime")
+        runtime = (fields or {}).get("runtime")
         if fields is None:
             fail(problems, f"rig.yaml has no member {seat.split('.', 1)[1]!r} in its pod")
         elif runtime not in RUNTIMES:
@@ -932,7 +1087,7 @@ def check_members(team, problems):
 def check_notice(team, problems):
     """NOTICE.md's rows for rig.yaml and agent.yaml say what the team added: every seat and every role's profiles."""
     rows = {}
-    for line in text_of(team / "NOTICE.md").splitlines():
+    for line in team.text("NOTICE.md").splitlines():
         cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
         if line.startswith("|") and len(cells) >= 3:
             rows[cells[0]] = cells[2]
@@ -947,7 +1102,7 @@ def check_notice(team, problems):
 
 def check_summary(team, problems):
     """rig.yaml's summary, which `rig bundle` listings show, says what the README's seat table does about the peer."""
-    block = re.search(r"^summary: >\n((?:  .*\n)+)", text_of(team / "rig.yaml"), re.MULTILINE)
+    block = re.search(r"^summary: >\n((?:  .*\n)+)", team.text("rig.yaml"), re.MULTILINE)
     summary = " ".join(block.group(1).split()) if block else ""
     if not re.search(r"a peer [^,]*on either runtime", summary):
         fail(problems, "rig.yaml's summary doesn't say the peer may run on either runtime")
@@ -955,7 +1110,7 @@ def check_summary(team, problems):
 
 def check_seat_table(team, problems):
     """The README's seat table names every seat the team ships."""
-    readme = text_of(team / "README.md")
+    readme = team.text("README.md")
     for seat in SEATS:
         name = seat.replace(".", "-")
         if not re.search(rf"^\|.*`{re.escape(name)}`.*\|", readme, re.MULTILINE):
@@ -964,7 +1119,7 @@ def check_seat_table(team, problems):
 
 def check_configurations(team, problems):
     """configurations.yaml maps each seat on each runtime to its role's profile there, and offers no other runtime."""
-    configured = text_of(team / "configurations.yaml")
+    configured = team.text("configurations.yaml")
     offered = {
         seat: dict(re.findall(r"([\w-]+):\s*([\w-]+)", runtimes))
         for seat, runtimes in re.findall(r"^  ([\w.-]+):\s*\{\s*runtimes:\s*\{([^}]*)\}", configured, re.MULTILINE)
@@ -981,31 +1136,42 @@ def check_configurations(team, problems):
 
 def check_retired_names(team, problems):
     """No file in the team still uses a name the team renamed."""
-    for path in sorted(team.rglob("*")):
-        try:
-            text = text_of(path)
-        except (UnicodeDecodeError, OSError):
-            continue
+    for path, text in team.files.items():
         for pattern, replacement in RETIRED_NAMES:
-            for match in re.finditer(pattern, text):
+            for match in re.finditer(pattern, text or ""):
                 line = text.count("\n", 0, match.start()) + 1
                 fail(problems, f"{path}:{line}: {match.group(0)!r} was renamed to {replacement}")
 
 
-def members(rig):
-    """Every seat in rig.yaml's pods, as pod.member, with its one-line fields, such as its profile and runtime."""
-    seats, pod, seat = {}, None, None
-    for line in rig.splitlines():
-        if m := re.match(r"^  - id: ([\w-]+)$", line):
-            pod, seat = m.group(1), None
-        elif line == "edges:":
-            pod, seat = None, None
-        elif (m := re.match(r"^      - id: ([\w-]+)$", line)) and pod:
-            seat = f"{pod}.{m.group(1)}"
-            seats[seat] = {}
-        elif (m := re.match(r"^        (\w+): (\S.*)$", line)) and seat:
-            seats[seat][m.group(1)] = m.group(2).strip('"')
-    return seats
+def seat_names():
+    """Each pod's seat names: every seat's member id, and for a numbered one the pattern its grown seats follow."""
+    names = {}
+    for seat in SEATS:
+        pod, member = seat.split(".", 1)
+        names.setdefault(pod, []).append(re.escape(member))
+        if numbered := re.fullmatch(r"(.+)-\d+", member):
+            names[pod].append(rf"{re.escape(numbered.group(1))}-\d+")
+    return {pod: re.compile("|".join(members)) for pod, members in names.items()}
+
+
+def check_seat_names(team, problems):
+    """Every name in the team's files that starts with a pod, such as dev.backend-1 or dev-backend-1, names a seat the
+    team ships or a grown seat numbered as its role's seats are, so a seat renamed or misspelled anywhere is caught.
+    A role or profile shares a pod's words only in its dashed form (release-manager), so a dotted name, or a session's
+    name (such as `orch-lead@<rig>`), must be a seat's."""
+    pods = seat_names()
+    pattern = re.compile(rf"(?<![\w/.@-])({'|'.join(sorted(pods.keys() | RETIRED_PODS))})([.-])([a-z][\w-]*\w)(@?)")
+    for path, text in team.files.items():
+        for match in pattern.finditer(text or ""):
+            pod, separator, member, session = match.groups()
+            name = f"{pod}-{member}"
+            if pod in pods and pods[pod].fullmatch(member):
+                continue
+            if separator == "-" and not session and any(name == word or name.startswith(f"{word}-") for word in NOT_SEAT_NAMES):
+                continue
+            line = text.count("\n", 0, match.start()) + 1
+            fail(problems, f"{path}:{line}: {match.group(0)!r} is no seat the team ships: name one in SEATS, such as "
+                           f"{next(iter(SEATS))!r}, or a grown seat numbered as its role's are")
 
 
 # The columns startup/team-shape.md's table fills for every role: whether it can grow, and how far it can shrink.
@@ -1019,26 +1185,22 @@ PEER = "orch.peer"
 
 def check_team_shape(team, problems):
     """startup/team-shape.md is the one place that says which roles can grow or shrink, so it names every profile, and
-    its table gives every role whether it can grow and the fewest seats it can shrink to."""
-    path = team / "startup" / "team-shape.md"
-    if not path.is_file():
+    its table of roles, whose header starts `| Role |`, gives every role whether it can grow and the fewest seats it
+    can shrink to."""
+    text = team.text("startup/team-shape.md")
+    if not text:
         fail(problems, "startup/team-shape.md is missing")
         return
-    text = path.read_text(encoding="utf-8")
-    for agent_yaml in sorted(team.glob("agents/*/agent.yaml")):
-        for profile in profile_blocks(agent_yaml):
-            if f"`{profile}`" not in text:
-                fail(problems, f"startup/team-shape.md doesn't name the {profile!r} profile")
-    rows = [[cell.strip() for cell in line.strip().strip("|").split("|")]
-            for line in text.splitlines() if line.startswith("|") and not set(line) <= set("|-: ")]
-    header, roles = (rows[0], rows[1:]) if rows else ([], [])
-    for column in SHAPE_COLUMNS:
-        if column not in header:
-            fail(problems, f"startup/team-shape.md's table has no {column!r} column")
-            continue
-        for row in roles:
-            if len(row) <= header.index(column) or not row[header.index(column)]:
-                fail(problems, f"startup/team-shape.md's table gives the {row[0]!r} role no {column!r}")
+    for profile in team.profiles:
+        if f"`{profile}`" not in text:
+            fail(problems, f"startup/team-shape.md doesn't name the {profile!r} profile")
+    roles = table(text, "Role")
+    if not roles:
+        fail(problems, "startup/team-shape.md has no table of roles")
+    for number, row in roles:
+        for column in SHAPE_COLUMNS:
+            if not row.get(column):
+                fail(problems, f"startup/team-shape.md:{number}: the table gives the {row['Role']!r} role no {column!r}")
 
 
 def check_delegation(team, problems):
@@ -1047,28 +1209,14 @@ def check_delegation(team, problems):
     OpenRig makes the source of a seat's delegates_to edge its orchestrator, and picks the latest-launched one when
     there are several, so a second source would quietly take the lead's place.
     """
-    path = team / "rig.yaml"
-    if not path.is_file():
-        return
-    seats, sources, pod = [], {}, None
-    lines = path.read_text(encoding="utf-8").splitlines()
-    for i, line in enumerate(lines):
-        if m := re.match(r"^  - id: ([\w-]+)$", line):
-            pod = m.group(1)
-        elif line == "edges:":
-            pod = None
-        elif (m := re.match(r"^      - id: ([\w-]+)$", line)) and pod:
-            seats.append(f"{pod}.{m.group(1)}")
-        elif m := re.match(r"^\s*- kind: (delegates_to|can_observe)$", line):
-            source = re.search(r"from: (\S+)", lines[i + 1]).group(1)
-            target = re.search(r"to: (\S+)", lines[i + 2]).group(1)
-            if pod:
-                source, target = f"{pod}.{source}", f"{pod}.{target}"
-            if m.group(1) == "delegates_to":
-                sources.setdefault(target, []).append(source)
-            elif source == PEER and target != LEAD:
-                fail(problems, f"rig.yaml: {PEER} observes {target}: it watches only the lead")
-    for seat in seats:
+    rig = team.rig
+    sources = {}
+    for kind, source, target in rig.edges:
+        if kind == "delegates_to":
+            sources.setdefault(target, []).append(source)
+        elif kind == "can_observe" and source == PEER and target != LEAD:
+            fail(problems, f"rig.yaml: {PEER} observes {target}: it watches only the lead")
+    for seat in rig.seats:
         got = sources.get(seat, [])
         if seat in (LEAD, PEER):
             if got:
@@ -1083,7 +1231,7 @@ def check_bundle(team, problems):
     if rig is None:
         print("not run: rig bundle check (rig isn't installed here)")
         return
-    result = subprocess.run([rig, "bundle", "check", str(team)], capture_output=True, text=True)
+    result = subprocess.run([rig, "bundle", "check", str(team.root)], capture_output=True, text=True)
     print(result.stdout, end="")
     if result.returncode != 0:
         fail(problems, f"rig bundle check exited {result.returncode}: {result.stderr.strip()}")
@@ -1093,7 +1241,7 @@ def main():
     if len(sys.argv) != 2:
         print(__doc__.strip().splitlines()[2], file=sys.stderr)
         return 2
-    team = Path(sys.argv[1])
+    team = read_team(Path(sys.argv[1]))
     problems = []
     check_names(team, problems)
     check_glossary_words(team, problems)
@@ -1101,7 +1249,7 @@ def main():
     check_settings(team, problems)
     check_skills(team, problems)
     check_guidance(team, problems)
-    check_ps_fields(team, problems)
+    check_commands(team, problems)
     check_profiles(team, problems)
     check_review_runtimes(team, problems)
     check_members(team, problems)
@@ -1110,12 +1258,13 @@ def main():
     check_seat_table(team, problems)
     check_configurations(team, problems)
     check_retired_names(team, problems)
+    check_seat_names(team, problems)
     check_team_shape(team, problems)
     check_delegation(team, problems)
     check_bundle(team, problems)
     for problem in problems:
         print(problem, file=sys.stderr)
-    print(f"{team}: {'ok' if not problems else f'{len(problems)} problems'}")
+    print(f"{team.root}: {'ok' if not problems else f'{len(problems)} problems'}")
     return 1 if problems else 0
 
 
