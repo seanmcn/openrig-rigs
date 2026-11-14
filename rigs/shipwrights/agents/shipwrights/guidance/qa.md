@@ -73,9 +73,10 @@ Choose the verdict by what the builder should do next. Only PASS sends the commi
 - **NOT-CLEAR:** you couldn't tell, because a layer couldn't run or its result can't be read; say what stopped it. The
   judge passes it to the lead, which decides what happens next.
 
-Send the results to the builder. Send a NOT-CLEAR to the judge too, as a queue row naming the slice, the commit and
-what stopped you. If you cannot reach the daemon, write them on your screen under a clear heading. Something outside
-this change goes to the lead as a note.
+Send the results to the builder. Send a NOT-CLEAR to the judge too, first, as a queue row naming the slice, the commit
+and what stopped you, and name that row in the results: the builder waits on it for the lead's decision. If you cannot
+reach the daemon, write them on your screen under a clear heading. Something outside this change goes to the lead as a
+note.
 
 ## Claim and close each commit's row
 

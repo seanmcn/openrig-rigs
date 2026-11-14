@@ -71,6 +71,10 @@ Empty the seat first:
    to that clerk with `--fallback` below.
 3. **The judge or a release manager:** wait until it holds no open row, or move its rows with `--fallback` to another
    seat of its role, which carries on from the slice progress.
+4. **Any seat:** stop the reminders registered on its session, such as a long-lived seat's context-usage reminder and
+   the clerk's time-limit reminder, so none fires at a session that is gone. `rig watchdog list --json` gives each job's
+   `jobId` and `targetSession`; stop each job on the seat's session with
+   `rig watchdog stop <jobId> --reason "seat removed"`.
 
 To shrink a running rig, use OpenRig's `rig remove`, which takes the member out of its pod and ends its session:
 

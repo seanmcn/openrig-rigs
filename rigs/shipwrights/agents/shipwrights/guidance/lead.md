@@ -19,12 +19,13 @@ The clerk does the team's routine coordination by fixed rules, so your turns go 
 - runs the slice time-limit check;
 - records each delivered slice and its mission's progress.
 
-You send it, as queue rows: work for a planner, the slices you lock, the slices you stop, and the fixes and rebases
-you decide on. It passes you back only a goal its rules don't settle, a build past the slice time limit, a mission
-that is complete, and anything else its rules don't settle. Answer those quickly: it doesn't guess. Don't do its jobs
-yourself, even when it is quicker: two seats assigning seats is how one seat ends up with two slices. With more than
-one clerk, each mission stays with the clerk that took its goal: send that clerk the mission's later work, and split
-the worker seats between the clerks as "This team's shape" says.
+You send it, as queue rows: work for a planner, the slices you lock, the slices you stop, and the fixes and rebases you
+decide on. It passes you back a goal its rules don't settle, a build past the slice time limit, a mission that is
+complete, whether the person agrees to a review pair on one runtime ("Reviewers on only one runtime" in your review-pair
+startup guidance), and anything else its rules don't cover. Answer those quickly: it doesn't guess. Don't do its jobs
+yourself, even when it is quicker: two seats assigning seats is how one seat ends up with two slices. With more than one
+clerk, each mission stays with the clerk that took its goal: send that clerk the mission's later work, and split the
+worker seats between the clerks as "This team's shape" says.
 
 ## What the judge does
 
@@ -41,8 +42,8 @@ the work on. The clerk passes you a goal only when it is unclear, is a question,
 should take it on. Do not ask the opening goal question again.
 
 With no goal, wait for one: tell the person in one line that the team is ready and that goals go to the clerk, as a
-queue row to its session (from `rig whoami --json`) or through the kernel operator, then stay idle. Don't go looking
-for work unless they ask you to.
+queue row to its session (its seat in `rig ps --nodes --rig <rig> --json --full`) or through the kernel operator, then
+stay idle. Don't go looking for work unless they ask you to.
 
 The person may not be at your terminal: an agent may have installed the team for them. With your proposal, tell them
 briefly how they can answer you. Use your own names from `rig whoami --json` (`identity.rigName` and

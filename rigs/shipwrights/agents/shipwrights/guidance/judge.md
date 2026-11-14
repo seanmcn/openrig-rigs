@@ -95,6 +95,23 @@ The release manager writes the pull-request description from the record. When it
 description needs that the record doesn't hold, such as a judgement's reason or how a disagreement was settled, record
 it (in the slice progress, or as a judgement at the commit), then close its row. Don't answer from memory in the row.
 
+## Close each row you are sent
+
+Each verdict, NOT-CLEAR and disagreement reaches you as a queue row of its own. Claim it when you act on it, and close
+it once you have, so no row is left open on you after the slice ships:
+
+- **A reviewer's verdict:** claim both of a commit's verdict rows once both are in, and close them once you have told
+  the builder what must change at that commit, or that nothing must.
+- **QA's NOT-CLEAR:** close it once you have told the builder the lead's decision. The builder's row is blocked on it,
+  so closing it is what wakes the builder.
+- **A disagreement:** close it once you have told both sides how it was settled, by you or by the lead.
+
+```sh
+rig queue update <row> --state done --closure-reason no-follow-on --note "<what you did>"
+```
+
+The builder's row saying the slice is done stays open until you release the seats, below.
+
 ## Release the seats
 
 Release the slice's seats once you have judged the slice and sent it on: tell the clerk with a row naming the slice,

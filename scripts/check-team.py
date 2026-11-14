@@ -273,6 +273,14 @@ GUIDANCE_RULES = [
     ("release-manager.md", "block your row on QA's row", "the release manager waits for the result on QA's row"),
     ("release-manager.md", "fail together, send the failure to the lead", "a failure goes to the lead, as after a CI run"),
     ("lead.md", "fail together, the release manager tells you", "the lead hears of a failure from the release manager"),
+    # Every row a slice's seats send the judge is closed, and the builder waits out a NOT-CLEAR on QA's row to the judge.
+    ("judge.md", "## Close each row you are sent", "no verdict, NOT-CLEAR or disagreement row stays open on the judge"),
+    ("judge.md", "closing it is what wakes the builder", "the judge's closing QA's NOT-CLEAR row wakes the builder"),
+    ("qa.md", "name that row in the results", "the builder needs QA's NOT-CLEAR row to the judge to wait on"),
+    ("builder-backend.md", "block your row on that row", "the builder waits out a NOT-CLEAR on a queue block"),
+    ("lead.md", "a review pair on one runtime", "the lead expects the clerk's question about a one-runtime pair"),
+    ("lead.md", "rig ps --nodes", "the lead finds the clerk's session by its seat, not with rig whoami"),
+    ("startup/team-shape.md", "rig watchdog stop", "a removed seat's reminders stop with it"),
 ]
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)
@@ -384,6 +392,8 @@ FORBIDDEN_RULES = [
     ("clerk.md", "the other runtime is back", "the clerk sees a runtime back at its next pairing, without the lead"),
     ("clerk.md", "pass on to the lead", "a reviewer's usage limit doesn't wake the lead"),
     ("startup/review-pair-lead.md", "the slice waits for one to free up", "No free pair lives in team-shape.md, which the clerk reads"),
+    # rig whoami prints the caller's own session, so it never gives the lead the clerk's.
+    ("lead.md", "to its session (from `rig whoami", "the clerk's session comes from rig ps"),
 ]
 
 # Every role, and the guidance files each of its profiles must deliver.
