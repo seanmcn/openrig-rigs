@@ -16,4 +16,4 @@ Single-context: one `GLOSSARY.md` and `docs/adr/` at the repo root. See `docs/ag
 
 ### Merging
 
-A person merges every pull request.
+A person merges every pull request, except the weekly skill update, which merges itself when the team's checks pass.

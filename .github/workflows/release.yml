@@ -1,0 +1,27 @@
+name: release
+
+# Releases a team when a change to its version reaches main: a tag <team>-v<version> and a GitHub
+# release. The weekly skills update releases its own version, since a merge it makes with the
+# workflow's token starts no other workflow; for one that did, the release already exists and
+# this changes nothing.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "rigs/*/agents/*/agent.yaml"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Release each team whose version has no release yet
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          for team in rigs/*/; do
+            scripts/release-team.sh "$team" "$GITHUB_SHA"
+          done
