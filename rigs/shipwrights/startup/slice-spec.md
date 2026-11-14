@@ -7,6 +7,9 @@ Start the file's frontmatter with a `repos:` list naming every repository the sl
 whose pull request must merge first comes first. A slice in one repository lists that one. The release manager opens
 one pull request per entry and states that order in each.
 
+List the issues the slice answers under `issues:`, as links, so the seats can check whether someone outside the team
+has taken one ("Taken issues" in "This team's shape"). Leave it out when the slice answers no issue.
+
 Add `risky: true` when the slice is risky, so the judge passes it to the lead whatever its proof shows. The team
 settings' "Risky slices" says what makes a slice risky, and how this rig marks one if it has chosen another way.
 
@@ -15,6 +18,8 @@ settings' "Risky slices" says what makes a slice risky, and how this rig marks o
 repos:
   - <repository that merges first>
   - <repository that merges after it>
+issues: # only when the slice answers issues
+  - <link to an issue the slice answers>
 risky: true # only when the slice is risky
 ---
 ```

@@ -141,8 +141,14 @@ Inside "Built and reviewed", each slice goes through these steps:
    the problems that came up more than once.
 
 The clerk relaunches each builder, QA seat, code reviewer and planner once its part of a slice is done, so each starts
-the next one fresh. The lead, its peer, the clerk, the judge and the release manager are long-lived, and hand over to a
-fresh session near a full context ([`team-shape.md`](startup/team-shape.md)).
+the next one fresh, and the release manager after each slice it delivers, its waits on other pull requests carrying
+over. The lead, its peer, the clerk and the judge are long-lived, and hand over to a fresh session near a full context
+([`team-shape.md`](startup/team-shape.md)).
+
+An issue with an assignee is someone else's: assign yourself to one you are fixing on your own machine, and the team
+leaves it alone. The planner doesn't plan it. If you take one the team is already building, the clerk notices within
+half an hour, and the release manager checks again before it publishes, and the lead stops the slice
+([`team-shape.md`](startup/team-shape.md)).
 
 A seat that has to wait blocks its queue row with a wake and stays idle until it fires. An OpenRig watchdog wakes the
 clerk on a timer to check for builds past the slice time limit, which it passes to the lead, and another wakes the

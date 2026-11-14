@@ -99,6 +99,12 @@ What a slice changes: UI, backend or both. It decides which builder takes the sl
 a slice of both kinds goes to one frontend builder; the planner cuts both kinds of work as two slices when it can.
 _Avoid_: type, area
 
+**Taken issue**:
+An issue with an assignee: someone outside the team is working on it, such as the person on their own machine. The
+team doesn't plan a taken issue, and the lead stops a slice whose issue is taken while it is built. A ticket the
+planner's own `wayfinder` map assigned isn't taken.
+_Avoid_: claimed issue (a claim is a seat taking a queue row)
+
 **Proof**:
 What a seat records about a slice at one commit, mostly QA and each reviewer, with a verdict. A builder's screenshots
 are proof too.
@@ -111,8 +117,9 @@ and the judge passes it to the lead to decide.
 
 **Fresh seat**:
 A builder, QA seat, code reviewer or planner, which the clerk relaunches with a new session after each piece of work:
-it keeps its address and remembers nothing of earlier slices. The lead, its peer, the clerk, the judge and the
-release manager are **long-lived** instead, and hand over to a fresh successor near a full context.
+it keeps its address and remembers nothing of earlier slices. The release manager is relaunched the same way after
+each slice it delivers, keeping its parked rows. The lead, its peer, the clerk and the judge are **long-lived**
+instead, and hand over to a fresh successor near a full context.
 _Avoid_: reset, recycled seat
 
 **Review pair**:

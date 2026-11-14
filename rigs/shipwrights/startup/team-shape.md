@@ -128,6 +128,29 @@ later work to. Wherever a role file says "the clerk", it means the slice's clerk
 
 A seat closes its row on a slice when the clerk tells it the judge, or the lead, has released it.
 
+## Taken issues
+
+An issue with an assignee is taken: someone is working on it outside this team, such as the person fixing it on their
+own machine. The team leaves a taken issue alone, and stops building one that is taken while it works on it. Check an
+issue with:
+
+```sh
+gh issue view <issue link> --json assignees --jq '[.assignees[].login] | join(", ")'
+```
+
+Nothing printed means nobody has taken it. The only exception is a ticket the planner claimed for its own `wayfinder`
+map, which `wayfinder` assigns as it works: that one is the team's.
+
+A slice's `SPEC.md` lists the issues it answers under `issues:`. Since someone may take one at any time, they are
+checked:
+
+- by the planner, before it plans an issue;
+- by the clerk, before it hands a slice on, and at each time-limit check for every open build;
+- by the release manager, before it first publishes a slice.
+
+A seat that finds one taken sends the lead a row naming the slice, the issue and who has it. The lead stops the slice,
+or has it re-cut without that issue, and tells the person.
+
 ## Slices the judge passes to the lead
 
 The judge sends a routine slice straight to a release manager. It passes a slice to the lead instead, with the proof
@@ -155,8 +178,15 @@ It keeps its address and gets its start steps again, but remembers nothing of th
 put whatever the next seat would need into the record: the slice progress, the spec or the proof. A seat never
 relaunches itself.
 
-**The lead, its peer, the clerk, the judge and the release manager are long-lived:** they hold work across slices.
-Each registers one reminder on its own session when it starts, unless `rig watchdog list` already shows it:
+**The release manager starts fresh after each slice it delivers.** It holds a parked row on each pull request it
+waits on, so the clerk relaunches it once it has closed its row on a delivered or stopped slice, holds no pending or
+in-progress row and is idle. Its parked rows carry over: each wakes the new session as it would have woken the old
+one, and its continuation says what to resume. So, as for the seats above, keep in the record what you would need
+when one wakes.
+
+**The lead, its peer, the clerk and the judge are long-lived:** they hold work across slices. Each of them, and the
+release manager, since a run of slices may never leave it free, registers one reminder on its own session when it
+starts, unless `rig watchdog list` already shows it:
 
 ```sh
 rig watchdog register --policy context-usage-threshold --target-session <your session> --registered-by <your session> \

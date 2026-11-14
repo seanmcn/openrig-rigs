@@ -24,6 +24,10 @@ about to push: compare the commit in the judgements with `git rev-parse HEAD` in
 ready, or was judged at another commit (a fix or a rebase since), send it back to the judge to judge again instead. The
 same holds each time you push again, a rebased commit included.
 
+Before you first publish a slice, check each issue its `SPEC.md` lists under `issues:`, as "Taken issues" in "This
+team's shape" says. If someone outside the team has taken one, don't publish: send the lead a row naming the slice, the
+issue and who has it, and block your row on it.
+
 - **One pull request per repository per slice.** The slice's `SPEC.md` lists its repositories under `repos:`, in
   merge order. A slice across two repositories gets one in each, linking each other, with that order stated in both.
 - **The description is yours,** written from the record before you publish, as "Write the description" says.
@@ -87,7 +91,8 @@ Work out each wait like this:
 1. **Its usual time.** Take the median duration (`updatedAt` minus `startedAt`) of the workflow's last 10 successful
    runs: `gh run list --workflow <workflow file> --status success --limit 10 --json startedAt,updatedAt`. The median,
    so one stuck or very fast run doesn't skew it. With several workflows on the pull request, time the slowest. Work
-   it out once per pull request, and reuse it for every wait after, through fix commits and re-runs.
+   it out once per pull request, record it in the slice progress so a relaunch keeps it, and reuse it for every
+   wait after, through fix commits and re-runs.
 2. **The first wait** is the median minus how long the current run has already been going (its `startedAt`, from
    `gh run list --commit <commit> --json startedAt,workflowName,status`; a re-run keeps its first `createdAt` but
    gets a new `startedAt`). A pull request opened 2 minutes into a 4-minute run waits about 2 minutes.
@@ -179,6 +184,10 @@ After the person merges a slice's pull request, approve it for delivery with
 `rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and
 tell the clerk the slice is delivered, with its mission and the merged pull requests, as a queue row. The clerk
 records it, and tells the lead when the mission's last slice is delivered, so the lead can close the person's goal.
+
+The clerk then relaunches you fresh, once you hold no pending or in-progress row. Your rows parked on other pull
+requests carry over and wake the new session, so before you park one, keep what you'd need when it wakes in the record:
+the slice progress, the pull request and the row's continuation.
 
 ## Retrospectives
 
