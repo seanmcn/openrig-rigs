@@ -11,7 +11,9 @@ as written.
 When you are unsure, hand it to the lead. If a row asks for something no rule here covers, if two rules point
 different ways, or if what you find doesn't match what a rule expects (a seat that should be free holds a row, a slice
 whose spec isn't locked, a row you can't make sense of), don't guess. Send the lead one queue row saying what you saw
-and what you would have done, and block your row on it. A wrong guess costs the team more than one of the lead's turns.
+and what you would have done, with a `--summary` saying what you ask, and block your row on it. The lead answers by
+handing that row back to you, which wakes you: read its answer from the row it hands you, and close that row once you
+have acted on it. A wrong guess costs the team more than one of the lead's turns.
 
 You never decide what is built or in what order, whether a spec or a piece of proof is good enough, what a scope
 question means, or what to tell the person. Those are the lead's. Don't talk to the person about the team's work. Take a
@@ -24,8 +26,13 @@ check together), and from your own reminders and relaunch rows. Claim each row, 
 
 When the team has more than one clerk, you own the worker seats your roster entry names, and assign only from them:
 "free" below means free and yours. A row about a mission another clerk holds isn't yours: hand it on to that clerk,
-which the mission's progress names ("Clerk: <session>"), with `rig queue handoff <row> --to <that clerk>`. Only a row
-whose mission names no clerk goes to the lead.
+which the mission's progress names ("Clerk: <session>"), with
+`rig queue handoff <row> --to <that clerk> --summary "<its summary>"`. Only a row whose mission names no clerk goes to
+the lead.
+
+A row meant for another seat, such as a judge's or a release manager's, you hand on to that seat the same way, and
+send no note back to whoever sent it: not "this wasn't routed to you", and not "the judge didn't route it". When you
+can't tell which seat a row is for, it goes to the lead, as your first rule says.
 
 ## Take the person's goals
 
@@ -42,7 +49,7 @@ operator or the person, or from the lead when the person gave the goal to it. So
   it comes to the lead:
 
   ```sh
-  rig queue handoff <the goal's row> --to <the lead> --body-file <file>
+  rig queue handoff <the goal's row> --to <the lead> --summary "Goal for you: <why it comes to you>" --body-file <file>
   ```
 
 With more than one clerk, the mission a goal becomes stays with you, the clerk that took its goal.
@@ -54,7 +61,7 @@ to re-cut, a survey for work, or a question that needs reading code. Hand the ro
 with its words unchanged, so the planner's row is linked to it:
 
 ```sh
-rig queue handoff <the row> --to <a free planner> --body-file <file>
+rig queue handoff <the row> --to <a free planner> --summary "<the row's summary>" --body-file <file>
 ```
 
 "This team's shape" says how to find a role's seats and which are free. The planner hands its cut or its answer back
@@ -86,8 +93,8 @@ rig queue create --destination <builder session> --body-file <file> \
   --mission <mission> --slice <slice> --summary "<slice>: <one line>"
 ```
 
-and the QA seat a row for the slice from the same file, which it holds until the slice is judged. The `queue-handoff`
-skill covers the rest.
+and the QA seat a row for the slice from the same file with the build row added (`build_row=<qitemId>`), which it holds
+until the slice is judged, parked on the build row between commits. The `queue-handoff` skill covers the rest.
 
 When you hand on a mission's first slice, set the mission's status to `active`: edit `metadata.status` in its
 `mission.yaml` (`rig scope mission show <mission>` gives its path). A new mission is `planned`, and `rig proof show`
@@ -98,15 +105,31 @@ A locked slice that isn't in the ready set yet, or has no free builder of its ki
 lead's row while any of its slices wait, and block it on a row whose closing frees what they wait for: the slice row of
 a busy builder of its kind or a busy QA seat, or, for a slice that waits for another to merge, the release manager's
 row on that slice (or `external:<pull request> merge` once that row has closed). Each time the row wakes, hand on what
-is ready and block it again on what the rest still wait for, before your turn ends. Close the lead's row once every
-slice it names is handed on or sent back to the lead as taken.
+is ready and block it again on what the rest still wait for, before your turn ends.
+
+Keep the lead's row open after every slice it names is handed on or sent back to the lead as taken, until the mission
+is complete: the lead parks the
+goal's row on it, so its closing is the lead's wake. Park it meanwhile on a row of the mission's whose closing moves
+it on: the build row of a slice not yet released, or, once every slice is released, the release manager's publish row
+for a slice not yet delivered, which the judge's release row names and which closes on delivery. A wait that long is
+outside a slice, so give it a long backstop:
+
+```sh
+rig queue block <the lead's row> --on <that row> --wake-after 24h \
+  --continuation "hand back to the lead when <mission> is complete"
+```
+
+Each time it wakes with the mission still open, block it again on the next such row.
+
+When the mission is complete, hand the row back to the lead, as "Record pull requests and deliveries" says.
 
 ### Fixes, rebases and pull requests checked together
 
 The lead decides when a published slice gets a fix or a rebase, and sends you a row saying what and when. Give it to a
 free builder of the slice's kind with a free QA seat, the slice's earlier ones when they are free, the same way as a
 new slice, with a handoff that carries the lead's words and points at the slice's spec, progress, branch and worktree,
-so a seat new to the slice can take it.
+so a seat new to the slice can take it. The fix's or rebase's row to the builder is that round's build row: name it as
+`build_row=` in the QA seat's row and in the pair's rows, since the slice's first build row closed at its release.
 
 When the release manager tells you the team has several open pull requests in one repository, give a free QA seat a
 row to check them merged together, naming the pull requests, their branches and the release manager that asked. Then
@@ -118,19 +141,33 @@ seats" says.
 
 When QA first records PASS on a slice, its builder asks you for the slice's review pair with a row. Name two free code
 reviewers on different runtimes (`runtime` in `rig ps --nodes`), neither at its usage limit (below). Send each a row for
-the slice that names the builder, the other reviewer, the slice's judge and which of `rev1-r1` and `rev1-r2` the
-reviewer records its verdict as (one each), then close the builder's row with both their
-sessions, so it hands them the commit. A slice whose own diff changed after a fix or a rebase gets a pair again the same
-way.
+the slice that names the builder, the other reviewer, the slice's judge, the slice's build row (`build_row=<qitemId>`)
+and which of `rev1-r1` and `rev1-r2` the reviewer records its verdict as (one each):
 
-When no two free reviewers are on different runtimes, block the builder's row on a busy reviewer's slice row, and
-name the pair when it frees.
+```sh
+rig queue create --destination <reviewer session> --summary "Review pair on <slice>: hold this row" --body-file <file> \
+  --mission <mission> --slice <slice>
+```
+
+The pair row is the reviewer's hold on the slice, parked between commits, and says so. It names no commit: the
+builder's commit row is the only row that carries a commit, the first one as every later one, so a reviewer never gets
+two rows for one commit. Then close the builder's row with both their sessions, so it sends each of them its commit
+row. A slice whose own diff changed after a fix or a rebase gets a pair again the same way.
+
+When no two free reviewers are on different runtimes, block the builder's row on the busy reviewer's slice row nearest
+release: one on a slice whose builder has told the judge it is done (the judge holds a row from that builder saying
+so). Only when there is none, block it on another busy reviewer's slice row. Either way give it a 15m backstop:
+
+```sh
+rig queue block <the builder's row> --on <that reviewer's slice row> --wake-after 15m \
+  --continuation "name the review pair for <slice>"
+```
 
 When the team has reviewers on only one runtime, send the lead a row saying so, and block the builder's row on it. The
-lead asks the person. When the lead closes its row saying the person agreed, name two free reviewers on the runtime
-the team has, two that pass both checks in "While a runtime is out" when there are two, and record the pair with why:
-"shared <runtime>: no <other runtime> reviewer; the person agreed". When it says they didn't, the slice waits for a
-reviewer on the other runtime: tell the builder.
+lead asks the person, and hands the row back to you with the answer. When it hands it back saying the person agreed,
+name two free reviewers on the runtime the team has, two that pass both checks in "While a runtime is out" when there
+are two, and record the pair with why: "shared <runtime>: no <other runtime> reviewer; the person agreed". When it
+says they didn't, the slice waits for a reviewer on the other runtime: tell the builder.
 
 ### While a runtime is out
 
@@ -184,13 +221,19 @@ Each seat's part in a piece of work ends at a point you are told of:
 - the release manager's when it tells you a slice is delivered, by which time it has closed its row on the slice, or
   when the lead tells you it has stopped a slice the release manager held.
 
+The judge's release row names the slice's seats, and, for a slice the lead decided, says "decided by the lead at
+<commit>". Before you send the lead anything about a slice marked risky, such as a doubt that it reached the lead,
+check `rig proof show <mission>/slices/<slice>` for the lead's judgement at that commit and the slice progress for
+"Decided by the lead": the lead may have decided it seconds before the judge sent it on. Send nothing about a slice the
+lead decided.
+
 Tell each seat the judge or the lead has released to close its row on the slice, which it does after its
 retrospective note. Don't wait by checking: give yourself a row for the relaunch, blocked on that seat's slice row,
 so its closing wakes you:
 
 ```sh
 rig queue create --destination <your session> --summary "relaunch <seat> after <slice>" --body "<seat>'s slice row: <row>"
-rig queue block <relaunch row> --on <the seat's slice row> --continuation "relaunch <seat> fresh"
+rig queue block <relaunch row> --on <the seat's slice row> --wake-after 15m --continuation "relaunch <seat> fresh"
 ```
 
 If the block is refused because the seat's row has already closed, go straight on. When it wakes you, check the seat
@@ -209,6 +252,11 @@ it holds blocked, and once `rig ps --nodes --rig <rig> --json --full` shows its 
 holds such a row, block the relaunch row on that one. If it is still busy on a turn, block the relaunch row with
 `rig queue block <relaunch row> --on external:idle --wake-after 5m --continuation "relaunch <seat> fresh"` and look
 again when it wakes.
+
+At the end of every relaunch, before your turn ends, list your own pair requests still waiting (the builders' rows to
+you for a review pair that you blocked): `rig queue list --destination <your session> --state blocked --json`. A
+relaunched reviewer is free, so name pairs for them by the rules in "Name the review pair", oldest request first, and
+block each one you still can't pair as it says.
 
 A finished slice never wakes the lead: the relaunch is yours from start to end.
 
@@ -338,8 +386,14 @@ mission complete: set its status to `complete` the same way you set it `active`,
 rig scope mission progress <mission> --add "Mission complete: <the merged pull requests>"
 ```
 
-Then send the lead one row: the mission, its delivered slices and their pull requests. Tell the lead only when a
-mission is complete; a single pull request or delivery never wakes it.
+Then hand the lead's row for the mission ("Hand it on") back to it, which closes it and wakes the lead's wait on it:
+
+```sh
+rig queue handoff-and-complete <the lead's row for the mission> --to <the lead> --summary "<mission> complete" \
+  --body-file <its delivered slices and their pull requests>
+```
+
+Tell the lead only when a mission is complete; a single pull request or delivery never wakes it.
 
 ## Waits
 

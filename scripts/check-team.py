@@ -37,7 +37,8 @@ usage: scripts/check-team.py rigs/<team>
 - the lead is the orchestrator (the only delegates_to source) of every seat but itself and its
   peer in rig.yaml, so every stuck queue row escalates to it, and the peer observes only the lead;
 - every `rig` command in the team's text uses only flags OpenRig accepts for it, and only the values
-  OpenRig accepts for a flag that takes a fixed set, such as `--status` or `--fields` (RIG_COMMANDS);
+  OpenRig accepts for a flag that takes a fixed set, such as `--status` or `--fields` (RIG_COMMANDS), and every
+  `rig queue create`, `handoff` and `handoff-and-complete` example gives a `--summary` (SUMMARY_COMMANDS);
 - `rig bundle check` passes, when `rig` is installed.
 
 A skill the guidance "names" is any lower-case name in backticks in the guidance, the
@@ -173,8 +174,36 @@ GUIDANCE_RULES = [
     ("release-manager.md", "external:merge", "the merge is a queue block with a wake that backs off"),
     ("release-manager.md", "release-candidate", "the release manager marks a ready mission release-candidate"),
     ("release-manager.md", "--scope delivery", "the release manager approves each merged slice for delivery"),
-    ("qa.md", "--on external:next-commit", "QA parks the lead's row between commits, so the stuck sweep doesn't flag it"),
-    ("code-reviewer.md", "--on external:next-commit", "a reviewer parks the lead's row between commits"),
+    ("qa.md", "--on <the build row> --wake-after 15m", "QA parks its slice row between commits on the build row"),
+    ("code-reviewer.md", "--on <the build row> --wake-after 15m", "a reviewer parks its slice row on the build row"),
+    # A wait blocks on the row whose closing ends it, and a decision someone waits on reaches them as a row.
+    ("startup/team-shape.md", "## Rows and their summaries", "every seat gives each row a summary, and hands decisions back"),
+    ("startup/team-shape.md", "only when no row stands for the wait", "external: is only for waits no row stands for"),
+    ("startup/team-shape.md", "it is 15m", "fallback wakes within a slice are 15 minutes"),
+    ("CULTURE.md", "the row whose closing ends the wait", "a wait blocks on the row that ends it"),
+    ("lead.md", "rig queue handoff-and-complete <the judge's row> --to <the judge>", "the lead hands its decision back as a row"),
+    ("lead.md", "rig queue handoff-and-complete <the clerk's row> --to <the clerk>", "the lead answers the clerk as a row"),
+    ("lead.md", "--on <your row to the clerk for the mission>", "the lead parks a goal's row on its mission row"),
+    ("startup/review-pair-lead.md", "rig queue handoff-and-complete <the clerk's row> --to <the clerk>",
+     "the lead answers the one-runtime ask as a row"),
+    ("judge.md", "read the decision from the row it hands you", "the judge reads the lead's decision from the row it hands back"),
+    ("judge.md", "decided by the lead at <commit>", "the judge's onward rows say the lead decided the slice"),
+    ("judge.md", "--summary \"<slice>: <why it's yours>; recommend <x>\"", "the judge's row to the lead has a summary"),
+    ("judge.md", "--summary \"Publish <slice> at <short commit>\"", "the judge's publish row has a summary"),
+    ("judge.md", "--summary \"Release the seats on <slice>\"", "the judge's release row has a summary"),
+    ("clerk.md", "check `rig proof show <mission>/slices/<slice>` for the lead's judgement",
+     "the clerk checks the proof before flagging a risky slice"),
+    ("clerk.md", "send no note back", "a row for another seat is handed on, with no note back"),
+    ("clerk.md", "It names no commit", "the clerk's pair row is the hold and names no commit"),
+    ("clerk.md", "nearest release", "a waiting pair request blocks on the reviewer row nearest release"),
+    ("clerk.md", "At the end of every relaunch", "the clerk re-checks waiting pair requests after each release"),
+    ("clerk.md", "--summary \"<mission> complete\"", "the clerk hands the lead's mission row back when it completes"),
+    ("builder-backend.md", "the only row that carries a commit", "one row per commit for each reviewer"),
+    ("builder-backend.md", "Never send a reviewer a slice row of your own", "the clerk's pair row is the reviewer's hold"),
+    ("builder-backend.md", "--wake-after 15m", "fallback wakes within a slice are 15 minutes"),
+    ("release-manager.md", "git merge-tree --write-tree origin/<base>", "a rebase is asked for only on a confirmed conflict"),
+    ("release-manager.md", "never the judge or the clerk", "a rebase ask goes only to the lead"),
+    ("release-manager.md", "A base branch that has only moved needs no rebase", "a branch only behind its base merges"),
     ("startup/review-pair-reviewer.md", "parked between commits", "a reviewer in a pair parks the lead's row between commits"),
     ("builder-backend.md", "block the rebase row", "the builder parks the rebase row while QA checks it"),
     ("planner.md", "rig queue handoff-and-complete <your row> --to <the lead>",
@@ -412,6 +441,21 @@ FORBIDDEN_RULES = [
     ("clerk.md", "the other runtime is back", "the clerk sees a runtime back at its next pairing, without the lead"),
     ("clerk.md", "pass on to the lead", "a reviewer's usage limit doesn't wake the lead"),
     ("startup/review-pair-lead.md", "the slice waits for one to free up", "No free pair lives in team-shape.md, which the clerk reads"),
+    # Waits block on the row that ends them, and the lead's decisions reach the seat waiting on them as a row.
+    ("qa.md", "external:next-commit", "QA parks its slice row on the build row"),
+    ("code-reviewer.md", "external:next-commit", "a reviewer parks its slice row on the build row"),
+    ("lead.md", "external:mission", "the lead parks a goal's row on its mission row to the clerk"),
+    ("lead.md", "in your row's closing note", "the lead hands its decision back as a row"),
+    ("lead.md", "say in your closing note", "the lead hands its decision back as a row"),
+    ("clerk.md", "external:delivery", "the clerk parks the lead's mission row on a build or publish row"),
+    ("startup/review-pair-lead.md", "close the clerk's row saying whether they agreed", "the lead answers as a row"),
+    ("judge.md", "the lead's closing it wakes you", "the judge reads the decision from the row the lead hands back"),
+    ("clerk.md", "When the lead closes its row saying", "the clerk reads the lead's answer from the row it hands back"),
+    ("clerk.md", "Close the lead's row once every slice it names is handed on", "the lead's mission row stays open"),
+    ("release-manager.md", "its closing note on the judge's row", "the lead's decision is in the row it hands back"),
+    ("builder-backend.md", "--wake-after 1h", "fallback wakes within a slice are 15 minutes"),
+    ("qa.md", "--wake-after 2h", "fallback wakes within a slice are 15 minutes"),
+    ("code-reviewer.md", "--wake-after 2h", "fallback wakes within a slice are 15 minutes"),
     # rig whoami prints the caller's own session, so it never gives the lead the clerk's.
     ("lead.md", "to its session (from `rig whoami", "the clerk's session comes from rig ps"),
 ]
@@ -577,6 +621,8 @@ RIG_COMMANDS = {
     "whoami": "--all-hosts --all-peers --full --host --hosts --json --node-id --session --verbose",
 }
 RIG_COMMANDS = {command: set(flags.split()) for command, flags in RIG_COMMANDS.items()}
+# The commands that make a row or hand one on, so each example of them shows a --summary.
+SUMMARY_COMMANDS = {"queue create", "queue handoff", "queue handoff-and-complete"}
 QUEUE_STATES = {"pending", "in-progress", "done", "blocked", "failed", "denied", "canceled", "handed-off"}
 PROGRESS_STATUSES = {"active", "done", "blocked"}
 # The values OpenRig accepts for a flag that takes a fixed set, as (command, flag): values. A comma-separated value,
@@ -1058,6 +1104,11 @@ def check_commands(team, problems):
             name = next((" ".join(words[:n]) for n in (3, 2, 1) if " ".join(words[:n]) in RIG_COMMANDS), None)
             if name is None:
                 continue
+            # A row's summary is what every listing shows, so each example that makes or hands on a row gives one. A
+            # bare mention of the command, with no arguments, names it rather than showing how to run it.
+            flags = {word.partition("=")[0] for word in words}
+            if name in SUMMARY_COMMANDS and len(words) > len(name.split()) and "--summary" not in flags:
+                fail(problems, f"{path}: `{command}` has no --summary: every row a seat makes or hands on has one")
             for i, word in enumerate(words):
                 if not word.startswith("--"):
                     continue

@@ -85,7 +85,7 @@ Once the lead has been down for 10 minutes without a break:
 
 2. Send it the recap row, as after a handover, once its seat is `running` again.
 3. Tell the person in one message: the lead's seat was down since when, what you saw, and that you relaunched it with
-   a recap. Send it as a row to them (`rig queue create --destination <person>@external --human-intent update ...`),
+   a recap. Send it as a row to them (`rig queue create --destination <person>@external --human-intent update --summary "lead relaunched" ...`),
    so it reaches them wherever they read the team's messages.
 
 Then watch it as before. If the lead is still down 10 minutes after you relaunched it, tell the person in one row the

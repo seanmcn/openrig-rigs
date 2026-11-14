@@ -97,7 +97,7 @@ routed the work to you (your row's source), and anything you found outside the r
 survey or a question, the file holds your list or your answer instead. Then:
 
 ```sh
-rig queue handoff-and-complete <your row> --to <the lead> --body-file <file>
+rig queue handoff-and-complete <your row> --to <the lead> --summary "<goal or slice>: <what you hand back>" --body-file <file>
 ```
 
 Use `rig queue handoff-and-complete`, not `rig queue handoff`. The clerk waits on your row to relaunch you, and a goal

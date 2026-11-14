@@ -216,17 +216,43 @@ your row closes.
 
 ## Waits
 
-Every wait is a queue block with a wake or on another row, never a loop of checks:
+Every wait is a queue block with a wake or on another row, never a loop of checks. Block on the row whose closing is
+the thing you wait for:
 
-- **On a seat:** block on its row (`--on <qitemId>`), which clears when that row closes. Claiming it doesn't.
-- **On anything else,** such as CI or another team:
+- **On a row:** block on it (`--on <qitemId>`), which clears when that row closes. Claiming it doesn't. A seat's
+  answer, a decision of the lead's, a slice's release: each has a row that closes when it comes, so wait on that row.
+- **On `external:` only when no row stands for the wait:** CI, a merge, the person, a pause, another team:
   `rig queue block <row> --on external:<what> --wake-after <time> --continuation "<what to check when it fires>"`.
 
 Block on what the work itself waits for, not on whatever is busy now: a slice that waits for another to merge blocks
 on the release manager's row for that slice, or on `external:<pull request> merge`, not on a builder's row that may
-close first. When a wake fires, run `rig queue show <row> --full --json` first, then check, and block again or carry
+close first. A block on a row still takes a `--wake-after` as a backstop, in case its seat forgets to close it: within
+a slice (a builder's commit rows and rebase row, QA's and the reviewers' parked slice rows) it is 15m. Waits outside a
+slice keep their own times, such as the release manager's CI and merge waits and the lead's 24h on a goal.
+
+When a wake fires, run `rig queue show <row> --full --json` first, then check, and block again or carry
 on. A row you hold while it still waits is blocked again before your turn ends: a claimed row left open trips the
 stuck sweep, which tells the lead.
+
+## Rows and their summaries
+
+Every row a seat makes or hands on (`rig queue create`, `rig queue handoff`, `rig queue handoff-and-complete`) has a
+`--summary`: one line saying what the row is about and what it needs, such as `"<slice>: <what>"`. It is what every
+listing shows, so a row without one can't be told from the others without opening it.
+
+A decision goes in a row, never only in a closing note. When a seat is blocked on a row you hold and you answer it,
+hand the row back to that seat with the answer in its body, so the waiting seat wakes and reads it there:
+
+```sh
+rig queue handoff-and-complete <the row> --to <the seat blocked on it> --summary "<slice>: <decision in a line>" \
+  --body-file <your decision and why>
+```
+
+An answer you put in the record instead, such as a line in the slice progress or a judgement, needs only a closing
+note saying where it is.
+
+A row that reaches you but is meant for another seat, you hand on to that seat with `rig queue handoff`, with no
+note back to whoever sent it.
 
 ## Earlier sessions
 

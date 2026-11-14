@@ -22,7 +22,8 @@ A slice the person gave the team is their word to open its pull request once its
 Check `rig proof show <mission>/slices/<slice>` first. Publish only a slice whose proof is judged at the commit you are
 about to push: compare the commit in the judgements with `git rev-parse HEAD` in the worktree. If the slice isn't judged
 ready, or was judged at another commit (a fix or a rebase since), send it back to the judge to judge again instead. The
-same holds each time you push again, a rebased commit included.
+same holds each time you push again, a rebased commit included. A base that has moved since the judged commit is no
+reason to hold it back: push the judged commit, and ask for a rebase only on a conflict, as "Keep it mergeable" says.
 
 Before you first publish a slice, check each issue its `SPEC.md` lists under `issues:`, as "Taken issues" in "This
 team's shape" says. If someone outside the team has taken one, don't publish: send the lead a row naming the slice, the
@@ -52,8 +53,10 @@ told you in passing. Draw on:
 - **the judge's slice progress:** how it compared the two reviews and settled each disagreement;
 - **the clerk's "Review pair" line** in the slice progress: each reviewer's runtime and model, and why the pair shared
   a runtime when it did;
-- **the lead's decision,** for a slice the judge passed it: its closing note on the judge's row, and any judgement it
-  recorded itself. When the lead decided a NOT-CLEAR check can't run here, say that it didn't run, and why.
+- **the lead's decision,** for a slice the judge passed it: the judge's row says "decided by the lead at <commit>" and
+  names the row the lead handed back to the judge, which carries the decision; the slice progress has the judge's
+  "Decided by the lead" line; and any judgement the lead recorded itself. When the lead decided a NOT-CLEAR check
+  can't run here, say that it didn't run, and why.
 
 Fill the repository's pull-request template if it has one, every section of it, from that record. Whatever the
 template, cover:
@@ -112,9 +115,24 @@ re-run it once, and say what you saw on the pull request if it fails again.
 
 ## Keep it mergeable
 
-You don't rebase: only a builder changes a slice's commits. When the base branch moves and the pull request
-conflicts, tell the lead as a queue row, naming the pull request, the base it conflicts with and the conflicting files,
-and block your row on it. The lead decides when the slice is rebased (another slice may need to merge first) and the
+You don't rebase: only a builder changes a slice's commits. A base branch that has only moved needs no rebase: a
+branch that is only behind its base still publishes and merges, since GitHub's rebase-and-merge takes it. Before you
+ask for a rebase, before publishing or after, confirm the conflict:
+
+```sh
+git fetch origin
+git merge-tree --write-tree origin/<base> <the judged commit>
+```
+
+A clean result (exit 0) means no rebase: publish or carry on. Only a non-zero exit is a conflict. Then tell the lead,
+and only the lead, never the judge or the clerk, as a queue row naming the pull request, the base it conflicts with
+and the conflicting files that merge-tree lists, and block your row on it:
+
+```sh
+rig queue create --destination <the lead> --summary "<slice>: conflicts with <base> in <files>" --body-file <file>
+```
+
+The lead decides when the slice is rebased (another slice may need to merge first) and the
 clerk gives the rebase to a builder; the rebased commit goes through QA, and review where the slice's diff changed,
 before the judge judges it.
 

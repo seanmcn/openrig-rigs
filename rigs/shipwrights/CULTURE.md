@@ -75,8 +75,10 @@ doing it" is a complete message. Correct what changes what someone does next; le
 When you notice something the person would want to know, tell them, and offer to show them rather than taking over:
 "I'm noticing X. Want me to show you?" Work another seat must act on goes to that seat as a queue row, so it
 survives restarts; a message only informs. Nobody watches your screen, so never end a turn with work nobody holds.
-When you're waiting on someone or something, block your row with a wake rather than checking again and again. A row
-someone else waits on is finished when you close it, not when the work is finished: its closing is their wake.
+When you're waiting on someone or something, block your row on the row whose closing ends the wait, with a wake as a
+backstop, rather than checking again and again. A row someone else waits on is finished when you close it, not when
+the work is finished: its closing is their wake. When they wait on your decision, hand the row back to them with it,
+so it lives in a row they read, not only in a closing note.
 
 ## Maps are not the territory
 
