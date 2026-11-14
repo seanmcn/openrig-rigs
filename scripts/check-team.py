@@ -8,12 +8,15 @@ usage: scripts/check-team.py rigs/<team>
 - no file uses a word in AVOIDED_WORDS, which GLOSSARY.md says to avoid, and each list in ONE_PLACE
   appears only in its own file;
 - settings.md holds the team settings with their defaults;
-- the team ships no third-party skills: every skill a profile selects is declared, and
-  every declared skill sits inside the team folder with its SKILL.md;
 - skills.md lists every skill the guidance names, each row with a source, a full commit,
   a licence, the profiles that use it and whether it is required, a required skill's seats being
-  exactly the roles whose guidance or start files name it, and install-skills.sh
-  reads it (a dry run, into empty folders);
+  exactly the roles whose guidance or start files name it;
+- the team ships every skill skills.md lists, declared in agent.yaml as its copy in
+  agents/<agent>/vendor/<skill>, beside the team's own skills in skills/, each following its
+  source on restore; each copy is named as its id, carries a licence, and matches its source at
+  the pinned commit (scripts/sync-skills.py --check); vendor/ holds nothing the table doesn't list;
+- each profile selects the team's own skills and exactly the skills its role's row in skills.md
+  lists, and agent.yaml's version, the team version, is <major>.<minor>.<patch>;
 - the role guidance carries the rules the team relies on, and none it has dropped, every
   `rig queue block` example names its `--on` blocker, and every
   role file has its seat add a retrospective note to the slice progress;
@@ -42,6 +45,9 @@ culture, the start steps or the settings, other than OpenRig's own skills and th
 in NOT_SKILLS. Every new name in backticks must be one or the other, so a skill can't
 slip into the guidance without a row in skills.md.
 
+The vendored copies are other people's text, unchanged, so none of the checks on the team's
+own text read them. Checking them against their sources needs git and the network.
+
 Standard library only, so it runs anywhere Python 3 does. It reads agent.yaml with
 regular expressions, which holds because the team writes skills and `uses` lists in
 flow style on one line each.
@@ -52,7 +58,6 @@ import re
 import shutil
 import subprocess
 import sys
-import tempfile
 from pathlib import Path
 from typing import NamedTuple
 
@@ -577,6 +582,11 @@ FLAG_VALUES = {
 
 SKILL_NAME = r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*"
 
+# Where an agent folder keeps its copies of the skills skills.md lists, which sync-skills.py writes. They are other
+# people's text, unchanged, so none of the checks on the team's own text read them.
+VENDOR = "vendor"
+LICENCE = re.compile(r"^(licen[cs]e|notice|third_party_licenses)", re.IGNORECASE)
+
 # What OpenRig provides itself, which skills.md doesn't list: the Workshop skill this team
 # bundles, the openrig-core plugin and its skills, the skill an OpenRig clone ships, and
 # OpenRig's public context pack.
@@ -689,8 +699,9 @@ def check_settings(team, problems):
 
 
 def parse_agent(text):
-    """An agent.yaml's declared skills, as id: path, and the skills its profiles select."""
-    declared = dict(re.findall(r"-\s*\{\s*id:\s*([\w.-]+),\s*path:\s*([^\s,}]+)", text))
+    """An agent.yaml's declared skills, as id: (path, on_restore or None), and the skills its profiles select."""
+    declared = {skill: (path, on_restore or None) for skill, path, on_restore in re.findall(
+        r"-\s*\{\s*id:\s*([\w.-]+),\s*path:\s*([^\s,}]+)(?:,\s*on_restore:\s*([\w]+))?\s*\}", text)}
     selected = set()
     for items in re.findall(r"^\s*skills:\s*\[([^\]]*)\]", text, re.MULTILINE):
         selected.update(item.strip() for item in items.split(",") if item.strip())
@@ -831,6 +842,9 @@ class Team(NamedTuple):
 def read_team(root):
     files = {}
     for path in sorted(root.rglob("*")):
+        parts = path.relative_to(root).parts
+        if len(parts) > 3 and parts[0] == "agents" and parts[2] == VENDOR:
+            continue  # vendored skills: check_declared_skills and check_vendored_copies check them instead
         if path.is_file():
             try:
                 files[path] = path.read_text(encoding="utf-8")
@@ -883,29 +897,16 @@ def check_skill_seats(team, rows, problems):
                 fail(problems, f"skills.md:{number}: {skill!r} doesn't list {role}, though {named[skill]} names it")
 
 
-def check_install_script(team, listed, problems):
-    """install-skills.sh reads skills.md: a dry run into empty folders installs every row and writes nothing."""
-    script = team.root / "install-skills.sh"
-    if not script.is_file():
-        fail(problems, f"{script} is missing")
-        return
-    with tempfile.TemporaryDirectory() as home:
-        claude, codex = Path(home, "claude"), Path(home, "codex")
-        env = dict(os.environ, HOME=home, CLAUDE_CONFIG_DIR=str(claude), CODEX_HOME=str(codex))
-        result = subprocess.run(["bash", str(script), "--dry-run"], capture_output=True, text=True, env=env)
-        if result.returncode != 0:
-            fail(problems, f"install-skills.sh --dry-run exited {result.returncode}: {result.stderr.strip()}")
-            return
-        for skill in sorted(listed):
-            for folder in (claude / "skills" / skill, codex / "skills" / skill):
-                if f"would install {skill} " not in result.stdout or str(folder) not in result.stdout:
-                    fail(problems, f"install-skills.sh --dry-run doesn't install {skill!r} into {folder}")
-        if any(Path(home).iterdir()):
-            fail(problems, "install-skills.sh --dry-run wrote files")
+def skill_name(page):
+    """The name in a SKILL.md's frontmatter, or None."""
+    front = re.match(r"---\n(.*?)\n---", page.read_text(encoding="utf-8"), re.DOTALL)
+    name = re.search(r"^name:\s*['\"]?(.+?)['\"]?\s*$", front.group(1), re.MULTILINE) if front else None
+    return name.group(1) if name else None
 
 
-def check_bundle_skills(team, listed, problems):
-    """Profiles select only skills that ship in the team folder, and none skills.md lists."""
+def check_declared_skills(team, listed, problems):
+    """The team declares each skill skills.md lists as its copy in vendor/, beside its own skills in skills/, and
+    each follows its source on restore. A copy is named as its id and carries a licence."""
     agents = team.texts("agents/*/agent.yaml")
     if not agents:
         fail(problems, f"{team.root} has no agents/*/agent.yaml")
@@ -914,17 +915,67 @@ def check_bundle_skills(team, listed, problems):
         declared, selected = parse_agent(text)
         for skill in sorted(selected - declared.keys()):
             fail(problems, f"{agent_yaml}: a profile selects {skill!r}, which no skill resource in the team declares")
-        for skill, rel in sorted(declared.items()):
+        for skill in sorted(listed - declared.keys()):
+            fail(problems, f"{agent_yaml}: skills.md lists {skill!r}, but no skill resource declares it")
+        for skill, (rel, on_restore) in sorted(declared.items()):
             folder = (agent_yaml.parent / rel).resolve()
+            want = f"{VENDOR}/{skill}" if skill in listed else f"skills/{skill}"
+            if rel != want:
+                fail(problems, f"{agent_yaml}: {skill!r} is at {rel}: " + (f"a copy of a skill skills.md lists is "
+                     f"at {want}" if skill in listed else f"skills.md doesn't list it, so it's the team's own, at {want}"))
+            if on_restore != "follow_source":
+                fail(problems, f"{agent_yaml}: {skill!r} doesn't follow its source on restore: give it "
+                               "on_restore: follow_source, or a restored seat loses it after an update")
             if not folder.is_relative_to(team.root.resolve()):
                 fail(problems, f"{agent_yaml}: {skill!r} is outside the team folder")
             elif not (folder / "SKILL.md").is_file():
                 fail(problems, f"{folder}: no SKILL.md")
-            if skill in listed:
-                fail(problems, f"{agent_yaml}: ships {skill!r}, which skills.md says the person installs")
-    for leftover in ("skills.lock", "skills.sources"):
-        if (team.root / leftover).exists():
-            fail(problems, f"{team.root / leftover}: the team no longer pins vendored skills")
+            elif (name := skill_name(folder / "SKILL.md")) != skill:
+                fail(problems, f"{folder / 'SKILL.md'} is named {name!r}, not {skill!r}, so seats can't select it")
+            elif rel.startswith(f"{VENDOR}/") and not any(LICENCE.match(p.name) for p in folder.iterdir()):
+                fail(problems, f"{folder}: no licence file beside the skill")
+        vendored = agent_yaml.parent / VENDOR
+        for leftover in sorted({p.name for p in vendored.iterdir()} - listed if vendored.is_dir() else []):
+            fail(problems, f"{vendored / leftover}: skills.md doesn't list it: run scripts/sync-skills.py")
+
+
+def check_profile_skills(team, rows, problems):
+    """Each profile selects the team's own skills and exactly the skills its role's row in skills.md lists."""
+    own = {skill for text in team.texts("agents/*/agent.yaml").values()
+           for skill, (rel, _) in parse_agent(text)[0].items() if rel.startswith("skills/")}
+    roles = {profile_name(role, runtime): role for role in ROLES for runtime in RUNTIMES}
+    for profile, block in sorted(team.profiles.items()):
+        role = roles.get(profile)
+        if role is None:
+            continue  # check_profiles names a profile that is no role's
+        listed = {row.get("Skill", "").strip("`") for _, row in rows
+                  if {seat.strip() for seat in row.get("Seats", "").split(",")} & {role, "all"}}
+        uses = re.search(r"^      skills:\s*\[([^\]]*)\]", block, re.MULTILINE)
+        selected = {item.strip() for item in uses.group(1).split(",") if item.strip()} if uses else set()
+        for skill in sorted(selected - listed - own):
+            fail(problems, f"the {profile!r} profile selects {skill!r}, which skills.md doesn't list for {role}")
+        for skill in sorted(listed - selected):
+            fail(problems, f"the {profile!r} profile doesn't select {skill!r}, which skills.md lists for {role}")
+        for skill in sorted(own - selected):
+            fail(problems, f"the {profile!r} profile doesn't select {skill!r}, which every seat uses")
+
+
+def check_vendored_copies(team, problems):
+    """Every vendored copy matches its source at the commit skills.md pins, as sync-skills.py --check says."""
+    result = subprocess.run([sys.executable, str(Path(__file__).with_name("sync-skills.py")), str(team.root),
+                             "--check"], capture_output=True, text=True)
+    if result.returncode != 0:
+        for line in result.stderr.strip().splitlines() or [f"sync-skills.py --check exited {result.returncode}"]:
+            fail(problems, f"vendored skills: {line}")
+
+
+def check_version(team, problems):
+    """agent.yaml's version is the team version, three-part, as the README's Versions section says."""
+    for agent_yaml, text in team.texts("agents/*/agent.yaml").items():
+        version = re.search(r'^version:\s*"?([^"\n]*)"?\s*$', text, re.MULTILINE)
+        if not version or not re.fullmatch(r"\d+\.\d+\.\d+", version.group(1)):
+            fail(problems, f'{agent_yaml}: version is "{version.group(1) if version else ""}": a team version is '
+                           '"<major>.<minor>.<patch>"')
 
 
 def check_skills(team, problems):
@@ -932,8 +983,10 @@ def check_skills(team, problems):
     listed = check_skills_table(rows, problems)
     check_guidance_skills(team, rows, listed, problems)
     check_skill_seats(team, rows, problems)
-    check_install_script(team, listed, problems)
-    check_bundle_skills(team, listed, problems)
+    check_declared_skills(team, listed, problems)
+    check_profile_skills(team, rows, problems)
+    check_vendored_copies(team, problems)
+    check_version(team, problems)
 
 
 def check_guidance(team, problems):

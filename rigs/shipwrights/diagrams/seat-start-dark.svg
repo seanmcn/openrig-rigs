@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 416" width="760" height="416" role="img" aria-labelledby="seat-start-dark-title seat-start-dark-desc">
   <title id="seat-start-dark-title">What a seat starts with</title>
-  <desc id="seat-start-dark-desc">Every seat starts with the team's culture, start steps, settings and skills, then its profile's role guidance and its own start files; an overlay replaces the settings, swaps skills and adds start files.</desc>
+  <desc id="seat-start-dark-desc">Every seat starts with the team's culture, start steps and settings, then its profile's skills and role guidance and its own start files; an overlay replaces the settings, swaps skills and adds start files.</desc>
   <defs><marker id="seat-start-dark-arrow-muted" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#bfc0c0"/></marker><marker id="seat-start-dark-arrow-accent" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,1 L9,5 L0,9 z" fill="#f08a59"/></marker></defs>
   <rect x="136" y="48" width="432" height="336" rx="6" fill="none" stroke="#bfc0c0" stroke-width="1"/>
   <line x1="136" y1="104" x2="568" y2="104" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
@@ -8,11 +8,11 @@
   <line x1="136" y1="216" x2="568" y2="216" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
   <line x1="136" y1="272" x2="568" y2="272" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
   <line x1="136" y1="328" x2="568" y2="328" stroke="rgba(245,245,245,0.16)" stroke-width="1"/>
-  <line x1="120" y1="56" x2="120" y2="264" stroke="#bfc0c0" stroke-width="1"/>
+  <line x1="120" y1="56" x2="120" y2="208" stroke="#bfc0c0" stroke-width="1"/>
   <line x1="120" y1="56" x2="126" y2="56" stroke="#bfc0c0" stroke-width="1"/>
-  <line x1="120" y1="264" x2="126" y2="264" stroke="#bfc0c0" stroke-width="1"/>
-  <line x1="120" y1="280" x2="120" y2="320" stroke="#bfc0c0" stroke-width="1"/>
-  <line x1="120" y1="280" x2="126" y2="280" stroke="#bfc0c0" stroke-width="1"/>
+  <line x1="120" y1="208" x2="126" y2="208" stroke="#bfc0c0" stroke-width="1"/>
+  <line x1="120" y1="224" x2="120" y2="320" stroke="#bfc0c0" stroke-width="1"/>
+  <line x1="120" y1="224" x2="126" y2="224" stroke="#bfc0c0" stroke-width="1"/>
   <line x1="120" y1="320" x2="126" y2="320" stroke="#bfc0c0" stroke-width="1"/>
   <line x1="120" y1="336" x2="120" y2="376" stroke="#bfc0c0" stroke-width="1"/>
   <line x1="120" y1="336" x2="126" y2="336" stroke="#bfc0c0" stroke-width="1"/>
@@ -30,7 +30,7 @@
   <text x="548" y="192" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="end">settings.md</text>
   <text x="592" y="191" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">YOUR COPY</text>
   <text x="156" y="248.5" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="start">Skills</text>
-  <text x="548" y="248" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="end">openrig-core, user-level</text>
+  <text x="548" y="248" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="end">openrig-core, vendor/&lt;skill&gt;</text>
   <text x="592" y="247" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">SWAP ANY FOR YOURS</text>
   <text x="156" y="304.5" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="start">Role guidance</text>
   <text x="548" y="304" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="end">guidance/&lt;role&gt;.md</text>
@@ -38,8 +38,8 @@
   <text x="156" y="360.5" font-family="Geist, system-ui, -apple-system, 'Segoe UI', Helvetica, Arial, sans-serif" font-size="13" font-weight="600" fill="#f5f5f5" text-anchor="start">Its own start files</text>
   <text x="548" y="360" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="10" font-weight="400" fill="#949eb2" text-anchor="end">startup/review-pair-*.md</text>
   <text x="592" y="359" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">ADD YOUR OWN RULES</text>
-  <text x="112" y="163" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">EVERY SEAT</text>
-  <text x="112" y="303" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">PER PROFILE</text>
+  <text x="112" y="135" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">EVERY SEAT</text>
+  <text x="112" y="275" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">PER PROFILE</text>
   <text x="112" y="359" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="end" letter-spacing="0.6">PER SEAT</text>
   <text x="24" y="404" font-family="'Geist Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" font-weight="400" fill="#bfc0c0" text-anchor="start" letter-spacing="0.6">NARROWER</text>
 </svg>

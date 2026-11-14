@@ -325,8 +325,8 @@ def lifecycle(t: Tokens, slug: str) -> Canvas:
 
 def team_to_rig(t: Tokens, slug: str) -> Canvas:
     c = Canvas(t, slug, 720, 328, "From a team to a running rig",
-               "A team's rig.yaml, agent.yaml, start files and settings go into rig bundle install, which starts the "
-               "rig's seats; its skills.md goes into install-skills.sh, which installs the skills the seats read.")
+               "A team's rig.yaml, agent.yaml, start files and skills go into rig bundle install, which starts the "
+               "rig's seats, each with the skills its profile selects.")
     w, h = 168, 48
     left, mid, right = 40, 296, 528
     rows = [64, 128, 192, 256]
@@ -336,27 +336,20 @@ def team_to_rig(t: Tokens, slug: str) -> Canvas:
     c.eyebrow(right + w / 2, 28, "Your machine")
 
     team = [("rig.yaml", "pods, seats, runtimes"), ("agent.yaml", "profiles, guidance"),
-            ("Start files", "culture, settings"), ("skills.md", "skills it names")]
+            ("Start files", "culture, settings"), ("Skills", "skills.md, vendor/")]
     for y, (name, sub) in zip(rows, team):
         c.node(left, y, w, h, name, sub)
 
-    install_y, skills_y = rows[1], rows[3]
+    install_y = (rows[1] + rows[2]) / 2
     c.node(mid, install_y, w, h, "rig bundle install", "--target, --cwd")
-    c.node(mid, skills_y, w, h, "install-skills.sh", "at user level")
     c.node(right, install_y, w, h, "Running rig", "a session per seat", "focal")
-    c.node(right, skills_y, w, h, "Your skills", "~/.claude, ~/.codex")
 
-    # Three of the team's files fan into the install, each at its own point on its left edge.
+    # The team's four parts fan into the install, each at its own point on its left edge.
     elbow = left + w + 40
-    for y, port in zip(rows[:3], (install_y + 12, install_y + 24, install_y + 36)):
+    for y, port in zip(rows, (install_y + 9, install_y + 19, install_y + 29, install_y + 39)):
         cy = y + h / 2
-        c.arrow([(left + w, cy), (elbow, cy), (elbow, port), (mid, port)] if cy != port else [(left + w, cy), (mid, cy)])
-    c.arrow([(left + w, skills_y + h / 2), (mid, skills_y + h / 2)])
+        c.arrow([(left + w, cy), (elbow, cy), (elbow, port), (mid, port)])
     c.arrow([(mid + w, install_y + h / 2), (right, install_y + h / 2)], "accent")
-    c.arrow([(mid + w, skills_y + h / 2), (right, skills_y + h / 2)])
-    sx = right + w / 2
-    c.arrow([(sx, skills_y), (sx, install_y + h)])
-    c.label(sx + 8, (install_y + h + skills_y) / 2 + 3, "seats read", anchor="start")
     return c
 
 
@@ -364,14 +357,14 @@ def team_to_rig(t: Tokens, slug: str) -> Canvas:
 
 def seat_start(t: Tokens, slug: str) -> Canvas:
     c = Canvas(t, slug, 760, 416, "What a seat starts with",
-               "Every seat starts with the team's culture, start steps, settings and skills, then its profile's role "
+               "Every seat starts with the team's culture, start steps and settings, then its profile's skills and role "
                "guidance and its own start files; an overlay replaces the settings, swaps skills and adds start files.")
     sx, sw, top, rh = 136, 432, 48, 56
     layers = [  # (scope, name, files, what an overlay does)
         ("every seat", "Culture", "CULTURE.md", ""),
         ("every seat", "Start steps", "context.md, team-shape.md", ""),
         ("every seat", "Settings", "settings.md", "your copy"),
-        ("every seat", "Skills", "openrig-core, user-level", "swap any for yours"),
+        ("per profile", "Skills", "openrig-core, vendor/<skill>", "swap any for yours"),
         ("per profile", "Role guidance", "guidance/<role>.md", "keep as it is"),
         ("per seat", "Its own start files", "startup/review-pair-*.md", "add your own rules"),
     ]

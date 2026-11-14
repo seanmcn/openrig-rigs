@@ -175,11 +175,12 @@ label.
 
 ## Skills
 
-Every seat gets OpenRig's `openrig-core` plugin and Workshop's `using-the-tui-together`, which this team ships. The
-other skills its guidance names, such as `implement`, `tdd`, `code-review` and `impeccable`, it doesn't ship: you
-install them at user level (`~/.claude/skills` and `~/.codex/skills`), where every seat finds them, or supply your own
-versions under the same names. [`skills.md`](skills.md) lists each one with its source, a suggested commit, its
-licence, the seats that use it and whether the guidance requires it, and how to install them.
+The team ships every skill its guidance names, such as `implement`, `tdd`, `code-review` and `impeccable`, so
+installing the team installs them: each seat gets the skills its role uses and no others, in its own storage, with
+nothing written to `~/.claude/skills` or `~/.codex/skills`. Every seat also gets OpenRig's `openrig-core` plugin and
+Workshop's `using-the-tui-together`. [`skills.md`](skills.md) lists each skill with its source, the commit the team's
+copy matches, its licence, the seats that use it and whether the guidance requires it, and says how the copies are kept
+current: a weekly update moves each to its source's newest release, as a new patch version of the team.
 
 ## Before you start
 
@@ -188,10 +189,6 @@ licence, the seats that use it and whether the guidance requires it, and how to 
 - `gh` installed and logged in, with a GitHub account that can push to each repository and open pull requests.
 - Your git identity set (`git config user.name` and `user.email`): the seats commit as you, and stop if it's empty.
 - A clone of each repository you want to work on, set up the way its README says.
-- A clone of this repository at the commit you install, for the skills installer and for editing the team.
-
-Install the skills the guidance names from that clone, as [`skills.md`](skills.md) says ("Install them").
-
 OpenRig writes its own files (`CLAUDE.local.md`, a block in `AGENTS.md`, `/.openrig/` and others) into the folder the
 seats work in. The seats commit only in each slice's worktree, which never sees them, so they can't reach a commit. To
 keep them out of `git status` in each clone as well, run from its root:
@@ -209,8 +206,9 @@ rig context add --git https://github.com/mvschwarz/openrig-world
 ## Install
 
 From the folder the seats should work in, install the team from the GitHub link to this folder, previewing it first.
-`<link>` below is `https://github.com/seanmcn/openrig-rigs/tree/<commit>/rigs/shipwrights`. Pin a full commit ID; a
-branch or tag also works, and OpenRig resolves it once and prints the commit-pinned link to keep.
+`<link>` below is `https://github.com/seanmcn/openrig-rigs/tree/shipwrights-v<version>/rigs/shipwrights`, with the
+newest version from the repository's releases, such as `shipwrights-v2.0.0`. OpenRig resolves the tag once and prints
+the commit-pinned link to keep. A full commit ID works in place of the tag.
 
 ```sh
 rig bundle install <link> --preset recommended --target ~/rigs/shipwrights --cwd . --plan
@@ -244,9 +242,11 @@ on it. Watch for prompts: the seats never answer one for you, and tell you which
 - **Stop:** `rig down shipwrights` ends every seat's session. `rig down shipwrights --snapshot` also saves their state.
 - **Start again:** `rig up shipwrights --existing` brings the team back, resuming each seat's conversation where it
   can. Or ask the kernel operator.
-- **Remove:** stop the team, then delete your installed copy (`~/rigs/shipwrights` above), the seats' worktrees with
-  `git worktree remove` (they're under `.worktrees/` in each clone), and the skills `install-skills.sh` added, which
-  [`skills.md`](skills.md) lists.
+- **Update:** stop the team with `rig down shipwrights`, then run the install above again with the newer version's
+  link. OpenRig archives the team it replaces (`rig unarchive` brings it back), and keeps a copy of any file in your
+  installed copy it overwrites under `bundle-backups/` in its home. It refuses while the team is running.
+- **Remove:** stop the team, then delete your installed copy (`~/rigs/shipwrights` above) and the seats' worktrees
+  with `git worktree remove` (they're under `.worktrees/` in each clone).
 
 Outside your clones, the team writes to OpenRig's workspace (`rig config get workspace.root`): its missions and slices,
 and the clerk's roster of the team's seats in `rosters/shipwrights.json`. Delete those too if you want no trace.
@@ -260,20 +260,34 @@ Edit your installed copy (`--target`) and start the team again. Two changes peop
 
 To change more and keep taking this team's improvements, use an overlay instead.
 
+## Versions
+
+The team's version is `version` in [`agent.yaml`](agents/shipwrights/agent.yaml), and the tag
+`shipwrights-v<version>` marks each release, with notes on GitHub. A version is `<major>.<minor>.<patch>`:
+
+- **Patch:** the weekly update of the team's skills, which [`skills.md`](skills.md) describes, and fixes to the team's
+  text that change nothing a seat does.
+- **Minor:** a change to how the team works, such as a rule in a role's guidance, a setting or a new skill.
+- **Major:** a change that would break an overlay: a seat, profile or skill ID removed or renamed, or a change to the
+  shape of the table in [`skills.md`](skills.md).
+
+A pull request that changes the team changes `version` too, and its tag is made when it merges.
+
 ## Overlays
 
 The team is meant to be used as it is, or under an overlay of your own that changes only what is yours: your settings
 copy, your own skills in place of some of these, and startup files for your own rules. Keep a copy of this folder
-pinned to a commit (OpenRig resolves agent specs only from disk), then in your own rig spec:
+pinned to a version (OpenRig resolves agent specs only from disk), then in your own rig spec and agent spec:
 
 - deliver your own `settings.md` in place of this one;
-- point the profiles' skill IDs at your own skills where you swap one;
+- swap a skill in your own `agent.yaml`: import this team's agent spec, pinned with `version`, declare your skill, and
+  have each profile select it in place of this team's, so a seat never gets both;
 - add or replace startup files for your own rules, and keep the role files as they are, so this team's improvements
   keep reaching you.
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="diagrams/seat-start-dark.svg">
-  <img alt="What a seat starts with: every seat gets the culture, the start steps, the settings and the skills; each profile adds its role guidance, and each seat its own start files. In an overlay, the settings are your copy, any skill can be swapped for yours, the role guidance stays as it is, and you add start files for your own rules." src="diagrams/seat-start.svg">
+  <img alt="What a seat starts with: every seat gets the culture, the start steps and the settings; each profile adds its skills and its role guidance, and each seat its own start files. In an overlay, the settings are your copy, any skill can be swapped for yours, the role guidance stays as it is, and you add start files for your own rules." src="diagrams/seat-start.svg">
 </picture>
 
 ## Permissions
