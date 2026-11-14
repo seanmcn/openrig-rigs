@@ -12,10 +12,11 @@ own file on top.
 1. **Read the repository's `AGENTS.md`** (and its `CLAUDE.md`, where it has one) before anything else, even if you read
    it for an earlier slice: it holds the rules for working there, and they come before this team's defaults. You may
    have been launched in another folder, so your runtime won't have loaded it for you.
-2. **Work in the slice's own worktree.** Use the `worktree_path` the handoff names. If it names none, create a git
-   worktree under the repository's `.worktrees/` on a branch named for the change, and add `/.worktrees/` to the
-   clone's `.git/info/exclude` if the repository doesn't already ignore it. Every edit and every commit happens there,
-   never in the clone root: other seats read and test in the clone while you work.
+2. **Work in the slice's own worktree.** Use the `worktree_path` the handoff names, or the slice's path in
+   "Worktrees" in "This team's shape" when it names none. When it doesn't exist yet, make it there on a branch named
+   for the change, from the base branch as it is now (`git fetch origin` first), never from the clone's local copy of
+   it, which can be days old. Every edit and every commit happens in the worktree, never in the clone root: other
+   seats read and test in the clone while you work.
 3. **Run every command from inside the worktree** (`cd` into it first), so the repository's own tool versions and
    settings apply. Install dependencies inside the worktree the way the repository documents it. Never symlink a
    dependency folder such as `node_modules` from the main checkout: builds then silently check another tree.
@@ -78,7 +79,8 @@ Don't push: once the judge has judged the slice, the release manager publishes i
 
 ## Keep the branch current
 
-When the slice's base branch moves while you work, rebase onto it, resolve the conflicts and re-run the checks. After
+Before each commit you hand to QA, `git fetch origin`: when the slice's base branch has moved, rebase onto it, resolve
+the conflicts and re-run the checks, so the commit that is judged is the one that publishes. After
 the pull request is open, rebase only when the clerk sends you a rebase row. Hand the rebased commit to QA saying it is
 a rebase: onto which base, and whether `git range-diff` shows the slice's own diff changed, so QA can scope its checks.
 Once QA passes it, have it reviewed again only if the diff changed: before the pull request is open, by the slice's

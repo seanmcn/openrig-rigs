@@ -194,7 +194,7 @@ seats work in. The seats commit only in each slice's worktree, which never sees 
 keep them out of `git status` in each clone as well, run from its root:
 
 ```sh
-printf '%s\n' CLAUDE.local.md AGENTS.md /.openrig/ .claude/settings.local.json /.worktrees/ >> .git/info/exclude
+printf '%s\n' CLAUDE.local.md AGENTS.md /.openrig/ .claude/settings.local.json >> .git/info/exclude
 ```
 
 Optionally add OpenRig's public context pack, so the seats load it at start:
@@ -246,7 +246,7 @@ on it. Watch for prompts: the seats never answer one for you, and tell you which
   link. OpenRig archives the team it replaces (`rig unarchive` brings it back), and keeps a copy of any file in your
   installed copy it overwrites under `bundle-backups/` in its home. It refuses while the team is running.
 - **Remove:** stop the team, then delete your installed copy (`~/rigs/shipwrights` above) and the seats' worktrees
-  with `git worktree remove` (they're under `.worktrees/` in each clone).
+  with `git worktree remove` (they're under `worktrees/` in OpenRig's workspace, below).
 
 Outside your clones, the team writes to OpenRig's workspace (`rig config get workspace.root`): its missions and slices,
 and the clerk's roster of the team's seats in `rosters/shipwrights.json`. Delete those too if you want no trace.

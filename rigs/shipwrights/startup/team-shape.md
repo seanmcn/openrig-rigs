@@ -167,6 +167,23 @@ rig watchdog register --policy context-usage-threshold --target-session <your se
 When it fires, hand the seat to a fresh successor as OpenRig's `retiring-and-inheriting-a-seat` skill says, rather
 than waiting for compaction. The reminder covers one session, so the successor registers its own.
 
+## Worktrees
+
+Every worktree the team makes lives outside the repository's clone, under OpenRig's workspace:
+`<workspace>/worktrees/<repository>/<name>`, where `<workspace>` is `rig config get workspace.root`. A worktree inside
+the clone, such as under its `.worktrees/`, sits below the clone's own config files, and a build that walks up the
+tree for one (a `tsconfig.json`, for example) reads the clone's and can fail or check the wrong settings.
+
+- **A slice's worktree** is `<workspace>/worktrees/<repository>/<slice>`: the clerk names it as `worktree_path`, and
+  the builder makes it.
+- **A seat's own worktree of a commit,** for QA or review, is `<workspace>/worktrees/<repository>/<slice>-<member
+  id>-<short commit>`, so no two seats share one.
+
+Make one from the clone, at a fresh base: `git -C <clone> fetch origin`, then
+`git -C <clone> worktree add <path> <commit>`, or for a new slice
+`git -C <clone> worktree add -b <branch> <path> origin/<base branch>`. Remove your own with `git worktree remove` once
+your row closes.
+
 ## Waits
 
 Every wait is a queue block with a wake or on another row, never a loop of checks:
@@ -175,7 +192,11 @@ Every wait is a queue block with a wake or on another row, never a loop of check
 - **On anything else,** such as CI or another team:
   `rig queue block <row> --on external:<what> --wake-after <time> --continuation "<what to check when it fires>"`.
 
-When a wake fires, run `rig queue show <row> --full --json` first, then check, and block again or carry on.
+Block on what the work itself waits for, not on whatever is busy now: a slice that waits for another to merge blocks
+on the release manager's row for that slice, or on `external:<pull request> merge`, not on a builder's row that may
+close first. When a wake fires, run `rig queue show <row> --full --json` first, then check, and block again or carry
+on. A row you hold while it still waits is blocked again before your turn ends: a claimed row left open trips the
+stuck sweep, which tells the lead.
 
 ## Earlier sessions
 

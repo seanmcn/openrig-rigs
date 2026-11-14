@@ -12,7 +12,7 @@ compatibility:
 preconditions:
   - name: "Install and run the rig as your normal user, not root: Claude Code refuses to bypass permissions as root or under sudo."
   - name: "Open a shell where the seats will work: the root of your clone of the repository, or a folder that holds clones of several repositories, each set up the way its README says. Run the install from that shell with --cwd ."
-  - name: "Optionally keep OpenRig's files out of git status: in each clone, add CLAUDE.local.md, AGENTS.md, /.openrig/, .claude/settings.local.json and /.worktrees/ to .git/info/exclude (the README has the command). The seats commit only in slice worktrees, which never see these files."
+  - name: "Optionally keep OpenRig's files out of git status: in each clone, add CLAUDE.local.md, AGENTS.md, /.openrig/, and .claude/settings.local.json to .git/info/exclude (the README has the command). The seats commit only in slice worktrees, which never see these files."
   - name: "Optionally add OpenRig's public context pack, so the seats load it at start."
     commands:
       - rig context add --git https://github.com/mvschwarz/openrig-world

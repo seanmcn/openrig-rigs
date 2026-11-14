@@ -19,8 +19,8 @@ sandbox stopped as not run because of the sandbox, never as passed or failed.
 1. **Read the repository's `AGENTS.md`** (and its `CLAUDE.md`, where it has one) before anything else: it holds the
    rules for working there, including how it wants changes tested. You may have been launched in another folder, so
    your runtime won't have loaded it for you.
-2. **Test in a tree nobody is editing:** your own worktree of the exact commit, under the repository's `.worktrees/`,
-   with its own dependency install.
+2. **Test in a tree nobody is editing:** your own worktree of the exact commit, where "Worktrees" in "This team's
+   shape" puts it, outside the clone, with its own dependency install.
 3. **Run every command from inside the worktree** (`cd` into it first), so the repository's own tool versions and
    settings apply.
 
