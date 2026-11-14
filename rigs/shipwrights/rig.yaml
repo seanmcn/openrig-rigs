@@ -104,6 +104,13 @@ pods:
       - kind: can_observe
         from: peer
         to: lead
+      # The lead's edges to the seats in its own pod: OpenRig refuses a top-level edge within one pod.
+      - kind: delegates_to
+        from: lead
+        to: clerk-1
+      - kind: delegates_to
+        from: lead
+        to: planner-1
 
   - id: dev
     label: Development
@@ -206,12 +213,6 @@ pods:
 # and every seat reports back to it. The clerk and the judge act through queue rows, not edges: the clerk pairs
 # builders, QA seats and reviewers afresh for each slice, so no edges join them.
 edges:
-  - kind: delegates_to
-    from: orch.lead
-    to: orch.clerk-1
-  - kind: delegates_to
-    from: orch.lead
-    to: orch.planner-1
   - kind: delegates_to
     from: orch.lead
     to: dev.backend-1
