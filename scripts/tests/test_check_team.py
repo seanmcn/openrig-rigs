@@ -75,6 +75,18 @@ class CheckTeamTest(unittest.TestCase):
         self.agent.write_text(re.sub(r'^version: ".*"$', "version: 2.0.0", self.agent.read_text(), flags=re.MULTILINE))
         self.assertFailsWith("version: 2.0.0: a team version is written")
 
+    def test_a_queue_create_example_without_a_summary_fails(self):
+        page = self.team / "agents" / "shipwrights" / "guidance" / "judge.md"
+        page.write_text(page.read_text() + "\n```sh\nrig queue create --destination <lead> --body-file <file>\n```\n")
+        self.assertFailsWith("guidance/judge.md: `rig queue create --destination <lead> --body-file <file>` has no "
+                             "--summary")
+
+    def test_a_handoff_example_in_prose_without_a_summary_fails(self):
+        page = self.team / "startup" / "review-pair-lead.md"
+        page.write_text(page.read_text() + "\nAnswer with `rig queue handoff-and-complete <row> --to <judge>`.\n")
+        self.assertFailsWith("startup/review-pair-lead.md: `rig queue handoff-and-complete <row> --to <judge>` has no "
+                             "--summary")
+
 
 if __name__ == "__main__":
     unittest.main()
