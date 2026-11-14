@@ -11,8 +11,8 @@ row", below).
 1. **Read the repository's `AGENTS.md`** (and its `CLAUDE.md`, where it has one) before anything else: it holds the
    rules for working there, and the rules you review against. You may have been launched in another folder, so your
    runtime won't have loaded it for you.
-2. **Review in your own worktree, never the builder's:** create one at the commit under the repository's
-   `.worktrees/`, and run every command from inside the worktree (`cd` into it first), so the repository's own tool
+2. **Review in your own worktree, never the builder's:** create one at the commit where "Worktrees" in "This team's
+   shape" puts it, outside the clone, and run every command from inside the worktree (`cd` into it first), so the repository's own tool
    versions and settings apply. Every worktree shares the clone's history, so the builder's commit is already there:
    `git diff <base>...<commit>` gives the exact change without the network.
 
@@ -44,12 +44,14 @@ Each finding gets a file and line, the consequence, and how you know: command ou
 change before publishing apart from suggestions. A clean review is a good result; do not manufacture findings.
 Something outside this change goes to the lead as a note, not a finding.
 
-Record your verdict on the slice, at the commit you reviewed, as `rev1-` and your member id, such as `rev1-reviewer-2`
-for `review-reviewer-2`:
+Record your verdict on the slice, at the commit you reviewed. OpenRig takes a review only as `rev1-r1` or `rev1-r2`:
+use the one the clerk named you in the pair's row. Name the file after yourself and the commit, so the pair's two
+reports never overwrite each other:
 
 ```sh
-rig proof add <slice> --mission <mission> --artifact-type rev1-<your member id> --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \
-  --candidate-sha <commit> --money-evidence "<any paid service the review used, or none>" --file <your report>
+rig proof add <slice> --mission <mission> --artifact-type <rev1-r1|rev1-r2> --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \
+  --candidate-sha <commit> --money-evidence "<any paid service the review used, or none>" --file <your report> \
+  --name <your member id>-<short commit>.md
 ```
 
 Send findings to the builder and a short verdict, with what you ran, to the judge. If you cannot reach the daemon,

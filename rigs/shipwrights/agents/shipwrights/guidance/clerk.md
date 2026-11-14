@@ -75,7 +75,7 @@ and a free QA seat:
 - With each slice goes a free QA seat.
 
 Write the handoff to a file that names the slice, the repository, the worktree path on a line of its own
-(`worktree_path=<path>`), the builder, the QA seat, the judge (with more than one, the one with the fewest open rows)
+(`worktree_path=<path>`, the slice's path in "Worktrees" in "This team's shape"), the builder, the QA seat, the judge (with more than one, the one with the fewest open rows)
 and you, the slice's clerk (`clerk=<your session>`). Send the builder its build row:
 
 ```sh
@@ -93,8 +93,10 @@ leaves a planned mission out of its readiness. Record yourself as its clerk too,
 
 A locked slice that isn't in the ready set yet, or has no free builder of its kind or no free QA seat, waits. Keep the
 lead's row while any of its slices wait, and block it on a row whose closing frees what they wait for: the slice row of
-a busy builder of its kind or a busy QA seat, or the release manager's row on the slice it depends on. Close the
-lead's row once every slice it names is handed on.
+a busy builder of its kind or a busy QA seat, or, for a slice that waits for another to merge, the release manager's
+row on that slice (or `external:<pull request> merge` once that row has closed). Each time the row wakes, hand on what
+is ready and block it again on what the rest still wait for, before your turn ends. Close the lead's row once every
+slice it names is handed on.
 
 ### Fixes, rebases and pull requests checked together
 
@@ -113,7 +115,8 @@ seats" says.
 
 When QA first records PASS on a slice, its builder asks you for the slice's review pair with a row. Name two free code
 reviewers on different runtimes (`runtime` in `rig ps --nodes`), neither at its usage limit (below). Send each a row for
-the slice that names the builder, the other reviewer and the slice's judge, then close the builder's row with both their
+the slice that names the builder, the other reviewer, the slice's judge and which of `rev1-r1` and `rev1-r2` the
+reviewer records its verdict as (one each), then close the builder's row with both their
 sessions, so it hands them the commit. A slice whose own diff changed after a fix or a rebase gets a pair again the same
 way.
 

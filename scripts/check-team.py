@@ -476,8 +476,9 @@ RETIRED_NAMES = [
     (r"(?m)^  builder:$", "the builder-backend profile"),
     (r"(?<![\w-])backend-builder\b", "the builder-backend profile and builder-backend.md"),
     (r"(?<![\w-])frontend-builder\b", "the builder-frontend profile and builder-frontend.md"),
-    # A review's proof type is rev1- and the reviewer's member id.
-    (r"(?<![\w-])rev1-r\d\b", "the numbered reviewer seats' proof types, such as rev1-reviewer-1"),
+    # OpenRig's proof types are a closed set (guard, qa, rev1-r1, rev1-r2, adjudication): `rig proof add` refuses a
+    # review recorded under the reviewer's member id.
+    (r"(?<![\w-])rev1-(?:reviewer-\d+|<your member id>)", "rev1-r1 or rev1-r2, the pair slot the clerk names"),
     (r"(?i)fourteen seats|14 seats", "the small team's seat count"),
 ]
 # Pods the team once used, which no seat name may start with: OpenRig's naming guide puts a role in its domain's pod,
@@ -622,9 +623,9 @@ NOT_SKILLS = {
     "shape", "critique", "audit", "polish", "harden", "typeset", "quieter", "distill", "layout", "init", "generate",
 }
 NOT_SKILLS |= {profile_name(role, runtime) for role in ROLES for runtime in RUNTIMES}
-# Each seat by its member id (planner-1) and its name (orch-planner-1), and its reviews' proof type (rev1-reviewer-1).
+# Each seat by its member id (planner-1) and its name (orch-planner-1), and the two review proof types.
 NOT_SKILLS |= {seat.split(".", 1)[1] for seat in SEATS} | {seat.replace(".", "-") for seat in SEATS}
-NOT_SKILLS |= {f"rev1-{seat.split('.', 1)[1]}" for seat, role in SEATS.items() if role == "code-reviewer"}
+NOT_SKILLS |= {"rev1-r1", "rev1-r2"}
 
 
 def fail(problems, message):
