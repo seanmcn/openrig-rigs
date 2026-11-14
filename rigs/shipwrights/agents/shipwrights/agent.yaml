@@ -13,12 +13,13 @@ description: >
 #
 # The team ships every other skill its guidance names: Workshop's using-the-tui-together in
 # skills/, and a copy of each skill in ../../skills.md, unchanged from its source at the commit
-# the table pins, in vendor/. scripts/sync-skills.py writes vendor/ from the table, so edit the
-# table, never a copy. Each skill follows its source on restore, so a rig restored after an
-# update gets the new copy rather than losing the skill.
+# the table pins, in vendor/. scripts/sync-skills.py writes vendor/, the skill declarations
+# below and each profile's skills from the table, so edit the table, never a copy or those
+# lines. Each skill follows its source on restore, so a rig restored after an update gets the
+# new copy rather than losing the skill.
 #
-# version is the team version: a tag shipwrights-v<version> marks each release (the README's
-# "Versions" section says when each part moves).
+# version is the team version, which a tag shipwrights-v<version> marks; the README's
+# "Versions" section says when each part moves. Keep it quoted: the weekly update bumps it.
 
 resources:
   skills:
@@ -61,8 +62,8 @@ resources:
       runtime: claude-code
       type: claude_activity_hooks
 
-# Every profile selects using-the-tui-together and the skills its role's row in ../../skills.md
-# lists, in the table's order, and nothing installed at user level.
+# Every profile selects using-the-tui-together and the skills whose row in ../../skills.md lists
+# its role, in the table's order, and nothing installed at user level.
 #
 # Each role has one profile per runtime, <role>-claude and <role>-codex. The two deliver the
 # same guidance files and select the same resources; they differ only in the runtime and in

@@ -29,9 +29,8 @@ licence is in `LICENSE`. These files are modified versions of Workshop's:
 
 `skills.md`, `settings.md`, `startup/slice-spec.md` and `startup/team-shape.md` are this team's own.
 
-`agents/shipwrights/vendor/` holds copies of other people's skills, unchanged, each from the source and at the commit
-its row in `skills.md` names, and each under its own licence, which sits beside it in its folder: MIT for most,
-Apache-2.0 for `impeccable` (with its source's `NOTICE.md`), and CC-BY-SA-4.0 for the Trail of Bits skills
-(`differential-review`, `sharp-edges`, `supply-chain-risk-auditor` and `agentic-actions-auditor`), whose copies, and
-any changed copy you share, keep that licence and its attribution. None of this team's Apache-2.0 licence applies to
-them.
+`agents/shipwrights/vendor/` holds copies of other people's skills, each unchanged from the source and commit its row
+in `skills.md` names. Each keeps its own licence, which sits beside it in its folder, and none of this team's
+Apache-2.0 licence applies to them. Most are MIT. `impeccable` is Apache-2.0, with its source's `NOTICE.md`. The
+Trail of Bits skills (`differential-review`, `sharp-edges`, `supply-chain-risk-auditor` and `agentic-actions-auditor`)
+are CC-BY-SA-4.0: their copies, and any changed copy you share, keep that licence and its attribution.

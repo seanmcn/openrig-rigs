@@ -69,7 +69,11 @@ class CheckTeamTest(unittest.TestCase):
 
     def test_a_version_that_is_not_three_part_fails(self):
         self.agent.write_text(re.sub(r'^version: ".*"$', 'version: "2.0"', self.agent.read_text(), flags=re.MULTILINE))
-        self.assertFailsWith('version is "2.0"')
+        self.assertFailsWith('version: "2.0": a team version is written')
+
+    def test_an_unquoted_version_fails_since_the_weekly_update_could_not_bump_it(self):
+        self.agent.write_text(re.sub(r'^version: ".*"$', "version: 2.0.0", self.agent.read_text(), flags=re.MULTILINE))
+        self.assertFailsWith("version: 2.0.0: a team version is written")
 
 
 if __name__ == "__main__":

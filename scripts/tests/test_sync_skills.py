@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import subprocess
 import sys
 import tempfile
@@ -54,7 +55,7 @@ class SyncSkillsTest(unittest.TestCase):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
         self.team = self.root / "team"
-        (self.team / "agents" / "crew").mkdir(parents=True)
+        (self.team / "agents" / "acme").mkdir(parents=True)
         self.env = dict(
             os.environ,
             SYNC_SKILLS_GIT_URL=f"file://{self.root}/github/{{repo}}",
@@ -65,10 +66,11 @@ class SyncSkillsTest(unittest.TestCase):
         self.tmp.cleanup()
 
     def write_team(self, skills, sources, version="2.0.0"):
-        """skills: (skill, repo, path, commit, licence); sources: (repo, follows, release)."""
+        """skills: (skill, repo, path, commit, licence[, seats]); sources: (repo, follows, release)."""
         rows = "\n".join(
-            f"| `{skill}` | [{repo}](https://github.com/{repo}) | `{path}` | `{commit}` | {licence} | all | required |"
-            for skill, repo, path, commit, licence in skills
+            f"| `{skill}` | [{repo}](https://github.com/{repo}) | `{path}` | `{commit}` | {licence} | "
+            f"{seats[0] if seats else 'all'} | required |"
+            for skill, repo, path, commit, licence, *seats in skills
         )
         source_rows = "\n".join(
             f"| [{repo}](https://github.com/{repo}) | {follows} | {release} |" for repo, follows, release in sources
@@ -86,14 +88,37 @@ class SyncSkillsTest(unittest.TestCase):
             | --- | --- | --- |
             {source_rows}
             """).format(rows=rows, source_rows=source_rows))
-        (self.team / "agents" / "crew" / "agent.yaml").write_text(f'name: crew\nversion: "{version}"\n')
+        self.agent_yaml.write_text(textwrap.dedent(f"""\
+            name: acme
+            version: "{version}"
+
+            resources:
+              skills:
+                - {{ id: own-skill, path: skills/own-skill, on_restore: follow_source }}
+                - {{ id: dropped, path: vendor/dropped, on_restore: follow_source }}
+              plugins: []
+
+            profiles:
+              lead-claude:
+                summary: Leads.
+                uses:
+                  skills: [own-skill, dropped]
+              qa-codex:
+                summary: Tests.
+                uses:
+                  skills: [own-skill]
+            """))
+
+    @property
+    def agent_yaml(self):
+        return self.team / "agents" / "acme" / "agent.yaml"
 
     def run_sync(self, *args):
         return subprocess.run([sys.executable, str(SCRIPT), str(self.team), *args],
                               capture_output=True, text=True, env=self.env)
 
     def vendored(self, skill):
-        return self.team / "agents" / "crew" / "vendor" / skill
+        return self.team / "agents" / "acme" / "vendor" / skill
 
     def test_vendors_each_skill_at_its_pin_without_hidden_files_and_with_the_source_licence(self):
         source = Source(self.root, "acme/skills")
@@ -115,6 +140,30 @@ class SyncSkillsTest(unittest.TestCase):
                          ["LICENSE", "SKILL.md", "references/loop.md"])
         self.assertIn("Do the thing.", (copy / "SKILL.md").read_text())
         self.assertEqual((copy / "LICENSE").read_text(), "MIT licence text\n")
+
+    def test_vendoring_declares_each_skill_and_gives_each_profile_its_roles_skills_from_the_table(self):
+        source = Source(self.root, "acme/skills")
+        pinned = source.commit({"LICENSE": "MIT\n", "tdd/SKILL.md": skill_page("tdd"),
+                                "retro/SKILL.md": skill_page("retro"), "lint/SKILL.md": skill_page("lint")})
+        self.write_team([("tdd", "acme/skills", "tdd", pinned, "MIT", "qa"),
+                         ("retro", "acme/skills", "retro", pinned, "MIT", "lead"),
+                         ("lint", "acme/skills", "lint", pinned, "MIT", "all")],
+                        [("acme/skills", "`main`", "none")])
+
+        result = self.run_sync()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        text = self.agent_yaml.read_text()
+        declared = re.search(r"  skills:\n((?:    - .*\n)+)", text).group(1)
+        self.assertEqual(declared.splitlines(), [
+            "    - { id: own-skill, path: skills/own-skill, on_restore: follow_source }",
+            "    - { id: tdd, path: vendor/tdd, on_restore: follow_source }",
+            "    - { id: retro, path: vendor/retro, on_restore: follow_source }",
+            "    - { id: lint, path: vendor/lint, on_restore: follow_source }",
+        ])
+        self.assertIn("  lead-claude:\n    summary: Leads.\n    uses:\n      skills: [own-skill, retro, lint]\n", text)
+        self.assertIn("  qa-codex:\n    summary: Tests.\n    uses:\n      skills: [own-skill, tdd, lint]\n", text)
+        self.assertIn("  plugins: []\n", text)
 
     def test_check_passes_on_a_clean_copy_and_names_every_difference_otherwise(self):
         source = Source(self.root, "acme/skills")
@@ -169,11 +218,11 @@ class SyncSkillsTest(unittest.TestCase):
         self.assertNotIn(first, table)
         self.assertIn("| [acme/skills](https://github.com/acme/skills) | `skill-v<version>` tags | skill-v1.10.0 |", table)
         self.assertIn("Release two.", (self.vendored("tdd") / "SKILL.md").read_text())
-        self.assertIn('version: "2.0.1"', (self.team / "agents" / "crew" / "agent.yaml").read_text())
+        self.assertIn('version: "2.0.1"', (self.agent_yaml).read_text())
         self.assertEqual(report["version"], "2.0.1")
         self.assertEqual(report["holds"], [])
         self.assertIn("acme/skills", report["notes"])
-        self.assertIn("skill-v1.2.0 → skill-v1.10.0", report["notes"])
+        self.assertIn(f"skill-v1.2.0 (`{first[:7]}`) → skill-v1.10.0 (`{newest[:7]}`)", report["notes"])
         self.assertIn(f"https://github.com/acme/skills/compare/{first}...{newest}", report["notes"])
         self.assertIn("`tdd`", report["notes"])
         self.assertEqual(self.run_sync("--check").returncode, 0)
@@ -188,15 +237,39 @@ class SyncSkillsTest(unittest.TestCase):
 
         self.assertEqual(self.update(), {"changed": False})
         self.assertEqual((self.team / "skills.md").read_text(), before)
-        self.assertIn('version: "2.0.0"', (self.team / "agents" / "crew" / "agent.yaml").read_text())
+        self.assertIn('version: "2.0.0"', (self.agent_yaml).read_text())
 
         head = source.commit({"skills/tdd/SKILL.md": skill_page("tdd", "On main now.")})
         report = self.update()
 
         self.assertEqual(report["version"], "2.0.1")
         self.assertIn(f"`{head}`", (self.team / "skills.md").read_text())
-        self.assertIn(f"{pinned[:7]} → {head[:7]}", report["notes"])
+        self.assertIn(f"`{pinned[:7]}` → `{head[:7]}`", report["notes"])
         self.assertIn("On main now.", (self.vendored("tdd") / "SKILL.md").read_text())
+
+    def test_a_fetch_cut_short_is_fetched_again_rather_than_read_as_an_empty_source(self):
+        source = Source(self.root, "acme/skills")
+        pinned = source.commit({"LICENSE": "MIT\n", "skills/tdd/SKILL.md": skill_page("tdd")})
+        self.write_team([("tdd", "acme/skills", "skills/tdd", pinned, "MIT")], [("acme/skills", "`main`", "none")])
+        cut_short = self.root / "cache" / "acme--skills" / pinned / ".git"
+        cut_short.mkdir(parents=True)  # what `git init` leaves when the fetch after it fails
+
+        result = self.run_sync()
+
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertTrue((self.vendored("tdd") / "SKILL.md").is_file())
+
+    def test_a_source_whose_rows_pin_different_commits_is_refused(self):
+        source = Source(self.root, "acme/skills")
+        first = source.commit({"LICENSE": "MIT\n", "tdd/SKILL.md": skill_page("tdd"), "pr/SKILL.md": skill_page("pr")})
+        second = source.commit({"pr/SKILL.md": skill_page("pr", "Later.")})
+        self.write_team([("tdd", "acme/skills", "tdd", first, "MIT"), ("pr", "acme/skills", "pr", second, "MIT")],
+                        [("acme/skills", "`main`", "none")])
+
+        result = self.run_sync("--check")
+
+        self.assertEqual(result.returncode, 1)
+        self.assertIn("the rows from acme/skills pin different commits", result.stderr)
 
     def test_update_holds_for_a_skill_gone_or_renamed_upstream_and_for_a_changed_licence(self):
         gone, renamed, relicensed = (Source(self.root, f"acme/{name}") for name in ("gone", "renamed", "relicensed"))

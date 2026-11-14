@@ -53,6 +53,7 @@ regular expressions, which holds because the team writes skills and `uses` lists
 flow style on one line each.
 """
 
+import importlib.util
 import os
 import re
 import shutil
@@ -582,10 +583,14 @@ FLAG_VALUES = {
 
 SKILL_NAME = r"[a-z][a-z0-9]*(?:-[a-z0-9]+)*"
 
-# Where an agent folder keeps its copies of the skills skills.md lists, which sync-skills.py writes. They are other
-# people's text, unchanged, so none of the checks on the team's own text read them.
-VENDOR = "vendor"
-LICENCE = re.compile(r"^(licen[cs]e|notice|third_party_licenses)", re.IGNORECASE)
+# sync-skills.py, which writes the team's copies of the skills skills.md lists, and reads skills.md as this does.
+_spec = importlib.util.spec_from_file_location("sync_skills", Path(__file__).with_name("sync-skills.py"))
+SYNC = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(SYNC)
+
+# Where an agent folder keeps those copies. They are other people's text, unchanged, so none of the checks on the
+# team's own text read them.
+VENDOR = SYNC.VENDOR_FOLDER
 
 # What OpenRig provides itself, which skills.md doesn't list: the Workshop skill this team
 # bundles, the openrig-core plugin and its skills, the skill an OpenRig clone ships, and
@@ -631,21 +636,8 @@ def markdown(files):
     return {path: text for path, text in files.items() if path.suffix == ".md" and text is not None}
 
 
-def table(text, first):
-    """The rows of the Markdown table whose header's first cell is `first`, each as (line number, {column: cell}). The
-    table ends at the first line that isn't a table row, so another table in the same file is never read as part of
-    it."""
-    rows, header = [], None
-    for number, line in enumerate(text.splitlines(), 1):
-        if not line.lstrip().startswith("|"):
-            header = None
-            continue
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if cells[0] == first:
-            header = cells
-        elif header and not set(cells[0]) <= set("-: "):
-            rows.append((number, dict(zip(header, cells))))
-    return rows
+table = SYNC.table
+skill_name = SYNC.skill_name
 
 
 def check_names(team, problems):
@@ -897,13 +889,6 @@ def check_skill_seats(team, rows, problems):
                 fail(problems, f"skills.md:{number}: {skill!r} doesn't list {role}, though {named[skill]} names it")
 
 
-def skill_name(page):
-    """The name in a SKILL.md's frontmatter, or None."""
-    front = re.match(r"---\n(.*?)\n---", page.read_text(encoding="utf-8"), re.DOTALL)
-    name = re.search(r"^name:\s*['\"]?(.+?)['\"]?\s*$", front.group(1), re.MULTILINE) if front else None
-    return name.group(1) if name else None
-
-
 def check_declared_skills(team, listed, problems):
     """The team declares each skill skills.md lists as its copy in vendor/, beside its own skills in skills/, and
     each follows its source on restore. A copy is named as its id and carries a licence."""
@@ -932,8 +917,8 @@ def check_declared_skills(team, listed, problems):
                 fail(problems, f"{folder}: no SKILL.md")
             elif (name := skill_name(folder / "SKILL.md")) != skill:
                 fail(problems, f"{folder / 'SKILL.md'} is named {name!r}, not {skill!r}, so seats can't select it")
-            elif rel.startswith(f"{VENDOR}/") and not any(LICENCE.match(p.name) for p in folder.iterdir()):
-                fail(problems, f"{folder}: no licence file beside the skill")
+            elif rel.startswith(f"{VENDOR}/") and not any(SYNC.OWN_LICENCE.match(p.name) for p in folder.iterdir()):
+                fail(problems, f"{folder}: no LICENSE or LICENCE file beside the skill")
         vendored = agent_yaml.parent / VENDOR
         for leftover in sorted({p.name for p in vendored.iterdir()} - listed if vendored.is_dir() else []):
             fail(problems, f"{vendored / leftover}: skills.md doesn't list it: run scripts/sync-skills.py")
@@ -949,15 +934,16 @@ def check_profile_skills(team, rows, problems):
         if role is None:
             continue  # check_profiles names a profile that is no role's
         listed = {row.get("Skill", "").strip("`") for _, row in rows
-                  if {seat.strip() for seat in row.get("Seats", "").split(",")} & {role, "all"}}
+                  if {seat.strip().strip("`") for seat in row.get("Seats", "").split(",")} & {role, "all"}}
         uses = re.search(r"^      skills:\s*\[([^\]]*)\]", block, re.MULTILINE)
         selected = {item.strip() for item in uses.group(1).split(",") if item.strip()} if uses else set()
+        fix = "scripts/sync-skills.py writes each profile's skills from skills.md"
         for skill in sorted(selected - listed - own):
-            fail(problems, f"the {profile!r} profile selects {skill!r}, which skills.md doesn't list for {role}")
+            fail(problems, f"the {profile!r} profile selects {skill!r}, which skills.md doesn't list for {role}: {fix}")
         for skill in sorted(listed - selected):
-            fail(problems, f"the {profile!r} profile doesn't select {skill!r}, which skills.md lists for {role}")
+            fail(problems, f"the {profile!r} profile doesn't select {skill!r}, which skills.md lists for {role}: {fix}")
         for skill in sorted(own - selected):
-            fail(problems, f"the {profile!r} profile doesn't select {skill!r}, which every seat uses")
+            fail(problems, f"the {profile!r} profile doesn't select {skill!r}, which every seat uses: {fix}")
 
 
 def check_vendored_copies(team, problems):
@@ -972,10 +958,10 @@ def check_vendored_copies(team, problems):
 def check_version(team, problems):
     """agent.yaml's version is the team version, three-part, as the README's Versions section says."""
     for agent_yaml, text in team.texts("agents/*/agent.yaml").items():
-        version = re.search(r'^version:\s*"?([^"\n]*)"?\s*$', text, re.MULTILINE)
-        if not version or not re.fullmatch(r"\d+\.\d+\.\d+", version.group(1)):
-            fail(problems, f'{agent_yaml}: version is "{version.group(1) if version else ""}": a team version is '
-                           '"<major>.<minor>.<patch>"')
+        if not SYNC.VERSION.search(text):
+            line = re.search(r"^version:.*$", text, re.MULTILINE)
+            fail(problems, f"{agent_yaml}: {line.group(0) if line else 'no version'}: a team version is written "
+                           'version: "<major>.<minor>.<patch>", quoted, as the weekly skill update bumps it')
 
 
 def check_skills(team, problems):

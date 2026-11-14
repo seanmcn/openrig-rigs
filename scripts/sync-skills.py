@@ -1,18 +1,32 @@
 #!/usr/bin/env python3
-"""Keeps a team's vendored skills at the pins its skills.md lists.
+"""Keeps a team's skills at the pins its skills.md lists.
 
 usage: scripts/sync-skills.py rigs/<team> [--check | --update [owner/repo ...] [--report FILE]]
 
-Copies each skill in skills.md's table from its source at the row's commit into the team's
-agents/<agent>/vendor/<skill>, and removes vendored folders the table no longer lists. A copy
-is the skill's folder without its hidden entries (a source's own tooling, such as .github or
-plugin manifests), plus the source's licence files when the skill has no licence of its own.
+skills.md's table is the only list of the team's skills. With no option, this copies each skill
+in it from its source at the row's commit into the team's agents/<agent>/vendor/<skill>, removes
+copies the table no longer lists, and writes agent.yaml's skill lines from the table: a
+declaration for each copy, after the team's own skills in skills/, and each profile's skills,
+which are the team's own and those whose Seats cell names the profile's role (a profile is named
+<role>-<runtime>) or `all`.
 
-Sources are public Git repositories, read with git alone: a shallow, sparse fetch of the
-pinned commit. SYNC_SKILLS_GIT_URL replaces https://github.com/{repo}.git, and
-SYNC_SKILLS_CACHE the cache of fetched commits (~/.cache/openrig-rigs/skill-sources).
+A copy is the skill's folder without its hidden entries (a source's own tooling, such as .github
+or plugin manifests), plus the source's licence files when the skill has no licence of its own.
 
-Standard library and git only, as check-team.py is.
+--check says whether every copy matches its source at its pin, and changes nothing.
+
+--update moves each source, or those named, to what skills.md's Sources table says it follows:
+the newest release among the tags matching its pattern, or its branch's head. It moves a source
+only when that changes one of its skills' copies, then copies them again, bumps the team's patch
+version and writes a report for the weekly job: the release notes, and the reasons a person
+should read the update before it merges.
+
+Sources are public Git repositories, read with git alone: a shallow, sparse fetch of the pinned
+commit. SYNC_SKILLS_GIT_URL replaces https://github.com/{repo}.git, and SYNC_SKILLS_CACHE the
+cache of fetched commits (~/.cache/openrig-rigs/skill-sources).
+
+Standard library and git only, as check-team.py is, which reads skills.md with this file's
+table() and skill_name().
 """
 
 import argparse
@@ -29,9 +43,17 @@ from typing import NamedTuple
 GIT_URL = os.environ.get("SYNC_SKILLS_GIT_URL") or "https://github.com/{repo}.git"
 CACHE = Path(os.environ.get("SYNC_SKILLS_CACHE") or Path.home() / ".cache" / "openrig-rigs" / "skill-sources")
 
+# The folder in an agent's folder that holds the copies.
+VENDOR_FOLDER = "vendor"
 # A licence of the skill's own, and the files a source's licence comes in when it has none.
 OWN_LICENCE = re.compile(r"^licen[cs]e", re.IGNORECASE)
 SOURCE_LICENCE = re.compile(r"^(LICENSE|LICENCE|NOTICE|THIRD_PARTY_LICENSES)")
+# A team version, written quoted, as agent.yaml's `version`.
+VERSION = re.compile(r'^version: "(\d+)\.(\d+)\.(\d+)"$', re.MULTILINE)
+# The runtime a profile's name ends in, after its role.
+RUNTIME_SUFFIX = re.compile(r"-(claude|codex)$")
+# A source cell, which links its GitHub repository.
+SOURCE_LINK = re.compile(r"\[([\w.-]+/[\w.-]+)\]\(https://github\.com/\1\)")
 
 
 class SyncError(Exception):
@@ -43,40 +65,59 @@ class Row(NamedTuple):
     repo: str
     path: str
     commit: str
+    seats: frozenset  # roles, or `all`
+
+
+def cells(line):
+    return [cell.strip() for cell in line.strip().strip("|").split("|")]
 
 
 def table(text, first):
-    """The rows of the Markdown table whose header's first cell is `first`, each as (line number, {column: cell})."""
+    """The rows of the Markdown table whose header's first cell is `first`, each as (line number, {column: cell}). The
+    table ends at the first line that isn't a table row, so another table in the same file is never read as part of
+    it."""
     rows, header = [], None
     for number, line in enumerate(text.splitlines(), 1):
         if not line.lstrip().startswith("|"):
             header = None
             continue
-        cells = [cell.strip() for cell in line.strip().strip("|").split("|")]
-        if cells[0] == first:
-            header = cells
-        elif header and not set(cells[0]) <= set("-: "):
-            rows.append((number, dict(zip(header, cells))))
+        row = cells(line)
+        if row[0] == first:
+            header = row
+        elif header and not set(row[0]) <= set("-: "):
+            rows.append((number, dict(zip(header, row))))
     return rows
 
 
+def skill_name(page):
+    """The name in a SKILL.md's frontmatter, or None."""
+    front = re.match(r"---\n(.*?)\n---", page.read_text(encoding="utf-8"), re.DOTALL)
+    name = re.search(r"^name:\s*['\"]?(.+?)['\"]?\s*$", front.group(1), re.MULTILINE) if front else None
+    return name.group(1) if name else None
+
+
 def repo_of(cell):
-    match = re.fullmatch(r"\[([\w.-]+/[\w.-]+)\]\(https://github\.com/\1\)", cell)
+    match = SOURCE_LINK.fullmatch(cell)
     if not match:
         raise SyncError(f"{cell!r} is not a GitHub source link")
     return match.group(1)
 
 
 def read_rows(team):
+    """The table's rows. A source has one pin, so its rows share one commit."""
     rows = []
     for number, row in table((team / "skills.md").read_text(), "Skill"):
         skill = row["Skill"].strip("`")
         commit = row["Commit"].strip("`")
         if not re.fullmatch(r"[0-9a-f]{40}", commit):
             raise SyncError(f"skills.md:{number}: {skill!r} has no full commit")
-        rows.append(Row(skill, repo_of(row["Source"]), row["Path"].strip("`"), commit))
+        seats = frozenset(seat.strip().strip("`") for seat in row["Seats"].split(",") if seat.strip())
+        rows.append(Row(skill, repo_of(row["Source"]), row["Path"].strip("`"), commit, seats))
     if not rows:
         raise SyncError("skills.md has no table of skills")
+    for repo in sorted({row.repo for row in rows}):
+        if len({row.commit for row in rows if row.repo == repo}) > 1:
+            raise SyncError(f"skills.md: the rows from {repo} pin different commits; a source has one pin")
     return rows
 
 
@@ -96,9 +137,11 @@ def git(cwd, *args):
 
 def checkout(repo, commit, paths):
     """A working tree of the source at this commit holding these paths and the top-level files, fetched once and
-    cached, since a commit's files never change."""
+    cached, since a commit's files never change. A marker written last says the fetch finished, so one cut short is
+    fetched again."""
     tree = CACHE / repo.replace("/", "--") / commit
-    if not (tree / ".git").is_dir():
+    done = tree / ".git" / "sync-skills-done"
+    if not done.is_file():
         shutil.rmtree(tree, ignore_errors=True)
         tree.mkdir(parents=True)
         git(tree, "init", "-q")
@@ -107,6 +150,7 @@ def checkout(repo, commit, paths):
         if "." not in paths:
             git(tree, "sparse-checkout", "set", "--cone", *paths)
         git(tree, "checkout", "-q", "FETCH_HEAD")
+        done.touch()
     elif "." in paths:
         git(tree, "sparse-checkout", "disable")
     elif git(tree, "config", "--bool", "--default", "false", "core.sparseCheckout") == "true":
@@ -137,7 +181,7 @@ def copy_skill(root, path, dest):
     partial.rename(dest)
 
 
-def vendor(rows, into, missing=None):
+def copy_skills(rows, into, missing=None):
     """Writes every row's copy under `into`, and removes folders there that no row names. A skill its source no
     longer has stops the sync, or, given a `missing` list, is added to it and skipped."""
     into.mkdir(parents=True, exist_ok=True)
@@ -153,8 +197,33 @@ def vendor(rows, into, missing=None):
                 if missing is None:
                     raise SyncError(f"{row.skill}: {repo}@{commit[:7]}: {error}") from None
                 missing.append(row.skill)
-    for leftover in sorted(set(p.name for p in into.iterdir()) - {row.skill for row in rows}):
+    for leftover in sorted({p.name for p in into.iterdir()} - {row.skill for row in rows}):
         shutil.rmtree(into / leftover)
+
+
+def write_agent(agent_yaml, rows):
+    """Writes agent.yaml's skill declarations and each profile's skills from the table, as the module docstring says.
+    It reads the layout the team writes: `resources:` then `  skills:` with one flow-style entry per line, and each
+    profile's `      skills: [...]` on one line."""
+    text = agent_yaml.read_text()
+    declared = re.search(r"^resources:\n  skills:\n((?:    - \{.*\}\n)*)", text, re.MULTILINE)
+    if not declared:
+        raise SyncError(f"{agent_yaml}: no resources.skills list, one `- {{ id: ..., path: ... }}` a line")
+    own_lines = [line for line in declared.group(1).splitlines(keepends=True) if "path: skills/" in line]
+    own = re.findall(r"id:\s*([\w.-]+)", "".join(own_lines))
+    copies = [f"    - {{ id: {row.skill}, path: {VENDOR_FOLDER}/{row.skill}, on_restore: follow_source }}\n"
+              for row in rows]
+    text = text[:declared.start(1)] + "".join(own_lines + copies) + text[declared.end(1):]
+
+    def select(match):
+        role = RUNTIME_SUFFIX.sub("", match.group(1))
+        skills = own + [row.skill for row in rows if row.seats & {role, "all"}]
+        return re.sub(r"^(      skills:\s*)\[[^\]]*\]", lambda m: f"{m.group(1)}[{', '.join(skills)}]",
+                      match.group(0), count=1, flags=re.MULTILINE)
+
+    head, profiles = text.split("\nprofiles:\n", 1) if "\nprofiles:\n" in text else (text, "")
+    profiles = re.sub(r"^  ([\w-]+):\n(?:(?:    .*)?\n)*", select, profiles, flags=re.MULTILINE)
+    agent_yaml.write_text(head + ("\nprofiles:\n" + profiles if profiles else ""))
 
 
 class Source(NamedTuple):
@@ -188,24 +257,17 @@ def newest(source):
         return head[0], "none"
     prefix, suffix = (re.escape(part) for part in source.follows.split("<version>", 1))
     pattern = re.compile(rf"refs/tags/({prefix}(\d+)\.(\d+)\.(\d+){suffix})(\^\{{\}})?")
-    found = {}
+    tags = {}
     for line in git(None, "ls-remote", "--tags", url).splitlines():
         commit, ref = line.split("\t")
         if match := pattern.fullmatch(ref):
             # An annotated tag's own line names the tag object; its peeled line (^{}) names the commit.
-            if match.group(5) or match.group(1) not in found:
-                found[match.group(1)] = (tuple(int(n) for n in match.group(2, 3, 4)), commit)
-    if not found:
+            if match.group(5) or match.group(1) not in tags:
+                tags[match.group(1)] = (tuple(int(n) for n in match.group(2, 3, 4)), commit)
+    if not tags:
         raise SyncError(f"{source.repo} has no tag matching {source.follows}")
-    tag = max(found, key=lambda name: found[name][0])
-    return found[tag][1], tag
-
-
-def skill_name(folder):
-    """The name in a skill's SKILL.md frontmatter."""
-    front = re.match(r"---\n(.*?)\n---", (folder / "SKILL.md").read_text(), re.DOTALL)
-    name = re.search(r"^name:\s*['\"]?(.+?)['\"]?\s*$", front.group(1), re.MULTILINE) if front else None
-    return name.group(1) if name else None
+    tag = max(tags, key=lambda name: tags[name][0])
+    return tags[tag][1], tag
 
 
 def licence_files(folder):
@@ -213,26 +275,26 @@ def licence_files(folder):
             if path.is_file() and (OWN_LICENCE.match(path.name) or SOURCE_LICENCE.match(path.name))}
 
 
-def holds(rows, fresh, vendored, missing, label):
+def hold_reasons(rows, fresh, vendored, missing, label):
     """Why a person should read this update before it merges: a skill gone from its source, one renamed, or a
     licence changed."""
-    found = []
+    reasons = []
     for row in rows:
         old, new = vendored / row.skill, fresh / row.skill
         if row.skill in missing:
-            found.append(f"`{row.skill}` is gone from {row.repo} at {label}: there's no SKILL.md at `{row.path}`")
+            reasons.append(f"`{row.skill}` is gone from {row.repo} at {label}: there's no SKILL.md at `{row.path}`")
             continue
-        if (name := skill_name(new)) != row.skill:
-            found.append(f"`{row.skill}`'s SKILL.md is named {name!r} at {label}, so seats can't select it as "
-                         f"`{row.skill}`")
+        if (name := skill_name(new / "SKILL.md")) != row.skill:
+            reasons.append(f"`{row.skill}`'s SKILL.md is named {name!r} at {label}, so seats can't select it as "
+                           f"`{row.skill}`")
         if old.is_dir() and licence_files(old) != licence_files(new):
-            found.append(f"`{row.skill}`'s licence changed at {label}: check the Licence column and NOTICE.md")
-    return found
+            reasons.append(f"`{row.skill}`'s licence changed at {label}: check the Licence column and NOTICE.md")
+    return reasons
 
 
 def bump_patch(agent_yaml):
     text = agent_yaml.read_text()
-    match = re.search(r'^version:\s*"(\d+)\.(\d+)\.(\d+)"\s*$', text, re.MULTILINE)
+    match = VERSION.search(text)
     if not match:
         raise SyncError(f'{agent_yaml}: version is not "<major>.<minor>.<patch>"')
     major, minor, patch = (int(n) for n in match.groups())
@@ -241,9 +303,16 @@ def bump_patch(agent_yaml):
     return version
 
 
+def set_release(line, header, release):
+    """A Sources table row with its Release cell set."""
+    row = cells(line)
+    row[header.index("Release")] = release
+    return "| " + " | ".join(row) + " |\n"
+
+
 def update(team, only):
     """Moves each source (or only those named) to the commit `newest` gives, where that changes any of its skills'
-    copies, rewriting skills.md's pins and re-vendoring them. Returns the report the weekly job reads."""
+    copies, rewriting skills.md's pins and copying the skills again. Returns the report the weekly job reads."""
     table_path = team / "skills.md"
     lines = table_path.read_text().splitlines(keepends=True)
     rows, sources = read_rows(team), read_sources("".join(lines))
@@ -251,44 +320,45 @@ def update(team, only):
     if unknown:
         raise SyncError(f"skills.md's Sources table has no {', '.join(sorted(unknown))}")
     folder = agent_folder(team)
-    vendored = folder / "vendor"
-    notes, found = [], []
+    vendored = folder / VENDOR_FOLDER
+    notes, reasons = [], []
     for source in sources:
         if only and source.repo not in only:
             continue
-        mine = [row for row in rows if row.repo == source.repo]
+        source_rows = [row for row in rows if row.repo == source.repo]
         commit, release = newest(source)
-        if not mine or {row.commit for row in mine} == {commit}:
+        if not source_rows or source_rows[0].commit == commit:
             continue
-        moved = [row._replace(commit=commit) for row in mine]
+        old = source_rows[0].commit
+        moved = [row._replace(commit=commit) for row in source_rows]
         label = release if source.tags else commit[:7]
         with tempfile.TemporaryDirectory() as tmp:
             fresh, missing = Path(tmp), []
-            vendor(moved, fresh, missing)
-            changed = [row.skill for row in mine if row.skill in missing
+            copy_skills(moved, fresh, missing)
+            changed = [row.skill for row in source_rows if row.skill in missing
                        or files(fresh / row.skill) != files(vendored / row.skill)]
             if not changed:
                 continue
-            found += holds(moved, fresh, vendored, missing, label)
+            reasons += hold_reasons(moved, fresh, vendored, missing, label)
             for skill in changed:
                 shutil.rmtree(vendored / skill, ignore_errors=True)
                 if skill not in missing:
                     shutil.copytree(fresh / skill, vendored / skill, symlinks=True)
-        old = mine[0].commit
         for number, row in table("".join(lines), "Skill"):
             if repo_of(row["Source"]) == source.repo:
-                lines[number - 1] = re.sub(r"`[0-9a-f]{40}`", f"`{commit}`", lines[number - 1], count=1)
-        cells = [cell.strip() for cell in lines[source.line - 1].strip().strip("|").split("|")]
-        lines[source.line - 1] = "| " + " | ".join(cells[:-1] + [release]) + " |\n"
-        was = source.release if source.tags and source.release != "none" else old[:7]
-        notes.append(f"- [{source.repo}](https://github.com/{source.repo}): {was} → {label} "
+                lines[number - 1] = lines[number - 1].replace(f"`{old}`", f"`{commit}`", 1)
+        header = next(cells(line) for line in reversed(lines[:source.line]) if cells(line)[0] == "Source")
+        lines[source.line - 1] = set_release(lines[source.line - 1], header, release)
+        was = f"{source.release} (`{old[:7]}`)" if source.tags and source.release != "none" else f"`{old[:7]}`"
+        now = f"{release} (`{commit[:7]}`)" if source.tags else f"`{commit[:7]}`"
+        notes.append(f"- [{source.repo}](https://github.com/{source.repo}): {was} → {now} "
                      f"([compare](https://github.com/{source.repo}/compare/{old}...{commit})): "
                      + ", ".join(f"`{skill}`" for skill in changed))
     if not notes:
         return {"changed": False}
     table_path.write_text("".join(lines))
     version = bump_patch(folder / "agent.yaml")
-    return {"changed": True, "team": team.name, "version": version, "holds": found,
+    return {"changed": True, "team": team.name, "version": version, "holds": reasons,
             "notes": "The weekly update of the team's skills.\n\n" + "\n".join(notes) + "\n"}
 
 
@@ -313,12 +383,13 @@ def differences(expected, actual):
     return lines
 
 
-def check(team, rows, vendored):
+def check(rows, vendored):
     """The differences between the vendored copies and fresh copies at the table's pins."""
+    if not vendored.is_dir():
+        return [f"{vendored} is missing"]
     with tempfile.TemporaryDirectory() as fresh:
-        vendor(rows, Path(fresh))
-        return [f"{vendored.name}/{line}" for line in differences(Path(fresh), vendored)] if vendored.is_dir() \
-            else [f"{vendored} is missing"]
+        copy_skills(rows, Path(fresh))
+        return [f"{vendored.name}/{line}" for line in differences(Path(fresh), vendored)]
 
 
 def main():
@@ -331,12 +402,15 @@ def main():
                       "its newest release or branch head, and bump the team's patch version")
     parser.add_argument("--report", type=Path, help="with --update, write what changed, as JSON, to this file")
     args = parser.parse_args()
+    if args.report and args.update is None:
+        parser.error("--report goes with --update")
     team = args.team
     try:
         rows = read_rows(team)
-        vendored = agent_folder(team) / "vendor"
+        folder = agent_folder(team)
+        vendored = folder / VENDOR_FOLDER
         if args.check:
-            problems = check(team, rows, vendored)
+            problems = check(rows, vendored)
             for problem in problems:
                 print(problem, file=sys.stderr)
             print(f"{team}: {'vendored skills match their pins' if not problems else f'{len(problems)} differences'}")
@@ -348,11 +422,12 @@ def main():
             print(f"{team}: " + (f"{report['version']}, {len(report['holds'])} holds" if report["changed"]
                                  else "every source is at its newest"))
             return 0
-        vendor(rows, vendored)
+        copy_skills(rows, vendored)
+        write_agent(folder / "agent.yaml", rows)
     except SyncError as error:
         print(f"sync-skills: {error}", file=sys.stderr)
         return 1
-    print(f"{team}: vendored {len(rows)} skills")
+    print(f"{team}: copied {len(rows)} skills and wrote agent.yaml's skill lines")
     return 0
 
 
