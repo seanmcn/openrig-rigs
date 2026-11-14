@@ -169,9 +169,9 @@ than waiting for compaction. The reminder covers one session, so the successor r
 
 ## Worktrees
 
-Every worktree the team makes lives outside the repository's clone, under OpenRig's workspace:
-`<workspace>/worktrees/<repository>/<name>`, where `<workspace>` is `rig config get workspace.root`. A worktree inside
-the clone, such as under its `.worktrees/`, sits below the clone's own config files, and a build that walks up the
+Every worktree the team makes lives outside the repository's clone, under the workspace its missions live in:
+`<workspace>/worktrees/<repository>/<name>`, where `<workspace>` is `$OPENRIG_WORK_ROOT` when it's set, as OpenRig
+itself reads it, and otherwise `rig config get workspace.root`. A worktree inside the clone, such as under its `.worktrees/`, sits below the clone's own config files, and a build that walks up the
 tree for one (a `tsconfig.json`, for example) reads the clone's and can fail or check the wrong settings.
 
 - **A slice's worktree** is `<workspace>/worktrees/<repository>/<slice>`: the clerk names it as `worktree_path`, and

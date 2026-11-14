@@ -248,8 +248,8 @@ on it. Watch for prompts: the seats never answer one for you, and tell you which
 - **Remove:** stop the team, then delete your installed copy (`~/rigs/shipwrights` above) and the seats' worktrees
   with `git worktree remove` (they're under `worktrees/` in OpenRig's workspace, below).
 
-Outside your clones, the team writes to OpenRig's workspace (`rig config get workspace.root`): its missions and slices,
-and the clerk's roster of the team's seats in `rosters/shipwrights.json`. Delete those too if you want no trace.
+Outside your clones, the team writes to OpenRig's workspace (`$OPENRIG_WORK_ROOT` when it's set, else
+`rig config get workspace.root`): its missions, slices and worktrees, and the clerk's roster of the team's seats in `rosters/shipwrights.json`. Delete those too if you want no trace.
 
 ## Changing the team
 
