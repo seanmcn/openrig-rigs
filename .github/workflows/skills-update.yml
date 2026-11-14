@@ -38,6 +38,9 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          # One team's failure doesn't stop the others' updates; the run fails at the end.
+          status=0
           for team in rigs/*/; do
-            scripts/weekly-skill-update.sh "$team"
+            scripts/weekly-skill-update.sh "$team" || status=1
           done
+          exit $status

@@ -1,9 +1,11 @@
 # Skills
 
 The team's guidance names skills by name, such as "follow the `implement` skill", and the team ships every one of
-them. Each is a copy of its source's skill, unchanged, at the commit in the table below, in
-`agents/shipwrights/vendor/<skill>`. Each profile in `agents/shipwrights/agent.yaml` selects the skills its role's
-row lists, so a seat gets those and no others, wherever it runs.
+them as a team skill. Each is a copy of its source's skill at the commit in the table below, in
+`agents/shipwrights/vendor/<skill>`: unchanged, except that the source's hidden files (its own tooling, such as
+`.github` or a plugin manifest) are left out, and its licence is added when the skill has none of its own. Each
+profile in `agents/shipwrights/agent.yaml` selects the skills whose row lists its role, so a seat gets those and no
+others, wherever it runs.
 
 The rest come with the team too: OpenRig provides its `openrig-core` plugin and its skills, and the team ships
 Workshop's `using-the-tui-together` in `agents/shipwrights/skills`.
@@ -13,9 +15,9 @@ Workshop's `using-the-tui-together` in `agents/shipwrights/skills`.
 **Required** skills are named in a step of the guidance, `CULTURE.md` included, since every seat reads it; a seat
 without one can't do that step as written. **Optional** ones help the seats listed but no step names them. **Seats** are
 the roles in `agents/shipwrights/agent.yaml`, each meaning both of the role's profiles; `all` is every seat. A required
-skill's seats are the roles whose guidance or start files name it. **Commit** is the one the team's copy matches. This
-table is the only list: `scripts/sync-skills.py` copies the skills from it, and `scripts/check-team.py` checks the
-copies and the profiles against it.
+skill's seats are the roles whose guidance or start files name it. **Commit** is the one the team's copy matches, one
+per source. This table is the only list: `scripts/sync-skills.py` copies the skills and writes `agent.yaml`'s skill
+declarations and each profile's skills from it, and `scripts/check-team.py` checks all of them against it.
 
 | Skill | Source | Path | Commit | Licence | Seats | Need |
 | --- | --- | --- | --- | --- | --- | --- |
@@ -70,10 +72,11 @@ is the tag at the pin, or `none` for a branch.
 ## Keeping them current
 
 Every week, a workflow in this repository moves each source to what it follows, and copies its skills again where any
-of them changed. It releases the change as the team's next patch version, with notes naming each source's old and new
-pin. It opens one pull request for the update and merges it itself when the team's checks pass. It leaves the pull
-request open for a person instead when a check fails, when a skill is gone from its source or renamed there, or when a
-skill's licence changed, and a later week's run replaces that pull request rather than opening another.
+of them changed. The change comes out as the team's next patch version, with release notes naming each source's old
+and new pin. It opens one pull request for the update and merges it itself when the checks the `check` workflow runs
+pass. It leaves the pull request open for a person instead when a check fails, when a skill is gone from its source
+or renamed there, or when a skill's licence changed, and a later week's run replaces that pull request rather than
+opening another.
 
 To do the same by hand, from a clone of this repository:
 
@@ -82,8 +85,9 @@ scripts/sync-skills.py rigs/shipwrights --update        # or name sources: --upd
 scripts/check-team.py rigs/shipwrights
 ```
 
-To pin a skill to another commit, change its Commit cell, then run `scripts/sync-skills.py rigs/shipwrights` to copy it
-again. `--check` says whether every copy matches its pin, and changes nothing.
+To add or remove a skill, change a skill's seats, or pin a source to another commit, edit the table (a source's rows
+share one commit), then run `scripts/sync-skills.py rigs/shipwrights`: it copies the skills again and rewrites
+`agent.yaml`'s skill lines. `--check` says whether every copy matches its pin, and changes nothing.
 
 ## Using your own
 

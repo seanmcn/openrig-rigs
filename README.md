@@ -19,13 +19,14 @@ A team is a folder of files, and one command turns it into a running rig: `rig b
   <img alt="From a team to a running rig: a team folder's rig.yaml, agent.yaml, start files and skills go into rig bundle install, which starts the running rig with a session per seat." src="docs/diagrams/team-to-rig.svg">
 </picture>
 
-A team ships every skill its guidance names. Its `skills.md` lists them, each with its source, the commit the team
-pins and its licence, and the team carries a copy of each, unchanged, that its profiles select per role
-([why](docs/adr/0001-teams-vendor-their-skills.md)). `scripts/sync-skills.py rigs/<team>` writes the copies from the
-table, and a weekly workflow moves the pins to each source's newest release and releases the team again.
+A team ships every skill its guidance names as a team skill. Its `skills.md` lists them, each with its source, the
+commit the team pins and its licence, and the team carries a copy of each, unchanged, that its profiles select per
+role ([why](docs/adr/0001-teams-vendor-their-skills.md)). `scripts/sync-skills.py rigs/<team>` writes the copies and
+`agent.yaml`'s skill lines from the table, and a weekly workflow moves the pins to each source's newest release, which
+comes out as the team's next version.
 
-Each team has a version, in its `agent.yaml`, and a tag `<team>-v<version>` marks each release; install a team from
-its tag to pin it. The team's README says when each part of the version moves.
+Each team has a version, in its `agent.yaml`, and a tag `<team>-v<version>` marks each team version; install a team
+from its tag to pin it. The team's README says when each part of the version moves.
 
 `scripts/check-team.py rigs/<team>` checks a team against what its README promises; the script's docstring lists every
 check. Set `TEAM_BLOCKLIST` to a comma-separated list of words the team must never contain, such as names from the

@@ -5,8 +5,10 @@
 #
 # usage: scripts/weekly-skill-update.sh rigs/<team>
 #
-# It holds the pull request open for a person, saying why at its top, when check-team.py fails,
-# a skill is gone from its source or renamed there, or a skill's licence changed. A later run
+# Before merging it runs the checks the check workflow runs on other pull requests:
+# check-team.py, with rig bundle check when rig is installed, and the script tests. It holds the
+# pull request open for a person, saying why at its top, when one fails, a skill is gone from its
+# source or renamed there, or a skill's licence changed. A later run
 # replaces that pull request's branch and text rather than opening another, and closes it when
 # main needs no update any more.
 #
@@ -43,8 +45,13 @@ fi
 version=$(jq -r .version "$work/report.json")
 jq -r '.holds[]' "$work/report.json" >"$work/holds"
 
+# The checks the check workflow runs, since a pull request this opens with the workflow's token starts no workflow.
+# The version raise it also checks is the patch bump sync-skills.py has just made.
 if ! python3 "$scripts/check-team.py" "$team" >"$work/check.log" 2>&1; then
   echo "\`scripts/check-team.py $team\` fails; its output is at the end." >>"$work/holds"
+fi
+if ! python3 -m unittest discover -s "$scripts/tests" >>"$work/check.log" 2>&1; then
+  echo "The script tests (\`python3 -m unittest discover -s scripts/tests\`) fail; their output is at the end." >>"$work/holds"
 fi
 
 jq -r .notes "$work/report.json" >"$work/notes.md"
@@ -61,8 +68,8 @@ jq -r .notes "$work/report.json" >"$work/notes.md"
   echo "Releases \`$name-v$version\`."
   echo
   cat "$work/notes.md"
-  if grep -q check-team "$work/holds"; then
-    printf '\n<details><summary>check-team.py output</summary>\n\n```\n'
+  if grep -q -e check-team -e unittest "$work/holds"; then
+    printf '\n<details><summary>Output of the checks</summary>\n\n```\n'
     tail -n 60 "$work/check.log"
     printf '```\n\n</details>\n'
   fi

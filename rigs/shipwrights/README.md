@@ -175,8 +175,8 @@ label.
 
 ## Skills
 
-The team ships every skill its guidance names, such as `implement`, `tdd`, `code-review` and `impeccable`, so
-installing the team installs them: each seat gets the skills its role uses and no others, in its own storage, with
+The team ships every skill its guidance names, such as `implement`, `tdd`, `code-review` and `impeccable`, as a team
+skill, so installing the team installs them: each seat gets the skills its role uses and no others, in its own storage, with
 nothing written to `~/.claude/skills` or `~/.codex/skills`. Every seat also gets OpenRig's `openrig-core` plugin and
 Workshop's `using-the-tui-together`. [`skills.md`](skills.md) lists each skill with its source, the commit the team's
 copy matches, its licence, the seats that use it and whether the guidance requires it, and says how the copies are kept
@@ -207,7 +207,7 @@ rig context add --git https://github.com/mvschwarz/openrig-world
 
 From the folder the seats should work in, install the team from the GitHub link to this folder, previewing it first.
 `<link>` below is `https://github.com/seanmcn/openrig-rigs/tree/shipwrights-v<version>/rigs/shipwrights`, with the
-newest version from the repository's releases, such as `shipwrights-v2.0.0`. OpenRig resolves the tag once and prints
+newest version from the repository's GitHub releases page, such as `shipwrights-v2.0.0`. OpenRig resolves the tag once and prints
 the commit-pinned link to keep. A full commit ID works in place of the tag.
 
 ```sh
@@ -263,7 +263,8 @@ To change more and keep taking this team's improvements, use an overlay instead.
 ## Versions
 
 The team's version is `version` in [`agent.yaml`](agents/shipwrights/agent.yaml), and the tag
-`shipwrights-v<version>` marks each release, with notes on GitHub. A version is `<major>.<minor>.<patch>`:
+`shipwrights-v<version>` marks each team version, with release notes on GitHub. A version is
+`<major>.<minor>.<patch>`, written quoted:
 
 - **Patch:** the weekly update of the team's skills, which [`skills.md`](skills.md) describes, and fixes to the team's
   text that change nothing a seat does.
