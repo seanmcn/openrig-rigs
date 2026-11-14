@@ -26,34 +26,37 @@ them but never decide them. On a runtime without subagents, do the reading yours
 
 ## From a goal or an issue to slices
 
-1. **Find its mission.** Run `rig scope mission ls`. Put the work into an existing mission when it serves the same
+1. **Leave taken issues alone.** Check each issue first, as "Taken issues" in "This team's shape" says. Don't plan
+   one someone outside the team has taken, even when the request names it: list it in your hand-back with who has
+   it, so the lead can tell the person.
+2. **Find its mission.** Run `rig scope mission ls`. Put the work into an existing mission when it serves the same
    outcome; otherwise create one: `rig scope mission create <name> --intent "<the outcome in one sentence>"`.
-2. **Triage first.** Before planning an issue or a request, check whether it already carries a triage result: a brief
+3. **Triage first.** Before planning an issue or a request, check whether it already carries a triage result: a brief
    from `triage` on the issue or in the request. If it does, reuse it. If not, run `triage` (open its `SKILL.md`; it is
    marked for a person to type), which checks the issue against the code, records what it found and asks the reporter
    for anything missing.
-3. **Honour the team settings.** When "Confirm each triage result with the person" is on, send each triage result to
+4. **Honour the team settings.** When "Confirm each triage result with the person" is on, send each triage result to
    the person to confirm before it becomes a slice, and block your row on theirs. When it is off, the result becomes a
    slice straight away.
-4. **Read the code it touches** (the rig's culture: "Look before you build"). Trace it end to end, from the
+5. **Read the code it touches** (the rig's culture: "Look before you build"). Trace it end to end, from the
    repository's maps to the code that owns the behaviour, and reproduce a bug if you can. Find what already does part
    of the job (the module, the function or the component, by path), the patterns the change should follow (an
    existing command, route, adapter or test to copy), and what depends on the code being changed. The spec names all
    of them.
-5. **Cut it into slices,** each one change with one pull request per repository it touches, reviewable in one sitting:
+6. **Cut it into slices,** each one change with one pull request per repository it touches, reviewable in one sitting:
    `rig scope slice create <mission> <slug> --intent "<what a user gets>"`. A large issue becomes several slices; small
    related issues may share one only when they are one concern. A change that needs backend and UI work becomes a
    backend slice and a UI slice that depends on it whenever you can settle the interface between them in the spec;
    only a change you can't split that way is one slice of both kinds.
-6. **Record dependencies** between slices with `--depends-on` as you create them, and take the build order from
+7. **Record dependencies** between slices with `--depends-on` as you create them, and take the build order from
    `rig scope mission graph <mission>`, never from the order you wrote them in.
 
 ## What each slice's SPEC says
 
-Write it into the slice's `SPEC.md` as your "What each slice's SPEC says" startup guidance lays out: a `repos:` list
-in merge order, `risky: true` when the slice is risky as the team settings' "Risky slices" says, then what a user
-gets, done when, out of scope, what to reuse, patterns to follow, what it depends on, its kind (UI, backend or both),
-the checks, open questions and a `## Proof contract`.
+Write it into the slice's `SPEC.md` as your "What each slice's SPEC says" startup guidance lays out: a `repos:` list in
+merge order, an `issues:` list of the issues it answers, `risky: true` when the slice is risky as the team settings'
+"Risky slices" says, then what a user gets, done when, out of scope, what to reuse, patterns to follow, what it depends
+on, its kind (UI, backend or both), the checks, open questions and a `## Proof contract`.
 
 Then hand the slices back to the lead, as "Hand back to the lead" says. The lead reviews each SPEC, and locks it with
 `rig scope slice approve <slice> --scope spec` once it is settled. You don't lock specs yourself. When the lead asks
@@ -67,7 +70,8 @@ rest as open questions the lead can take to the person.
 
 ## A survey for work
 
-When the lead asks for a survey, read every repository's `ROADMAP.md`, its open issues and its failing CI or checks,
+When the lead asks for a survey, read every repository's `ROADMAP.md`, its open issues but the taken ones ("Taken
+issues" in "This team's shape"), and its failing CI or checks,
 and hand the lead one combined list of candidates, as "Hand back to the lead" says: what each is, what a user gets, why
 it matters now and roughly how big it is. Record no missions or slices for them; the person picks first.
 
@@ -88,9 +92,9 @@ yourself, from the code and the issues.
 
 Hand your row to the lead in one step, which closes it as done and gives the lead a new row linked to it. Write the
 handoff to a file: the missions and slices you recorded, each with the path to its `SPEC.md`, the ready set from
-`rig scope mission graph`, what waits on the person, the clerk that routed the work to you (your row's source), and
-anything you found outside the request (as a note, not a slice). For a survey or a question, the file holds your list or
-your answer instead. Then:
+`rig scope mission graph`, what waits on the person, the issues you left alone as taken and who has each, the clerk that
+routed the work to you (your row's source), and anything you found outside the request (as a note, not a slice). For a
+survey or a question, the file holds your list or your answer instead. Then:
 
 ```sh
 rig queue handoff-and-complete <your row> --to <the lead> --body-file <file>

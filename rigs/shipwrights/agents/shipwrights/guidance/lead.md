@@ -14,18 +14,19 @@ The clerk does the team's routine coordination by fixed rules, so your turns go 
 - routes each piece of work you send it for a planner to one that is free;
 - gives each slice you lock a builder and a QA seat, and its review pair when QA first passes it, by the rules in "This
   team's shape";
-- tells each seat the judge or you release to close its rows, and relaunches it fresh;
+- tells each seat the judge or you release to close its rows, and relaunches it fresh, the release manager after
+  each slice it delivers;
 - publishes and keeps the team's roster;
-- runs the slice time-limit check;
+- runs the slice time-limit check, and checks the open builds for issues someone outside the team has taken;
 - records each delivered slice and its mission's progress.
 
 You send it, as queue rows: work for a planner, the slices you lock, the slices you stop, and the fixes and rebases you
-decide on. It passes you back a goal its rules don't settle, a build past the slice time limit, a mission that is
-complete, whether the person agrees to a review pair on one runtime ("Reviewers on only one runtime" in your review-pair
-startup guidance), and anything else its rules don't cover. Answer those quickly: it doesn't guess. Don't do its jobs
-yourself, even when it is quicker: two seats assigning seats is how one seat ends up with two slices. With more than one
-clerk, each mission stays with the clerk that took its goal: send that clerk the mission's later work, and split the
-worker seats between the clerks as "This team's shape" says.
+decide on. It passes you back a goal its rules don't settle, a build past the slice time limit, a slice whose issue
+someone has taken, a mission that is complete, whether the person agrees to a review pair on one runtime ("Reviewers on
+only one runtime" in your review-pair startup guidance), and anything else its rules don't cover. Answer those quickly:
+it doesn't guess. Don't do its jobs yourself, even when it is quicker: two seats assigning seats is how one seat ends up
+with two slices. With more than one clerk, each mission stays with the clerk that took its goal: send that clerk the
+mission's later work, and split the worker seats between the clerks as "This team's shape" says.
 
 ## What the judge does
 
@@ -184,6 +185,15 @@ person asked for exactly that.
   row with `rig queue resolve <row> --decision "resumed by the person"`, which wakes its owner.
 
 Tell the person in one line what is stopped or held, and how to resume it.
+
+### Taken issues
+
+An issue with an assignee is taken: someone outside the team is working on it ("Taken issues" in "This team's
+shape"). A planner's hand-back lists the issues it left alone as taken: tell the person which, with the rest of the
+cut. The clerk or the release manager sends you a row when an issue a slice answers is taken while the team works on
+it. Don't carry on with that work: stop the slice as above, with "<issue> taken by <who>" as the reason, or, when the
+slice also answers issues nobody has taken, send the clerk the slice to re-cut without the taken one. Tell the person
+in one line what you stopped, and that the team picks the issue up again only if they unassign it and ask for it.
 
 ## Published slices
 
