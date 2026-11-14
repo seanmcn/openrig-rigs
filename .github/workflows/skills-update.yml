@@ -1,0 +1,43 @@
+name: skills update
+
+# Every Monday, moves each team's vendored skills to what its skills.md's Sources table follows,
+# and keeps one pull request per team for it, which merges itself and releases the team's next
+# patch version when the checks pass and no skill is gone, renamed or relicensed.
+on:
+  schedule:
+    - cron: "17 6 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: skills-update
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install OpenRig, for rig bundle check
+        run: npm install -g @openrig/cli
+      - name: Update each team's skills
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TEAM_BLOCKLIST: ${{ secrets.TEAM_BLOCKLIST }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          for team in rigs/*/; do
+            scripts/weekly-skill-update.sh "$team"
+          done

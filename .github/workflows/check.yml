@@ -1,0 +1,55 @@
+name: check
+
+# Checks every team as its README promises, tests the scripts, and makes a pull request that
+# changes a team raise that team's version, so merging it releases one.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Install OpenRig, for rig bundle check
+        run: npm install -g @openrig/cli
+      - name: Test the scripts
+        run: python3 -m unittest discover -s scripts/tests
+      - name: Check every team
+        env:
+          TEAM_BLOCKLIST: ${{ secrets.TEAM_BLOCKLIST }}
+        run: |
+          for team in rigs/*/; do
+            scripts/check-team.py "$team"
+          done
+      - name: A changed team raises its version
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+        run: |
+          status=0
+          for team in rigs/*/; do
+            name=$(basename "$team")
+            if git diff --quiet "$BASE" HEAD -- "$team"; then continue; fi
+            agent="rigs/$name/agents/$name/agent.yaml"
+            was=$(git show "$BASE:$agent" 2>/dev/null | sed -nE 's/^version:[[:space:]]*"?([0-9.]+)"?.*/\1/p')
+            now=$(sed -nE 's/^version:[[:space:]]*"?([0-9.]+)"?.*/\1/p' "$agent")
+            highest=$(printf '%s\n%s\n' "$was" "$now" | sort -V | tail -1)
+            if [ -n "$was" ] && { [ "$was" = "$now" ] || [ "$highest" != "$now" ]; }; then
+              echo "::error file=$agent::$name changed but its version is still $was: raise it, as the team README's Versions section says"
+              status=1
+            fi
+          done
+          exit $status
