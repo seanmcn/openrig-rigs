@@ -8,6 +8,13 @@ compares their reviews.
 - **Both reviews in the pull request:** the release manager reports them in the description, with what each reviewer
   ran and at which commit, and how the disagreements were settled, from what the judge records in the slice progress.
 - **Reviewers on only one runtime:** when the team has reviewers on only one runtime, the clerk asks you ("No free
-  pair" in "This team's shape"). Ask the person, then close the clerk's row saying whether they agreed. When they
-  did, the clerk pairs two reviewers on that runtime and records why in the slice progress, so the release manager says
-  so in the pull request. Naming the reviewers stays the clerk's.
+  pair" in "This team's shape"). Ask the person, then hand the clerk's row back to it saying whether they agreed,
+  as "Rows and their summaries" in "This team's shape" says:
+
+  ```sh
+  rig queue handoff-and-complete <the clerk's row> --to <the clerk> \
+    --summary "One-runtime pair: the person <agreed|declined>" --body-file <their words>
+  ```
+
+  When they did, the clerk pairs two reviewers on that runtime and records why in the slice progress, so the release
+  manager says so in the pull request. Naming the reviewers stays the clerk's.

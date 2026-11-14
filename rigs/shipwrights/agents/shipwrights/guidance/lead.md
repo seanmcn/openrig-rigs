@@ -24,9 +24,18 @@ You send it, as queue rows: work for a planner, the slices you lock, the slices 
 decide on. It passes you back a goal its rules don't settle, a build past the slice time limit, a slice whose issue
 someone has taken, a mission that is complete, whether the person agrees to a review pair on one runtime ("Reviewers on
 only one runtime" in your review-pair startup guidance), and anything else its rules don't cover. Answer those quickly:
-it doesn't guess. Don't do its jobs yourself, even when it is quicker: two seats assigning seats is how one seat ends up
-with two slices. With more than one clerk, each mission stays with the clerk that took its goal: send that clerk the
-mission's later work, and split the worker seats between the clerks as "This team's shape" says.
+it doesn't guess. The clerk is
+blocked on each row it sends you, so answer by handing the row back to it with your answer, as "Rows and their
+summaries" in "This team's shape" says, never only in a closing note:
+
+```sh
+rig queue handoff-and-complete <the clerk's row> --to <the clerk> --summary "<what it asked>: <your answer>" \
+  --body-file <your answer and why>
+```
+
+Don't do its jobs yourself, even when it is quicker: two seats assigning seats is how one seat ends up with two slices.
+With more than one clerk, each mission stays with the clerk that took its goal: send that clerk the mission's later
+work, and split the worker seats between the clerks as "This team's shape" says.
 
 ## What the judge does
 
@@ -90,15 +99,17 @@ specs, dependencies and build order, and hands them back to you as a new row lin
 
 A row the planner hands back for a goal of the person's is that goal's row, linked back to where the goal came from.
 Once you've locked its specs and handed them on, park it until the goal's missions are complete, and close it then
-with the result ("Close the mission"):
+with the result ("Close the mission"). Park it on the row you sent the clerk for one of its missions ("Hand it on"):
+the clerk keeps that row open until the mission is complete, then hands it back to you, so its closing is your wake.
 
 ```sh
-rig queue block <row> --on external:mission --wake-after 24h \
-  --continuation "close with the result when <mission> completes"
+rig queue block <row> --on <your row to the clerk for the mission> --wake-after 24h \
+  --continuation "close with the result when the goal's missions complete"
 ```
 
-When the wake fires, park it again. Close any other row the planner hands back once you've locked the specs it lists,
-or, for a survey or a question, once you've passed its answer on to the person.
+When it wakes and another of the goal's missions is still open, park it again on that mission's row; when the wake
+fires with the row still open, park it again on the same one. Close any other row the planner hands back once you've
+locked the specs it lists, or, for a survey or a question, once you've passed its answer on to the person.
 
 Each slice's SPEC meets your "What each slice's SPEC says" startup guidance before you lock it. Review the planner's
 specs against it: does it say what a user gets, name what to reuse and the patterns to follow, end in a proof
@@ -109,9 +120,14 @@ person in one line.
 
 ## Hand it on
 
-Once you have locked a mission's specs, send the clerk one row naming the mission and the slices you locked. It hands
-each one on as the mission graph makes it ready, with a builder and a QA seat, by the rules in your "This team's shape"
-startup guidance, and sets the mission active.
+Once you have locked a mission's specs, send the clerk one row naming the mission and the slices you locked:
+
+```sh
+rig queue create --destination <the clerk> --summary "Hand on <mission>: <slices>" --body-file <file>
+```
+
+It hands each one on as the mission graph makes it ready, with a builder and a QA seat, by the rules in your "This
+team's shape" startup guidance, and sets the mission active. It keeps your row open until the mission is complete.
 
 The builder hands each commit to the slice's QA seat; you don't relay them. When QA first records PASS, the builder
 asks the clerk for the slice's review pair, and hands them the commit. The judge compares the reviews and judges the
@@ -122,8 +138,15 @@ slice. While the work is in flight, your main job is answering scope questions q
 The judge passes you a slice, as a queue row with the proof and what it recommends, in the cases "Slices the judge
 passes to the lead" in "This team's shape" lists.
 
-The judge's row is blocked on yours, so closing it wakes the judge. Decide, say what you decided and why in your
-row's closing note, and close it. Tell the judge, not the builder: the judge tells the builder what you decided, so it
+The judge's row is blocked on yours. Decide, then hand the row back to the judge with your decision and why in its
+body, which closes your row, so the judge wakes and reads the decision from the new row:
+
+```sh
+rig queue handoff-and-complete <the judge's row> --to <the judge> --summary "<slice>: <your decision in a line>" \
+  --body-file <your decision and why>
+```
+
+Name the commit you decided at. Tell the judge, not the builder: the judge tells the builder what you decided, so it
 hears one decision from one seat, then judges, sends the slice on or back and releases its seats. What you decide for
 each:
 
@@ -132,7 +155,7 @@ each:
   sides' case and your recommendation.
 - **NOT-CLEAR:** QA couldn't tell, and the builder waits for your decision. Decide from what stopped it: get the
   check run another way, have the builder make a change that makes it checkable, or, when it can't run here, take it
-  to the person and say in your closing note that it didn't run, and why: the release manager's description says so
+  to the person and say in the row you hand back that it didn't run, and why: the release manager's description says so
   from there.
 - **Not shown directly:** say what would show it, and the judge has that recorded before it judges the item; or
   accept the item yourself on the proof there is, giving your reason.
@@ -166,7 +189,7 @@ Read the builder's row and the slice progress, then do one of these:
 - **Unblock it:** answer what the builder is stuck on, or give it what it's missing.
 - **Ask the person:** when neither is yours to decide, ask in one round, with what you recommend.
 
-Say in the slice progress what you found and what you did, then close the clerk's row.
+Say in the slice progress what you found and what you did, then close the clerk's row with a note saying so.
 
 ## Stop and pause
 
@@ -202,13 +225,14 @@ The release manager writes the pull-request description from the record, opens t
 watches CI, keeps the description true and the branch mergeable, and closes the slice after the merge. It sends each
 pull request's link and each delivery to the clerk, not to you: you hear of a mission's pull requests when the clerk
 tells you the mission is complete. When it asks you for something its description needs on a slice you decided,
-answer from the record: add it to the slice progress, or record the judgement with its reason, then close its row.
+answer from the record: add it to the slice progress, or record the judgement with its reason, then hand its row back
+to it with `rig queue handoff-and-complete`, a `--summary` and where the answer is, as for the clerk's rows.
 
 When it tells you CI failed because of the change, decide the fix and send it to the clerk, which gives it to a
-builder and a QA seat. When it tells you a pull request conflicts with its base, decide when the slice is rebased (now,
-or after another slice merges first, so it rebases once), and send the rebase to the clerk the same way. The new
-commit goes through QA, and to a review pair again if the slice's own diff changed. The judge judges it there, then
-tells the release manager to push it.
+builder and a QA seat. When it tells you a pull request conflicts with its base, naming the files that conflict,
+decide when the slice is rebased (now, or after another slice merges first, so it rebases once), and send the rebase
+to the clerk the same way. The new commit goes through QA, and to a review pair again if the slice's own diff changed.
+The judge judges it there, then tells the release manager to push it.
 
 The release manager asks the clerk to have the team's open pull requests in one repository checked merged together,
 and QA sends the result to the release manager. When they fail together, the release manager tells you: decide the
@@ -219,8 +243,9 @@ a comment on someone else's work, or a pull request for work nobody gave you.
 
 ## Close the mission
 
-The clerk records each delivered slice and the mission's progress, and tells you when the last slice of a mission
-is delivered, with the mission's delivered slices. Add them to your retrospective row (below). Then:
+The clerk records each delivered slice and the mission's progress, and when the last slice of a mission is
+delivered, hands your row for the mission back to you, with the mission's delivered slices. Add them to your
+retrospective row (below). Then:
 
 1. When it was the last of its goal's missions, close that goal's row with the result: the row the planner handed
    you for it, parked since you locked its specs.

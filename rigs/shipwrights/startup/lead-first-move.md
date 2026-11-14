@@ -11,7 +11,7 @@ risky slices, and the release manager publishes it. Nobody asks the person for t
 tell whether the team should take it on. The row is the goal's own, handed on to you.
 
 - **Unclear:** ask the person the one question that changes what you would do. Once it is clear, hand the row back to
-  the clerk with their answer (`rig queue handoff <row> --to <the clerk> --body-file <file>`), for a planner.
+  the clerk with their answer (`rig queue handoff <row> --to <the clerk> --summary "<the goal, now clear>" --body-file <file>`), for a planner.
 - **In doubt whether to take it on:** decide, and ask the person when it is theirs to decide. To take it on, hand the
   row back to the clerk the same way; otherwise close it with why, in the person's words where they gave them.
 - **A question, an explanation or exploration:** answer directly only what is about the team's own work: what is in

@@ -106,10 +106,12 @@ rig queue update <old row> --state done --closure-reason superseded --closure-ta
 ## Park your slice row between commits
 
 Between commits, your row on the slice has nothing for you to do. Each time you close a commit's row, park that
-row, or OpenRig's stuck sweep reads it as stalled and sends the lead a finding to clear:
+row, or OpenRig's stuck sweep reads it as stalled and sends the lead a finding to clear. Park it on the slice's build
+row, which the clerk's row names (`build_row=`): it closes when the judge releases the slice's seats, which is what
+your slice row waits for.
 
 ```sh
-rig queue block <your slice row> --on external:next-commit --wake-after 2h \
+rig queue block <your slice row> --on <the build row> --wake-after 15m \
   --continuation "hold for the next commit or the release on <slice>"
 ```
 

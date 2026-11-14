@@ -1,5 +1,5 @@
 name: shipwrights
-version: "2.2.0"
+version: "2.3.0"
 description: >
   A seat on the shipwrights rig, which works in a clone of a repository, or in a folder
   that holds several clones. The rig member's profile picks the role and the runtime: each of

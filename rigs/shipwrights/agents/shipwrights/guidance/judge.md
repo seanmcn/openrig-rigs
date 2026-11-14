@@ -64,9 +64,21 @@ Before you send a slice on, check it against "Slices the judge passes to the lea
 of them holds, pass the slice to the lead.
 
 Send the lead one queue row: the slice, the commit, which of them holds, the proof on each side and what you
-recommend. Block your row on it (`--on <its row>`), so the lead's closing it wakes you. Don't judge the item or send
-the slice on in the meantime. Carry on from the lead's decision as it gives it: tell the builder what the lead decided
-(it is waiting, and only you tell it), judge or re-judge as it says, and send the slice on or back.
+recommend.
+
+```sh
+rig queue create --destination <the lead> --summary "<slice>: <why it's yours>; recommend <x>" --body-file <file>
+```
+
+Block your row on it (`--on <its row> --wake-after 15m`, the backstop within a slice). The lead answers by handing that row back to you with its decision, which
+closes it and wakes you: read the decision from the row it hands you, not from a closing note. Don't judge
+the item or send the slice on in the meantime. Carry on from the lead's decision as it gives it: tell the builder what
+the lead decided (it is waiting, and only you tell it), judge or re-judge as it says, and send the slice on or back.
+Record it in the slice progress too, so the clerk and the release manager can find it:
+
+```sh
+rig scope slice progress <slice> --mission <mission> --add "Decided by the lead at <commit>: <decision> (row <the row the lead handed back>)"
+```
 
 A NOT-CLEAR comes to you mid-build, before the slice is done. Pass it on as soon as QA records it: the builder waits
 for the lead's decision, which you tell it.
@@ -77,7 +89,14 @@ A slice whose every proof item you have accepted at one commit, with none of "Pa
 send it straight to a release manager, without waiting for the lead. Picking the release manager is yours, not the
 clerk's: give it to the one that already holds the mission's other slices, or else the one with the fewest open rows, so
 one release manager sees each mission's merge order. Its row names the slice, its repository, branch and worktree, the
-commit you judged and the slice's clerk, and says how each disagreement was settled and what couldn't run.
+commit you judged and the slice's clerk, and says how each disagreement was settled and what couldn't run:
+
+```sh
+rig queue create --destination <the release manager> --summary "Publish <slice> at <short commit>" --body-file <file>
+```
+
+For a slice the lead decided, the row says "decided by the lead at <commit>" and names the row the lead handed back, so
+the release manager writes the description from that decision.
 
 Then record your judgement in the slice progress, where the lead and the release manager can read it:
 
@@ -105,6 +124,8 @@ it once you have, so no row is left open on you after the slice ships:
 - **QA's NOT-CLEAR:** close it once you have told the builder the lead's decision. The builder's row is blocked on it,
   so closing it is what wakes the builder.
 - **A disagreement:** close it once you have told both sides how it was settled, by you or by the lead.
+- **The row the lead hands back with its decision:** close it once you have told the builder the decision and sent
+  the slice on or back.
 
 ```sh
 rig queue update <row> --state done --closure-reason no-follow-on --note "<what you did>"
@@ -115,7 +136,15 @@ The builder's row saying the slice is done stays open until you release the seat
 ## Release the seats
 
 Release the slice's seats once you have judged the slice and sent it on: tell the clerk with a row naming the slice,
-its builder, its QA seat and its review pair. Not before: until then a rejection, or a decision of the lead's, can
+its builder, its QA seat and its review pair, and your publish row to the release manager (the clerk parks the
+lead's mission row on it), and, for a slice the lead decided, "decided by the lead at <commit>" with the row the lead handed
+back:
+
+```sh
+rig queue create --destination <the clerk> --summary "Release the seats on <slice>" --body-file <file>
+```
+
+Not before: until then a rejection, or a decision of the lead's, can
 still need a new commit, which goes back through the same QA seat and the same pair. The clerk tells them to close
 their rows and relaunches them. Then close the builder's row to you with what you did.
 

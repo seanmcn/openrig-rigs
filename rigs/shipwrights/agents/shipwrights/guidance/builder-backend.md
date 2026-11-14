@@ -44,7 +44,15 @@ round.
 ## Hand it to QA, then to review
 
 Commit, then hand the commit to the slice's QA seat with a queue row: the commit, the worktree path, what changed, and
-what you ran. Fix what QA finds in new commits and hand each one back to QA, until QA records PASS at a commit:
+what you ran.
+
+```sh
+rig queue create --destination <the QA seat> --summary "<slice>: check <short commit>" --body-file <file> \
+  --mission <mission> --slice <slice>
+```
+
+A commit row to a reviewer is the same, with `--summary "<slice>: review <short commit>"`. Fix what QA finds in new
+commits and hand each one back to QA, until QA records PASS at a commit:
 
 - **BLOCKING:** fix it.
 - **CONCERNING:** fix it, or tell QA why it shouldn't change, with what you ran and saw.
@@ -58,7 +66,9 @@ replaces, and its seat closes the old one.
 When QA first records PASS, ask the clerk for the slice's review pair: a row naming the slice and the commit QA passed,
 with your row blocked on it. Ask again the same way after a fix or a rebase of a published slice that changed its own
 diff: its first pair was released when the judge sent the slice on. The clerk closes it with the two code reviewers'
-sessions: hand them that commit, a row each. Their findings come straight back to you. Fix them in a new commit, which
+sessions: hand them that commit, a commit row each. The clerk's row to each reviewer is its hold on the slice and
+names no commit; your commit row is the only row that carries a commit, for the first commit as for every later one.
+Never send a reviewer a slice row of your own. Their findings come straight back to you. Fix them in a new commit, which
 goes to QA first and then back to both reviewers, saying which finding it answers. If a finding is wrong, say why, with
 what you ran and saw. A disagreement you and the reviewer or QA can't settle goes to the judge, with both sides' case.
 
@@ -66,7 +76,7 @@ After each handoff, block your row on a commit row you handed out that's still o
 timer is a backstop in case its seat forgets to close it:
 
 ```sh
-rig queue block <your row> --on <an open commit row> --wake-after 1h --continuation "check the QA and review rows for <commit>"
+rig queue block <your row> --on <an open commit row> --wake-after 15m --continuation "check the QA and review rows for <commit>"
 ```
 
 Each time you wake, check every commit row you handed out with `rig queue show <row>`. Block again on any that's still
@@ -92,7 +102,7 @@ A rebase reaches you from the clerk as a row of its own, once the lead has decid
 rebased commit to QA, block the rebase row on QA's row, as after any handoff:
 
 ```sh
-rig queue block <the rebase row> --on <QA's row> --wake-after 1h --continuation "check QA's row for the rebased <commit>"
+rig queue block <the rebase row> --on <QA's row> --wake-after 15m --continuation "check QA's row for the rebased <commit>"
 ```
 
 Once QA has passed it and you've handed it on (to a review pair if the diff changed, otherwise to the judge), close the
