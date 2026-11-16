@@ -51,8 +51,12 @@ reports never overwrite each other:
 ```sh
 rig proof add <slice> --mission <mission> --artifact-type <rev1-r1|rev1-r2> --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \
   --candidate-sha <commit> --money-evidence "<any paid service the review used, or none>" --file <your report> \
-  --name <your member id>-<short commit>.md
+  --name <your member id>-<short commit>.md \
+  --evidences "<the contract items this checked, by number>" --self-check "<what you looked at and saw>"
 ```
+
+Set `--evidences` to the comma-separated, 1-based numbers of the slice's proof-contract items this drop covers
+(for example, `1,3`). Use `--self-check` to attest that you inspected the proof and describe what it showed.
 
 Send findings to the builder and a short verdict, with what you ran, to the judge. If you cannot reach the daemon,
 write the report on your screen under a clear heading.
