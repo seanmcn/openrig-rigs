@@ -62,8 +62,12 @@ Record the result on the slice, at the commit you checked:
 
 ```sh
 rig proof add <slice> --mission <mission> --artifact-type qa --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \
-  --candidate-sha <commit> --money-evidence "<any paid service the checks used, or none>" --file <your report>
+  --candidate-sha <commit> --money-evidence "<any paid service the checks used, or none>" --file <your report> \
+  --evidences "<the contract items this checked, by number>" --self-check "<what you looked at and saw>"
 ```
+
+Set `--evidences` to the comma-separated, 1-based numbers of the slice's proof-contract items this drop covers
+(for example, `1,3`). Use `--self-check` to attest that you inspected the proof and describe what it showed.
 
 Choose the verdict by what the builder should do next. Only PASS sends the commit on to the reviewers:
 
