@@ -35,7 +35,7 @@ declarations and each profile's skills from it, and `scripts/check-team.py` chec
 | `sharp-edges` | [trailofbits/skills](https://github.com/trailofbits/skills) | `plugins/sharp-edges/skills/sharp-edges` | `e4dd0bb5b15535f7c5a0834187dffba6ac37e4ff` | CC-BY-SA-4.0 | code-reviewer | required |
 | `supply-chain-risk-auditor` | [trailofbits/skills](https://github.com/trailofbits/skills) | `plugins/supply-chain-risk-auditor/skills/supply-chain-risk-auditor` | `e4dd0bb5b15535f7c5a0834187dffba6ac37e4ff` | CC-BY-SA-4.0 | code-reviewer | required |
 | `agentic-actions-auditor` | [trailofbits/skills](https://github.com/trailofbits/skills) | `plugins/agentic-actions-auditor/skills/agentic-actions-auditor` | `e4dd0bb5b15535f7c5a0834187dffba6ac37e4ff` | CC-BY-SA-4.0 | code-reviewer | required |
-| `impeccable` | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `.agents/skills/impeccable` | `414603bf14c7a344edb466bb1f85690c77ce8b7d` | Apache-2.0 | builder-frontend | required |
+| `impeccable` | [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `.agents/skills/impeccable` | `acb4cfe14470b1fdf51e855431af618d936b7db8` | Apache-2.0 | builder-frontend | required |
 | `grilling` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/productivity/grilling` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead, planner | optional |
 | `domain-modeling` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/domain-modeling` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead, planner, builder-backend, builder-frontend | optional |
 | `research` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/research` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | lead, planner, builder-backend, builder-frontend | optional |
@@ -44,8 +44,8 @@ declarations and each profile's skills from it, and `scripts/check-team.py` chec
 | `codebase-design` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/codebase-design` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend | optional |
 | `wizard` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/wizard` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-backend, builder-frontend | optional |
 | `prototype` | [mattpocock/skills](https://github.com/mattpocock/skills) | `skills/engineering/prototype` | `d1478fcb140db0b93c0c8df17bcfd311844749d0` | MIT | builder-frontend | optional |
-| `humanizer` | [blader/humanizer](https://github.com/blader/humanizer) | `.` | `225a6f39ac85f76ee48dbad772ea4abe4ed6c9d8` | MIT | lead, builder-backend, builder-frontend | optional |
-| `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | `skills/diagram-design` | `e57eda6102a19444538ebd611d39534fad65b663` | MIT | lead, builder-backend, builder-frontend | optional |
+| `humanizer` | [blader/humanizer](https://github.com/blader/humanizer) | `.` | `b48c832f0f809c1b5658edbb838c2521b72f2413` | MIT | lead, builder-backend, builder-frontend | optional |
+| `diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | `skills/diagram-design` | `f6db0decea96de66b901331a0f79a8d4b147ebae` | MIT | lead, builder-backend, builder-frontend | optional |
 
 **Path** is where the skill sits in its source; `.` means the repository is the skill. Each skill keeps its own
 licence, beside it in its folder: the Trail of Bits skills are CC-BY-SA-4.0, so a changed copy you share must keep that
@@ -65,8 +65,8 @@ is the tag at the pin, or `none` for a branch.
 | [mattpocock/skills](https://github.com/mattpocock/skills) | `v<version>` tags | v1.3.2 |
 | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) | `v<version>` tags | v5.3.3 |
 | [trailofbits/skills](https://github.com/trailofbits/skills) | `main` | none |
-| [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `skill-v<version>` tags | skill-v4.8.0 |
-| [blader/humanizer](https://github.com/blader/humanizer) | `v<version>` tags | v3.1.0 |
+| [pbakaus/impeccable](https://github.com/pbakaus/impeccable) | `skill-v<version>` tags | skill-v4.9.1 |
+| [blader/humanizer](https://github.com/blader/humanizer) | `v<version>` tags | v4.0.0 |
 | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) | `main` | none |
 
 ## Keeping them current
