@@ -222,9 +222,22 @@ tree for one (a `tsconfig.json`, for example) reads the clone's and can fail or 
 
 Make one from the clone, at a fresh base: `git -C <clone> fetch origin`, then
 `git -C <clone> worktree add <path> <commit>`, or for a new slice
-`git -C <clone> worktree add -b <branch> <path> origin/<base branch>`. QA and the reviewers remove their own with
-`git worktree remove` once their row closes. The release manager removes a slice's worktree, and its local branch,
-once the slice is delivered ("Close the slice" in its role file).
+`git -C <clone> worktree add -b <branch> <path> origin/<base branch>`. A fresh worktree has no dependencies: install
+them the way the repository documents it (its install target, and its pinned tool versions) before its first check, or
+that check fails for a reason that isn't the change. QA and the reviewers remove their own with `git worktree remove`
+once their row closes. The release manager removes a slice's worktree, and its local branch, once the slice is
+delivered ("Close the slice" in its role file).
+
+## One machine, shared
+
+Seats often run on one machine, so a fixed port and the machine's capacity are shared too.
+
+- **Fixed ports.** Before you start a server on a fixed port, check nothing is listening on it
+  (`lsof -iTCP:<port> -sTCP:LISTEN`). If something is, use another port where the repository lets you choose one;
+  otherwise wait for it, as "Waits" says, and never stop another seat's process.
+- **Heavy suites.** Run a repository's full suite, and any suite that starts containers, one at a time across the rig.
+  If another seat's run is going (`docker ps`, or the process list), wait for it rather than starting yours beside it:
+  two at once make both time out, and the failure says nothing about the change.
 
 ## Proof in a workspace of the rig's own
 

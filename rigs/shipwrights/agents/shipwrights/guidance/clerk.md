@@ -83,6 +83,8 @@ and who has it, and count the slice as dealt with. Hand on each other one that i
 - A backend slice goes to a free backend builder. It goes to a free frontend builder only when no backend builder is
   free and no UI or mixed slice in the ready set is waiting for one.
 - With each slice goes a free QA seat.
+- One builder per slice. A slice you have already sent a build row for is never handed on again, even when its
+  builder looks idle or the lead's row names it once more; only the lead moves a slice to another builder.
 
 Write the handoff to a file that names the slice, the repository, the worktree path on a line of its own
 (`worktree_path=<path>`, the slice's path in "Worktrees" in "This team's shape"), the builder, the QA seat, the judge (with more than one, the one with the fewest open rows)

@@ -45,4 +45,11 @@ The body covers:
   message, a driver's detail, a traceback, the error-reporting chain. A failure that never held it, such as `1 / 0`
   for "no submitted value in database errors", proves nothing.
 - **Proof contract:** a `## Proof contract` section at the end, one checkbox per thing that must be shown before the
-  slice is ready. These are the items the judge judges.
+  slice is ready. These are the items the judge judges. Three kinds of slice need a particular item:
+  - **A check or a gate** (a lint rule, a CI step, a guard): an item that it fails when its input fails, shown by a
+    test that injects the failure, in the slice's first commit. A check that only ever passes proves nothing.
+  - **A pin moved** (a dependency, a vendored copy, a tool version): the spec lists everything the new version brings,
+    from its release notes or its diff, not only the change it's taken for, and an item covers each part a user could
+    notice.
+  - **Proof only a published branch can show,** such as a CI run on the pull request or a preview deploy: the item
+    names the seat that collects it and when, so it isn't left for whoever notices.
