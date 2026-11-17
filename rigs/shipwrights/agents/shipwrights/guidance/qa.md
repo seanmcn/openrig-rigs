@@ -59,13 +59,18 @@ rig queue update <row> --state done --closure-reason no-follow-on --note "<work 
 For each layer: the command, the commit, the result, and what it does and does not prove. Keep "the product failed"
 apart from "the harness, my setup or my sandbox failed"; the second is unknown, not a pass.
 
-Record the result on the slice, at the commit you checked:
+Record the result on the slice, at the commit you checked. Write your report to a scratch file: `rig proof add`
+copies it into the slice's `proof/` under the `--name` you give, which keeps each report apart from your others:
 
 ```sh
 rig proof add <slice> --mission <mission> --artifact-type qa --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \
   --candidate-sha <commit> --money-evidence "<any paid service the checks used, or none>" --file <your report> \
+  --name <your member id>-<short commit>.md \
   --evidences "<the contract items this checked, by number>" --self-check "<what you looked at and saw>"
 ```
+
+When you record a newer result at the same commit, such as after the lead decides a NOT-CLEAR, add `--replace`: the
+newer result stands for that commit.
 
 Set `--evidences` to the comma-separated, 1-based numbers of the slice's proof-contract items this drop covers
 (for example, `1,3`). Use `--self-check` to attest that you inspected the proof and describe what it showed.

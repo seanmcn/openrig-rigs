@@ -360,6 +360,13 @@ GUIDANCE_RULES = [
     ("release-manager.md", "git -C <clone> worktree remove <worktree>", "the release manager removes the slice's worktree from the clone"),
     ("release-manager.md", "headRefOid", "a rebase-merged branch is deleted only when its tip is the merged head"),
     ("release-manager.md", "--summary \"<slice>: left", "what the release manager leaves behind reaches the lead"),
+    # `rig proof add` names a report after its --file unless given --name, and refuses a name it already holds;
+    # `rig scope slice create` numbers the slice itself.
+    ("qa.md", "--name <your member id>-<short commit>.md", "two QA reports on a slice never collide"),
+    ("qa.md", "--replace", "a QA report re-recorded at the same commit replaces the earlier one"),
+    ("qa.md", "copies it into the slice's `proof/`", "the report QA passes is a scratch file"),
+    ("code-reviewer.md", "copies it into the slice's `proof/`", "the report a reviewer passes is a scratch file"),
+    ("planner.md", "a bare slug", "OpenRig numbers each slice, so a numbered slug is numbered twice"),
 ]
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)

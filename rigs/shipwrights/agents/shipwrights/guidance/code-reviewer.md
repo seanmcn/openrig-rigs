@@ -54,8 +54,9 @@ findings.
 Something outside this change goes to the lead as a note, not a finding.
 
 Record your verdict on the slice, at the commit you reviewed. OpenRig takes a review only as `rev1-r1` or `rev1-r2`:
-use the one the clerk named you in the pair's row. Name the file after yourself and the commit, so the pair's two
-reports never overwrite each other:
+use the one the clerk named you in the pair's row. Write your report to a scratch file: `rig proof add` copies it into
+the slice's `proof/` under the `--name` you give. Name it after yourself and the commit, so the pair's two reports
+never collide:
 
 ```sh
 rig proof add <slice> --mission <mission> --artifact-type <rev1-r1|rev1-r2> --verdict <PASS|BLOCKING|CONCERNING|NOT-CLEAR> \

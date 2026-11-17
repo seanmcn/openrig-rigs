@@ -45,7 +45,8 @@ them but never decide them. On a runtime without subagents, do the reading yours
    of them. When the issue quotes an audit that names what sets the problem off, run that trigger while you plan,
    and have the spec ask for the outcome rather than the mechanism the audit suggested.
 6. **Cut it into slices,** each one change with one pull request per repository it touches, reviewable in one sitting:
-   `rig scope slice create <mission> <slug> --intent "<what a user gets>"`. A large issue becomes several slices; small
+   `rig scope slice create <mission> <slug> --intent "<what a user gets>"`, with a bare slug: OpenRig numbers the
+   slice itself, so a slug that starts with a number gets a second one. A large issue becomes several slices; small
    related issues may share one only when they are one concern. A change that needs backend and UI work becomes a
    backend slice and a UI slice that depends on it whenever you can settle the interface between them in the spec;
    only a change you can't split that way is one slice of both kinds.
