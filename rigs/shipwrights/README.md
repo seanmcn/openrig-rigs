@@ -185,8 +185,9 @@ label.
 
 The team ships every skill its guidance names, such as `implement`, `tdd`, `code-review` and `impeccable`, as a team
 skill, so installing the team installs them: each seat gets the skills its role uses and no others, in its own storage, with
-nothing written to `~/.claude/skills` or `~/.codex/skills`. Every seat also gets OpenRig's `openrig-core` plugin and
-Workshop's `using-the-tui-together`. [`skills.md`](skills.md) lists each skill with its source, the commit the team's
+nothing written to `~/.claude/skills` or `~/.codex/skills`. Every seat also gets OpenRig's `openrig-core` plugin,
+Workshop's `using-the-tui-together`, and the team's own `page-proof`, which captures a page at a laptop and a phone
+width as proof. [`skills.md`](skills.md) lists each skill with its source, the commit the team's
 copy matches, its licence, the seats that use it and whether the guidance requires it, and says how the copies are kept
 current: a weekly update moves each to its source's newest release, as a new patch version of the team.
 

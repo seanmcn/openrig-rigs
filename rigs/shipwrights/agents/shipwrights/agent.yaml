@@ -1,5 +1,5 @@
 name: shipwrights
-version: "2.7.0"
+version: "2.8.0"
 description: >
   A seat on the shipwrights rig, which works in a clone of a repository, or in a folder
   that holds several clones. The rig member's profile picks the role and the runtime: each of
@@ -11,9 +11,10 @@ description: >
 # OpenRig home, so they get the OpenRig skills (and the plugin's hooks) that match the
 # person's installed OpenRig.
 #
-# The team ships every other skill its guidance names: Workshop's using-the-tui-together in
-# skills/, and a copy of each skill in ../../skills.md, unchanged from its source at the commit
-# the table pins, in vendor/. scripts/sync-skills.py writes vendor/, the skill declarations
+# The team ships every other skill its guidance names: its own skills in skills/ (Workshop's
+# using-the-tui-together and the team's page-proof), which every profile selects, and a copy
+# of each skill in ../../skills.md, unchanged from its source at the commit the table pins, in
+# vendor/. scripts/sync-skills.py writes vendor/, the skill declarations
 # below and each profile's skills from the table, so edit the table, never a copy or those
 # lines. Each skill follows its source on restore, so a rig restored after an update gets the
 # new copy rather than losing the skill.
@@ -24,6 +25,7 @@ description: >
 resources:
   skills:
     - { id: using-the-tui-together, path: skills/using-the-tui-together, on_restore: follow_source }
+    - { id: page-proof, path: skills/page-proof, on_restore: follow_source }
     - { id: ponytail, path: vendor/ponytail, on_restore: follow_source }
     - { id: ponytail-review, path: vendor/ponytail-review, on_restore: follow_source }
     - { id: pr, path: vendor/pr, on_restore: follow_source }
@@ -62,8 +64,9 @@ resources:
       runtime: claude-code
       type: claude_activity_hooks
 
-# Every profile selects using-the-tui-together and the skills whose row in ../../skills.md lists
-# its role, in the table's order, and nothing installed at user level.
+# Every profile selects the team's own skills (using-the-tui-together, page-proof) and the skills
+# whose row in ../../skills.md lists its role, in the table's order, and nothing installed at
+# user level.
 #
 # Each role has one profile per runtime, <role>-claude and <role>-codex. The two deliver the
 # same guidance files and select the same resources; they differ only in the runtime and in
@@ -78,7 +81,7 @@ profiles:
       model: claude-opus-5-5
       effort: high
     uses:
-      skills: [using-the-tui-together, ponytail, retro, grilling, domain-modeling, research, writing-for-agents, humanizer, diagram-design]
+      skills: [using-the-tui-together, page-proof, ponytail, retro, grilling, domain-modeling, research, writing-for-agents, humanizer, diagram-design]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -95,7 +98,7 @@ profiles:
       model: gpt-6-astra
       effort: high
     uses:
-      skills: [using-the-tui-together, ponytail, retro, grilling, domain-modeling, research, writing-for-agents, humanizer, diagram-design]
+      skills: [using-the-tui-together, page-proof, ponytail, retro, grilling, domain-modeling, research, writing-for-agents, humanizer, diagram-design]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -112,7 +115,7 @@ profiles:
       model: claude-haiku-5-5
       effort: low
     uses:
-      skills: [using-the-tui-together, ponytail]
+      skills: [using-the-tui-together, page-proof, ponytail]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -129,7 +132,7 @@ profiles:
       model: gpt-6-luna
       effort: low
     uses:
-      skills: [using-the-tui-together, ponytail]
+      skills: [using-the-tui-together, page-proof, ponytail]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -146,7 +149,7 @@ profiles:
       model: claude-haiku-5-5
       effort: low
     uses:
-      skills: [using-the-tui-together, ponytail]
+      skills: [using-the-tui-together, page-proof, ponytail]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -163,7 +166,7 @@ profiles:
       model: gpt-6-luna
       effort: low
     uses:
-      skills: [using-the-tui-together, ponytail]
+      skills: [using-the-tui-together, page-proof, ponytail]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -180,7 +183,7 @@ profiles:
       model: claude-opus-5-5
       effort: high
     uses:
-      skills: [using-the-tui-together, ponytail, triage, wayfinder, grilling, domain-modeling, research, to-spec]
+      skills: [using-the-tui-together, page-proof, ponytail, triage, wayfinder, grilling, domain-modeling, research, to-spec]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -197,7 +200,7 @@ profiles:
       model: gpt-6-astra
       effort: high
     uses:
-      skills: [using-the-tui-together, ponytail, triage, wayfinder, grilling, domain-modeling, research, to-spec]
+      skills: [using-the-tui-together, page-proof, ponytail, triage, wayfinder, grilling, domain-modeling, research, to-spec]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -214,7 +217,7 @@ profiles:
       model: claude-sonnet-5-5
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, domain-modeling, research, writing-for-agents, codebase-design, wizard, humanizer, diagram-design]
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, domain-modeling, research, writing-for-agents, codebase-design, wizard, humanizer, diagram-design]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -231,7 +234,7 @@ profiles:
       model: gpt-6.1-sol
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, domain-modeling, research, writing-for-agents, codebase-design, wizard, humanizer, diagram-design]
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, domain-modeling, research, writing-for-agents, codebase-design, wizard, humanizer, diagram-design]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -248,7 +251,7 @@ profiles:
       model: claude-sonnet-5-5
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, impeccable, domain-modeling, research, writing-for-agents, codebase-design, wizard, prototype, humanizer, diagram-design]
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, impeccable, domain-modeling, research, writing-for-agents, codebase-design, wizard, prototype, humanizer, diagram-design]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -268,7 +271,7 @@ profiles:
       model: gpt-6.1-sol
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, impeccable, domain-modeling, research, writing-for-agents, codebase-design, wizard, prototype, humanizer, diagram-design]
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, impeccable, domain-modeling, research, writing-for-agents, codebase-design, wizard, prototype, humanizer, diagram-design]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -288,7 +291,7 @@ profiles:
       model: claude-sonnet-5-5
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, diagnosing-bugs]
+      skills: [using-the-tui-together, page-proof, ponytail, diagnosing-bugs]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -305,7 +308,7 @@ profiles:
       model: gpt-6.1-sol
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, diagnosing-bugs]
+      skills: [using-the-tui-together, page-proof, ponytail, diagnosing-bugs]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -322,7 +325,7 @@ profiles:
       model: claude-opus-5-5
       effort: high
     uses:
-      skills: [using-the-tui-together, ponytail, ponytail-review, code-review, differential-review, sharp-edges, supply-chain-risk-auditor, agentic-actions-auditor, writing-for-agents]
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, code-review, differential-review, sharp-edges, supply-chain-risk-auditor, agentic-actions-auditor, writing-for-agents]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -339,7 +342,7 @@ profiles:
       model: gpt-6.1-sol
       effort: high
     uses:
-      skills: [using-the-tui-together, ponytail, ponytail-review, code-review, differential-review, sharp-edges, supply-chain-risk-auditor, agentic-actions-auditor, writing-for-agents]
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, code-review, differential-review, sharp-edges, supply-chain-risk-auditor, agentic-actions-auditor, writing-for-agents]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -356,7 +359,7 @@ profiles:
       model: claude-sonnet-5-5
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail]
+      skills: [using-the-tui-together, page-proof, ponytail]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -373,7 +376,7 @@ profiles:
       model: gpt-6.1-sol
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail]
+      skills: [using-the-tui-together, page-proof, ponytail]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -390,7 +393,7 @@ profiles:
       model: claude-sonnet-5-5
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, pr]
+      skills: [using-the-tui-together, page-proof, ponytail, pr]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:
@@ -407,7 +410,7 @@ profiles:
       model: gpt-6.1-sol
       effort: medium
     uses:
-      skills: [using-the-tui-together, ponytail, pr]
+      skills: [using-the-tui-together, page-proof, ponytail, pr]
       plugins: [openrig-core]
       runtime_resources: [claude-activity-hooks]
     startup:

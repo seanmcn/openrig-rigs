@@ -25,6 +25,15 @@ jobs:
           node-version: "22"
       - name: Install OpenRig, for rig bundle check
         run: npm install -g @openrig/cli
+      - name: Install Chromium at the Playwright version page-proof pins, for its tests
+        run: |
+          capture=rigs/shipwrights/agents/shipwrights/skills/page-proof/scripts/capture.mjs
+          version=$(sed -nE 's/.*PAGE_PROOF_PLAYWRIGHT_VERSION \|\| "([0-9.]+)".*/\1/p' "$capture")
+          if [ -z "$version" ]; then
+            echo "::error file=$capture::no pinned Playwright version found (PAGE_PROOF_PLAYWRIGHT_VERSION || \"x.y.z\")"
+            exit 1
+          fi
+          npx --yes "playwright@$version" install --with-deps chromium
       - name: Test the scripts
         run: python3 -m unittest discover -s scripts/tests
       - name: Check every team

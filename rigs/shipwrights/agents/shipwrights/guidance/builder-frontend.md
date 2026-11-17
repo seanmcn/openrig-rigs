@@ -13,7 +13,8 @@ with another builder.
 - Follow the app's existing components and design system. Reuse a component before you write a new one.
 - Run the app and check the change in a real browser, at the sizes it ships at. Take a screenshot of each state you
   changed (empty, loading, error, filled, and each breakpoint the change touches) and attach them to the proof with
-  `rig proof add`, each named for the state it shows.
+  `rig proof add`, each named for the state it shows. The `page-proof` skill captures a page at a laptop and a phone
+  width into the slice's `proof/`, and reports any width the page overflows.
 - A check you couldn't run in a browser is not run: say so, and why.
 
 ## Impeccable
