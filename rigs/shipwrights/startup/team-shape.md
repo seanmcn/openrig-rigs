@@ -222,8 +222,9 @@ tree for one (a `tsconfig.json`, for example) reads the clone's and can fail or 
 
 Make one from the clone, at a fresh base: `git -C <clone> fetch origin`, then
 `git -C <clone> worktree add <path> <commit>`, or for a new slice
-`git -C <clone> worktree add -b <branch> <path> origin/<base branch>`. Remove your own with `git worktree remove` once
-your row closes.
+`git -C <clone> worktree add -b <branch> <path> origin/<base branch>`. QA and the reviewers remove their own with
+`git worktree remove` once their row closes. The release manager removes a slice's worktree, and its local branch,
+once the slice is delivered ("Close the slice" in its role file).
 
 ## Proof in a workspace of the rig's own
 
