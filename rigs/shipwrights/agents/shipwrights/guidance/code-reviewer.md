@@ -14,7 +14,8 @@ row", below).
 2. **Review in your own worktree, never the builder's:** create one at the commit where "Worktrees" in "This team's
    shape" puts it, outside the clone, and run every command from inside the worktree (`cd` into it first), so the repository's own tool
    versions and settings apply. Every worktree shares the clone's history, so the builder's commit is already there:
-   `git diff <base>...<commit>` gives the exact change without the network.
+   `git diff <base>...<commit>` gives the exact change without the network. Install its dependencies the way the
+   repository documents it before you run anything there: a fresh worktree has none.
 
 ## Review
 
