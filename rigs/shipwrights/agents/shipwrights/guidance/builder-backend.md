@@ -41,10 +41,29 @@ Before you hand a commit on, review your diff against the slice's base with the 
 it finds that is yours to fix. The reviewers run the full review; this catches the obvious before it costs them a
 round.
 
+## What the change reaches
+
+List the ones that apply in the commit row:
+
+- **Callers:** when it changes what a shared method returns or raises, every call site, from a full search rather than
+  only the ones the spec named, and how you checked each.
+- **Failure paths:** when it touches error handling or a library's error callback, which failures stay fatal and which
+  don't, call site by call site.
+- **Deletes:** before you write code that deletes or overwrites for good, write down who else could own the target,
+  what states it can be in and what a partial read of it does.
+- **Restated rules:** when it changes a documented rule, search for the old rule's wording and reconcile every place
+  that restates it (agent docs, architecture docs, READMEs) in the same pull request.
+- **Shell blocks in docs:** prove a shell block a doc tells a seat to run the way a seat will run it, pasted into the
+  seat's own shell tool, not as `bash <file>`, where `set -e` and the environment differ.
+
+When you know an input or a path on which the slice's intent still fails, ask the lead before you hand it on, rather
+than leaving it as a note in the proof. That gap is inside the slice, unlike something outside the spec, which goes to
+the lead as a note.
+
 ## Hand it to QA, then to review
 
-Commit, then hand the commit to the slice's QA seat with a queue row: the commit, the worktree path, what changed, and
-what you ran.
+Commit, then hand the commit to the slice's QA seat with a queue row: the commit, the worktree path, what changed, what
+you ran and what the change reaches.
 
 ```sh
 rig queue create --destination <the QA seat> --summary "<slice>: check <short commit>" --body-file <file> \

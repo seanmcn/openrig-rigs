@@ -335,6 +335,18 @@ GUIDANCE_RULES = [
     ("startup/slice-spec.md", "a failure that would carry", "proof of an absence uses a failure that could have carried the thing"),
     ("planner.md", "run that trigger", "the planner runs the trigger an audit names, and specifies the outcome"),
     ("code-reviewer.md", "the bytes the consumer receives", "an output invariant is checked where its consumer reads it"),
+    # The builder's handoff and the review trace what a change reaches beyond the lines it touches.
+    ("builder-backend.md", "## What the change reaches", "the builder lists what a change reaches before handing it on"),
+    ("builder-backend.md", "every call site", "a changed shared method's callers are all found and checked"),
+    ("builder-backend.md", "which failures stay fatal", "a change to error handling says what stays fatal, per call site"),
+    ("builder-backend.md", "who else could own the target", "a destructive change is thought through before it is written"),
+    ("builder-backend.md", "restates it", "a changed rule is reconciled everywhere it is restated"),
+    ("builder-backend.md", "ask the lead before you hand it on", "a known gap in the slice's intent goes to the lead, not into the proof"),
+    ("builder-backend.md", "the way a seat will", "a doc's shell block is proven the way a seat runs it"),
+    ("code-reviewer.md", "injecting the fault", "a finding that changes failure behaviour is settled by injecting the fault"),
+    ("code-reviewer.md", "compare the two predicates", "one rule applied in two places is checked on the same inputs"),
+    ("code-reviewer.md", "a path named in the finding", "a reproducer is saved where QA and the other reviewer can rerun it"),
+    ("code-reviewer.md", "against the tests", "a spec's claims about the tests are checked against the tests"),
 ]
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)
