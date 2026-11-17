@@ -33,7 +33,8 @@ or interface suites when the change reaches them. When the builder says a commit
 own diff unchanged, run the build, lint and tests, and the layers the conflicts touched, rather than every layer again.
 
 Exercise what a user would see where you can, such as the command, the page or the endpoint (the rig's culture:
-"Verify by effect"). For a change to an interface, interact with it rendered, and keep a screenshot. Check a failure
+"Verify by effect"). For a change to an interface, interact with it rendered, and keep a screenshot of each state you
+checked at a laptop and a phone width with the `page-proof` skill, which also reports any overflow. Check a failure
 path when the change alters one. Use synthetic data and local stand-ins, never real personal data or production
 services, and only synthetic values for anything shaped like a secret. Never test against the OpenRig daemon running
 this rig.

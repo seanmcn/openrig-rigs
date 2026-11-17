@@ -7,8 +7,9 @@ them as a team skill. Each is a copy of its source's skill at the commit in the 
 profile in `agents/shipwrights/agent.yaml` selects the skills whose row lists its role, so a seat gets those and no
 others, wherever it runs.
 
-The rest come with the team too: OpenRig provides its `openrig-core` plugin and its skills, and the team ships
-Workshop's `using-the-tui-together` in `agents/shipwrights/skills`.
+The rest come with the team too: OpenRig provides its `openrig-core` plugin and its skills, and the team ships its
+own skills in `agents/shipwrights/skills`, which every seat gets: Workshop's `using-the-tui-together`, and
+`page-proof`, which the team wrote to capture a page at a laptop and a phone width as proof.
 
 ## The skills
 
