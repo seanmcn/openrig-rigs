@@ -330,6 +330,11 @@ GUIDANCE_RULES = [
     ("lead.md", "a review pair on one runtime", "the lead expects the clerk's question about a one-runtime pair"),
     ("lead.md", "rig ps --nodes", "the lead finds the clerk's session by its seat, not with rig whoami"),
     ("startup/team-shape.md", "rig watchdog stop", "a removed seat's reminders stop with it"),
+    # A "never X in output" requirement is planned, proven and reviewed where X could actually appear.
+    ("startup/slice-spec.md", "every producer", "an absence requirement lists every place that writes that kind of output"),
+    ("startup/slice-spec.md", "a failure that would carry", "proof of an absence uses a failure that could have carried the thing"),
+    ("planner.md", "run that trigger", "the planner runs the trigger an audit names, and specifies the outcome"),
+    ("code-reviewer.md", "the bytes the consumer receives", "an output invariant is checked where its consumer reads it"),
 ]
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)
