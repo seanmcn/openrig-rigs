@@ -33,7 +33,12 @@ row", below).
 - Place it in the codebase: the right module and layer, done the way the repository already does that kind of thing,
   reusing what the spec named, and nothing rebuilt that already exists.
 - Review the effect, not just the diff. Say what depends on the changed code and check the downstream behaviour with a
-  test or a scratch reproduction.
+  test or a scratch reproduction. Check the builder's list of what the change reaches against the code.
+- When the diff applies one rule in two places, compare the two predicates on the same inputs.
+- For code that deletes or overwrites for good, check that it still does what the slice asked, not only that it stopped
+  the unsafe case.
+- Check what the spec says about the repository's tests against the tests.
+- Settle a finding of yours that changes failure behaviour by injecting the fault before you pass, blocking or not.
 - Check an output invariant (unique, bounded, escaped, ordered, absent) on the bytes the consumer receives, parsed the
   way it parses them, not on what an intermediate function returns.
 - A change that adds a refusal, a prompt or a required step needs its case: who is harmed, how, and what it costs
@@ -42,8 +47,10 @@ row", below).
 
 ## Report
 
-Each finding gets a file and line, the consequence, and how you know: command output or a reproduction. Put what must
-change before publishing apart from suggestions. A clean review is a good result; do not manufacture findings.
+Each finding gets a file and line, the consequence, and how you know: command output or a reproduction. Save a
+reproducer at a path named in the finding, so QA can rerun it, and the other reviewer once it has recorded its own.
+Put what must change before publishing apart from suggestions. A clean review is a good result; do not manufacture
+findings.
 Something outside this change goes to the lead as a note, not a finding.
 
 Record your verdict on the slice, at the commit you reviewed. OpenRig takes a review only as `rev1-r1` or `rev1-r2`:
