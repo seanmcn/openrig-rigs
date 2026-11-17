@@ -214,6 +214,15 @@ Make one from the clone, at a fresh base: `git -C <clone> fetch origin`, then
 `git -C <clone> worktree add -b <branch> <path> origin/<base branch>`. Remove your own with `git worktree remove` once
 your row closes.
 
+## Proof in a workspace of the rig's own
+
+`rig scope` and `rig proof add` read `$OPENRIG_WORK_ROOT`, but `rig proof show` and `rig proof judge` ask the daemon,
+which resolves a scope under its own `workspace.root`. So when `$OPENRIG_WORK_ROOT` is set to a workspace the daemon's
+catalog knows as a project, prefix the scope with that project's id wherever this guidance writes
+`<mission>/slices/<slice>` for either: `rig proof show <project>:<mission>/slices/<slice>` and
+`rig proof judge <project>:<mission>/slices/<slice>#<item> ...`. Without it they answer `scope_missing`. The rig's
+settings or its own files name the project; if nothing does and you get `scope_missing`, ask the lead.
+
 ## Waits
 
 Every wait is a queue block with a wake or on another row, never a loop of checks. Block on the row whose closing is
