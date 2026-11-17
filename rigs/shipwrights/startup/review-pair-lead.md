@@ -2,8 +2,8 @@
 
 Where your role file says "the code reviewer", this team uses a review pair: two code reviewers on different runtimes,
 which the clerk names for each slice when QA first passes it ("This team's shape" says how). The builder hands each
-commit to the slice's QA seat first, and to both reviewers once QA passes it. They review independently, and the judge
-compares their reviews.
+commit to the slice's QA seat first, and to both reviewers once QA passes it, all but a docs-only fix ("A docs-only
+fix" in "This team's shape"). They review independently, and the judge compares their reviews.
 
 - **Both reviews in the pull request:** the release manager reports them in the description, with what each reviewer
   ran and at which commit, and how the disagreements were settled, from what the judge records in the slice progress.

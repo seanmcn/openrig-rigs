@@ -347,6 +347,14 @@ GUIDANCE_RULES = [
     ("code-reviewer.md", "compare the two predicates", "one rule applied in two places is checked on the same inputs"),
     ("code-reviewer.md", "a path named in the finding", "a reproducer is saved where QA and the other reviewer can rerun it"),
     ("code-reviewer.md", "against the tests", "a spec's claims about the tests are checked against the tests"),
+    # A docs-only fix is rechecked by the seat that raised the finding, and the judge checks the diff itself.
+    ("startup/team-shape.md", "## A docs-only fix", "what a docs-only fix is, and who rechecks it, is written once"),
+    ("startup/team-shape.md", "When unsure, it isn't docs-only", "a doubtful fix gets the full round"),
+    ("builder-backend.md", "\"A docs-only fix\" in \"This team's shape\"", "the builder hands on a docs-only fix as team-shape.md says"),
+    ("judge.md", "the builder's word isn't enough", "the judge reads the diff before carrying passes forward"),
+    ("startup/review-pair-builder.md", "\"A docs-only fix\"", "a docs-only fix goes only to the seat that raised the finding"),
+    ("startup/review-pair-judge.md", "\"A docs-only fix\"", "the judge compares reviews across a docs-only fix"),
+    ("startup/review-pair-reviewer.md", "\"A docs-only fix\"", "only the raising reviewer rechecks a docs-only fix"),
 ]
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)

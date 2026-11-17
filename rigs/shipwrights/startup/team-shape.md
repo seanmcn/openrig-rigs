@@ -165,6 +165,17 @@ and what it recommends, when any of these holds:
 
 The judge checks each slice against this list, and the lead decides the slices it passes; their role files say how.
 
+## A docs-only fix
+
+A fix commit is docs-only when it answers only non-blocking findings (CONCERNING ones and suggestions) and changes
+only documentation: no code, test or configuration, no guidance or skill a seat reads and acts on, and nothing an item
+of the proof contract covers. When unsure, it isn't docs-only.
+
+A docs-only fix goes only to the seat that raised the finding it answers, and to QA as well when it touches something
+QA's proof covered. Its commit row says it is docs-only and names the lines it changed. The other seats' PASSes at the
+commit before it carry forward once the judge has read the diff and agrees. Every other fix commit goes to QA and then
+to both reviewers.
+
 ## Fresh seats and long-lived seats
 
 **Builders, QA seats, code reviewers and planners start fresh for each piece of work.** Once such a seat has closed its

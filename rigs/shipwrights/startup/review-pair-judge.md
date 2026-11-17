@@ -2,7 +2,9 @@
 
 Each slice has a review pair: two code reviewers on different runtimes, which the clerk names when QA first passes a
 commit ("This team's shape" says how). The builder hands each commit to the slice's QA seat first, and to both
-reviewers once QA passes it. They review independently, and each sends you its verdict.
+reviewers once QA passes it. They review independently, and each sends you its verdict. After a docs-only fix
+("A docs-only fix" in "This team's shape"), compare the pair's reviews at the commit before it, and judge the fix as
+your role file says.
 
 - **Compare the two reviews** when both verdicts are in for the same commit. Sort the findings into:
   - those both reviewers raised;

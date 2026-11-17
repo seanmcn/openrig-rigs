@@ -88,7 +88,8 @@ diff: its first pair was released when the judge sent the slice on. The clerk cl
 sessions: hand them that commit, a commit row each. The clerk's row to each reviewer is its hold on the slice and
 names no commit; your commit row is the only row that carries a commit, for the first commit as for every later one.
 Never send a reviewer a slice row of your own. Their findings come straight back to you. Fix them in a new commit, which
-goes to QA first and then back to both reviewers, saying which finding it answers. If a finding is wrong, say why, with
+goes to QA first and then back to both reviewers, saying which finding it answers, unless it is
+docs-only: then hand it on as "A docs-only fix" in "This team's shape" says. If a finding is wrong, say why, with
 what you ran and saw. A disagreement you and the reviewer or QA can't settle goes to the judge, with both sides' case.
 
 After each handoff, block your row on a commit row you handed out that's still open, so its closing wakes you. The
@@ -134,7 +135,8 @@ rig queue update <the rebase row> --state done --closure-reason no-follow-on --n
 ## Tell the judge it's done
 
 Once both reviewers have recorded PASS at one commit, tell the judge, as a queue row: the slice, that commit, what
-changed in a sentence, and anything you couldn't run. The judge reads the rest from the proof, and judges the slice.
+changed in a sentence, and anything you couldn't run. After a docs-only fix, name the fix once the seat that raised
+the finding has passed it, and the commit the pair passed. The judge reads the rest from the proof, and judges the slice.
 After a fix or a rebase on a published slice, tell the judge the new commit the same way.
 
 ## Close your row
