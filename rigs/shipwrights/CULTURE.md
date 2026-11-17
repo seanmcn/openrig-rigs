@@ -122,4 +122,7 @@ its `SKILL.md` and follow it.
 - **Don't restart or stop the OpenRig daemon that runs this team.** If the repository is OpenRig itself, test with
   its own harnesses, which start a private daemon.
 - **Keep credentials, private paths and personal details** out of commits, pull requests, issues and pasted output.
-  If one gets out anyway, tell the person at once, saying which one and where.
+  If one gets out anyway, tell the person at once, saying which one and where. A commit's author name and email are
+  personal details too, so read history without them (`git show --format= <commit>`, `git log --format='%h %s'`).
+  Name a personal detail you meet in the code by file and line, never by its value, in findings, proof, screenshots
+  and queue rows.
