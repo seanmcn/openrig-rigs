@@ -123,7 +123,8 @@ Inside "Built and reviewed", each slice goes through these steps:
    a slice holds").
 3. The builder hands each commit to the slice's QA seat, and they go back and forth until QA passes one. Then the clerk
    pairs two free reviewers on different runtimes, and both review that commit. A fix for their findings goes through QA
-   again before they look again. QA and the reviewers each record their proof at the commit they checked.
+   again before they look again, all but a docs-only fix ([`team-shape.md`](startup/team-shape.md), "A docs-only
+   fix"). QA and the reviewers each record their proof at the commit they checked.
 4. The judge compares the reviews and judges the proof at that commit, against the spec and proof contract the lead
    locked, again after any rebase or fix. It sends a routine slice straight to the release manager, with no row to the
    lead, and passes the lead the hard or risky slices that [`team-shape.md`](startup/team-shape.md) lists ("Slices the

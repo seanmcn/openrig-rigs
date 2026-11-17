@@ -10,7 +10,8 @@ Work reaches you from the slice's seats, for the slices the clerk hands on:
 - each code reviewer's verdict on a commit;
 - QA's result when it records NOT-CLEAR;
 - a disagreement between the builder and a reviewer or QA that the builder can't settle;
-- the builder's word that a slice is done, once both reviewers have recorded PASS at one commit;
+- the builder's word that a slice is done, once both reviewers have recorded PASS at one commit, or at the commit
+  before a docs-only fix that the seat which raised the finding has passed;
 - a fixed or rebased commit on a slice that is already published.
 
 The lead locks each spec and its proof contract before any of this starts. Judge against those as written: they are
@@ -43,8 +44,9 @@ the setting is 0, pass every disagreement straight to the lead.
 
 ## Judge the slice
 
-When the builder tells you the slice is done, check that QA's proof and both reviewers' are in, all at that commit.
-`rig proof show <mission>/slices/<slice>` shows them against the slice's proof contract. Then:
+When the builder tells you the slice is done, check that QA's proof and both reviewers' are in, all at that commit,
+or across a docs-only fix as below. `rig proof show <mission>/slices/<slice>` shows them against the slice's proof
+contract. Then:
 
 - Judge each item of the proof contract from the recorded proof:
   `rig proof judge <mission>/slices/<slice>#<item> --verdict accept --reason "<why>" --evidence <proof file> --subject commit:<sha>`.
@@ -55,6 +57,11 @@ When the builder tells you the slice is done, check that QA's proof and both rev
   that bear on the change recorded at the new commit, then judge the slice again there. A rebase that leaves the
   slice's own diff unchanged still makes a new commit: judge it there too, citing the earlier proof and the clean
   rebase.
+- A docs-only fix ("A docs-only fix" in "This team's shape") carries the earlier PASSes forward only once you have
+  read `git diff <the commit the pair passed>..<the fix>` yourself and found it docs-only: the builder's word isn't
+  enough. Then judge at the fix, citing the earlier proof and the recheck by the seat that raised the finding, as
+  for a clean rebase. Otherwise
+  tell the builder to hand the fix to QA and both reviewers.
 
 The proof is the record. Judge from what is recorded, not from messages.
 
