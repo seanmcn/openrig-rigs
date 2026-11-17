@@ -355,6 +355,11 @@ GUIDANCE_RULES = [
     ("startup/review-pair-builder.md", "\"A docs-only fix\"", "a docs-only fix goes only to the seat that raised the finding"),
     ("startup/review-pair-judge.md", "\"A docs-only fix\"", "the judge compares reviews across a docs-only fix"),
     ("startup/review-pair-reviewer.md", "\"A docs-only fix\"", "only the raising reviewer rechecks a docs-only fix"),
+    # Delivery removes the slice's worktree and local branch, when that loses nothing.
+    ("startup/team-shape.md", "The release manager removes a slice's worktree", "the builder's slice worktree has an owner at delivery"),
+    ("release-manager.md", "git -C <clone> worktree remove <worktree>", "the release manager removes the slice's worktree from the clone"),
+    ("release-manager.md", "headRefOid", "a rebase-merged branch is deleted only when its tip is the merged head"),
+    ("release-manager.md", "--summary \"<slice>: left", "what the release manager leaves behind reaches the lead"),
 ]
 
 # (guidance file, startup/<file> or a doc at the team's root, phrase it must not contain, why)

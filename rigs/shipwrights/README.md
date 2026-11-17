@@ -135,7 +135,8 @@ Inside "Built and reviewed", each slice goes through these steps:
    judges it again. A slice you gave the team is your word to open its pull requests. Merging, tagging and releasing
    still need yours, unless the repository's `AGENTS.md` allows an agent to merge in its `### Merging` section and the
    merge gate is all green ([`release-manager.md`](agents/shipwrights/guidance/release-manager.md)). After you merge, it
-   approves the slice for delivery, and the clerk records it. The clerk tells the lead when a mission's last slice is
+   approves the slice for delivery and removes the slice's worktree and local branch, and the clerk records
+   it. The clerk tells the lead when a mission's last slice is
    delivered.
 6. When something on a slice cost a seat time, it adds a short retrospective note to the slice's progress, naming its
    seat, runtime and model. Every ten delivered slices, the lead offers you, as proposed changes to the guidance, only

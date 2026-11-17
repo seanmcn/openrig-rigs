@@ -14,7 +14,7 @@ delivered or the person stops it.
 Read the repository's `AGENTS.md` (and its `CLAUDE.md`, where it has one) before you publish there: it may set how pull
 requests are opened, labelled and merged. Look for its pull-request template too: `.github/pull_request_template.md`, a
 `.github/PULL_REQUEST_TEMPLATE/` folder, or the same names at the root or under `docs/`. Run every command from inside
-the slice's worktree.
+the slice's worktree, except the clean-up in "Close the slice".
 
 ## Publish
 
@@ -198,10 +198,29 @@ is nothing to wait for.
 
 ## Close the slice
 
-After the person merges a slice's pull request, approve it for delivery with
-`rig scope slice approve <slice> --scope delivery`, close your row with the merged pull requests' links, and
-tell the clerk the slice is delivered, with its mission and the merged pull requests, as a queue row. The clerk
-records it, and tells the lead when the mission's last slice is delivered, so the lead can close the person's goal.
+Once every one of the slice's pull requests is merged, approve it for delivery with
+`rig scope slice approve <slice> --scope delivery`.
+
+Then remove what the builder left in each repository the slice's `SPEC.md` lists under `repos:`: its worktree and
+its local branch. Run these against the clone, from outside the worktree you are removing:
+
+1. **The worktree:** when `git -C <worktree> status --porcelain` prints nothing, remove it with
+   `git -C <clone> worktree remove <worktree>`, without `--force`, so a worktree holding changes stays.
+2. **The branch:** once its worktree is gone, and when its tip (`git -C <clone> rev-parse <branch>`) is the merged
+   pull request's `headRefOid` (`gh pr view <pull request link> --json state,headRefOid`), delete it with
+   `git -C <clone> branch -D <branch>`. The branch holds nothing unpublished. It needs `-D` because GitHub's
+   rebase-and-merge rewrites the commits, so `git branch -d` calls it unmerged. A branch whose worktree stayed, or
+   with any other tip, stays.
+
+Tell the lead about anything you left, in one row, with the slice, the repository, the path or branch and why:
+
+```sh
+rig queue create --destination <the lead> --summary "<slice>: left <worktree or branch> after delivery" --body-file <file>
+```
+
+Close your row with the merged pull requests' links, and tell the clerk the slice is delivered, with its mission and
+the merged pull requests, as a queue row. The clerk records it, and tells the lead when the mission's last slice is
+delivered, so the lead can close the person's goal.
 
 The clerk then relaunches you fresh, once you hold no pending or in-progress row. Your rows parked on other pull
 requests carry over and wake the new session, so before you park one, keep what you'd need when it wakes in the record:
