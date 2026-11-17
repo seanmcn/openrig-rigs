@@ -42,9 +42,9 @@ usage: scripts/check-team.py rigs/<team>
 - `rig bundle check` passes, when `rig` is installed.
 
 A skill the guidance "names" is any lower-case name in backticks in the guidance, the
-culture, the start steps or the settings, other than OpenRig's own skills and the names
-in NOT_SKILLS. Every new name in backticks must be one or the other, so a skill can't
-slip into the guidance without a row in skills.md.
+culture, the start steps or the settings, other than OpenRig's own skills, the team's own
+skills in skills/ and the names in NOT_SKILLS. Every new name in backticks must be one of
+those, so a skill can't slip into the guidance without a row in skills.md or a folder of its own.
 
 The vendored copies are other people's text, unchanged, so none of the checks on the team's
 own text read them. Checking them against their sources needs git and the network.
@@ -853,11 +853,19 @@ def named_in_text(team):
     return skill_names(team, paths + [team.root / "CULTURE.md", team.root / "settings.md"])
 
 
+def own_skills(team):
+    """The skills the team wrote itself: those its agent.yaml declares in skills/ rather than as a copy in vendor/."""
+    return {skill for text in team.texts("agents/*/agent.yaml").values()
+            for skill, (rel, _) in parse_agent(text)[0].items() if rel.startswith("skills/")}
+
+
 def check_guidance_skills(team, rows, listed, problems):
-    """A skill the text names is in skills.md as required; one it doesn't name is optional."""
+    """A skill the text names is in skills.md as required, or is one of the team's own; a listed one it doesn't name
+    is optional."""
     named = named_in_text(team)
+    known = listed | own_skills(team) | OPENRIG_SKILLS | NOT_SKILLS
     for name, where in sorted(named.items()):
-        if name not in listed | OPENRIG_SKILLS | NOT_SKILLS:
+        if name not in known:
             fail(problems, f"{where} names `{name}`: list it in skills.md, or add it to NOT_SKILLS if it isn't a skill")
     for number, row in rows:
         skill = row.get("Skill", "").strip("`")
@@ -1023,8 +1031,7 @@ def check_declared_skills(team, listed, problems):
 
 def check_profile_skills(team, rows, problems):
     """Each profile selects the team's own skills and exactly the skills its role's row in skills.md lists."""
-    own = {skill for text in team.texts("agents/*/agent.yaml").values()
-           for skill, (rel, _) in parse_agent(text)[0].items() if rel.startswith("skills/")}
+    own = own_skills(team)
     roles = {profile_name(role, runtime): role for role in ROLES for runtime in RUNTIMES}
     for profile, block in sorted(team.profiles.items()):
         role = roles.get(profile)
