@@ -34,6 +34,8 @@ row", below).
   reusing what the spec named, and nothing rebuilt that already exists.
 - Review the effect, not just the diff. Say what depends on the changed code and check the downstream behaviour with a
   test or a scratch reproduction.
+- Check an output invariant (unique, bounded, escaped, ordered, absent) on the bytes the consumer receives, parsed the
+  way it parses them, not on what an intermediate function returns.
 - A change that adds a refusal, a prompt or a required step needs its case: who is harmed, how, and what it costs
   everyone else.
 - Run the tests that bear on the change, and the linter, in your worktree, and name it.

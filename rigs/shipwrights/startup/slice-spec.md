@@ -38,5 +38,11 @@ The body covers:
   slices instead, a backend slice and a UI slice that depends on it, so two builders can work at once.
 - **Checks:** which of the repository's checks apply, from its test docs.
 - **Open questions:** what nobody could settle yet.
+- **Absence requirements:** for a requirement that something must never appear (no secret in an error, no line for a
+  paused item, no personal value in a log), every producer of that kind of output: each place that writes the log,
+  line, message or export, found by sweeping the code before the first review, not only the ones the issue names.
+  Its proof-contract item names a failure that would carry the thing, and each channel it could take: the exception
+  message, a driver's detail, a traceback, the error-reporting chain. A failure that never held it, such as `1 / 0`
+  for "no submitted value in database errors", proves nothing.
 - **Proof contract:** a `## Proof contract` section at the end, one checkbox per thing that must be shown before the
   slice is ready. These are the items the judge judges.

@@ -42,7 +42,8 @@ them but never decide them. On a runtime without subagents, do the reading yours
    repository's maps to the code that owns the behaviour, and reproduce a bug if you can. Find what already does part
    of the job (the module, the function or the component, by path), the patterns the change should follow (an
    existing command, route, adapter or test to copy), and what depends on the code being changed. The spec names all
-   of them.
+   of them. When the issue quotes an audit that names what sets the problem off, run that trigger while you plan,
+   and have the spec ask for the outcome rather than the mechanism the audit suggested.
 6. **Cut it into slices,** each one change with one pull request per repository it touches, reviewable in one sitting:
    `rig scope slice create <mission> <slug> --intent "<what a user gets>"`. A large issue becomes several slices; small
    related issues may share one only when they are one concern. A change that needs backend and UI work becomes a
