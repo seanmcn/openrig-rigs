@@ -39,9 +39,17 @@ jobs:
       - name: Check every team
         env:
           TEAM_BLOCKLIST: ${{ secrets.TEAM_BLOCKLIST }}
+        # check-team.py's rules are Shipwrights' own (its roles, seats and guidance). Every other
+        # team gets the checks that hold for any team: its vendored skills match their pins, and
+        # rig bundle check passes.
         run: |
           for team in rigs/*/; do
-            scripts/check-team.py "$team"
+            if [ "$(basename "$team")" = shipwrights ]; then
+              scripts/check-team.py "$team"
+            else
+              scripts/sync-skills.py "$team" --check
+              rig bundle check "$team"
+            fi
           done
       - name: A changed team raises its version
         if: github.event_name == 'pull_request'
