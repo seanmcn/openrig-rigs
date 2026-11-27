@@ -1,0 +1,16 @@
+# The runtimes each seat may use, and the profile it uses there: its role's profile for that
+# runtime, which carries the model and effort the README's "Models" section suggests. A seat
+# moved to the other runtime while its plan is out keeps its role's guidance. The two code
+# reviewers stay one on each runtime in the recommended preset.
+schema: openrig.bundle-configurations/v1
+recommended: recommended
+seats:
+  orch.lead: { runtimes: { claude-code: lead-claude, codex: lead-codex } }
+  orch.clerk: { runtimes: { claude-code: clerk-claude, codex: clerk-codex } }
+  dev.builder: { runtimes: { claude-code: builder-claude, codex: builder-codex } }
+  quality.qa: { runtimes: { codex: qa-codex, claude-code: qa-claude } }
+  review.reviewer-claude: { runtimes: { claude-code: code-reviewer-claude, codex: code-reviewer-codex } }
+  review.reviewer-codex: { runtimes: { codex: code-reviewer-codex, claude-code: code-reviewer-claude } }
+  review.judge: { runtimes: { codex: judge-codex, claude-code: judge-claude } }
+presets:
+  recommended: { orch.lead: claude-code, orch.clerk: claude-code, dev.builder: claude-code, quality.qa: codex, review.reviewer-claude: claude-code, review.reviewer-codex: codex, review.judge: codex }

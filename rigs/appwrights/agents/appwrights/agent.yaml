@@ -1,0 +1,279 @@
+name: appwrights
+version: "0.1.0"
+description: >
+  A seat on the appwrights rig, which works in a clone of a repository, or in a folder that
+  holds several clones. The rig member's profile picks the role and the runtime: each of lead,
+  clerk, builder, qa, code-reviewer and judge has a profile for Claude Code and one for Codex,
+  such as lead-claude and lead-codex.
+
+# Claude Code and Codex seats select OpenRig's own openrig-core plugin from the daemon's
+# OpenRig home, so they get the OpenRig skills that match the person's installed OpenRig.
+#
+# The team ships every other skill its guidance names: its own skills in skills/, which every
+# profile selects, and a copy of each skill in ../../skills.md, unchanged from its source at the
+# commit the table pins, in vendor/. scripts/sync-skills.py writes vendor/, the skill
+# declarations below and each profile's skills from the table, so edit the table, never a copy or
+# those lines.
+#
+# version is the team version, which a tag appwrights-v<version> marks. Keep it quoted.
+
+resources:
+  skills:
+    - { id: using-the-tui-together, path: skills/using-the-tui-together, on_restore: follow_source }
+    - { id: page-proof, path: skills/page-proof, on_restore: follow_source }
+    - { id: ponytail, path: vendor/ponytail, on_restore: follow_source }
+    - { id: ponytail-review, path: vendor/ponytail-review, on_restore: follow_source }
+    - { id: pr, path: vendor/pr, on_restore: follow_source }
+    - { id: retro, path: vendor/retro, on_restore: follow_source }
+    - { id: triage, path: vendor/triage, on_restore: follow_source }
+    - { id: wayfinder, path: vendor/wayfinder, on_restore: follow_source }
+    - { id: to-spec, path: vendor/to-spec, on_restore: follow_source }
+    - { id: implement, path: vendor/implement, on_restore: follow_source }
+    - { id: tdd, path: vendor/tdd, on_restore: follow_source }
+    - { id: diagnosing-bugs, path: vendor/diagnosing-bugs, on_restore: follow_source }
+    - { id: code-review, path: vendor/code-review, on_restore: follow_source }
+    - { id: differential-review, path: vendor/differential-review, on_restore: follow_source }
+    - { id: sharp-edges, path: vendor/sharp-edges, on_restore: follow_source }
+    - { id: supply-chain-risk-auditor, path: vendor/supply-chain-risk-auditor, on_restore: follow_source }
+    - { id: agentic-actions-auditor, path: vendor/agentic-actions-auditor, on_restore: follow_source }
+    - { id: eas-simulator, path: vendor/eas-simulator, on_restore: follow_source }
+    - { id: eas-update, path: vendor/eas-update, on_restore: follow_source }
+    - { id: agent-device, path: vendor/agent-device, on_restore: follow_source }
+    - { id: react-native-testing, path: vendor/react-native-testing, on_restore: follow_source }
+    - { id: react-native-best-practices, path: vendor/react-native-best-practices, on_restore: follow_source }
+    - { id: expo-overview, path: vendor/expo-overview, on_restore: follow_source }
+    - { id: expo-router, path: vendor/expo-router, on_restore: follow_source }
+    - { id: expo-native-ui, path: vendor/expo-native-ui, on_restore: follow_source }
+    - { id: expo-data-fetching, path: vendor/expo-data-fetching, on_restore: follow_source }
+    - { id: expo-design-system, path: vendor/expo-design-system, on_restore: follow_source }
+    - { id: expo-upgrade, path: vendor/expo-upgrade, on_restore: follow_source }
+    - { id: grilling, path: vendor/grilling, on_restore: follow_source }
+    - { id: domain-modeling, path: vendor/domain-modeling, on_restore: follow_source }
+    - { id: research, path: vendor/research, on_restore: follow_source }
+    - { id: writing-for-agents, path: vendor/writing-for-agents, on_restore: follow_source }
+    - { id: codebase-design, path: vendor/codebase-design, on_restore: follow_source }
+    - { id: wizard, path: vendor/wizard, on_restore: follow_source }
+    - { id: prototype, path: vendor/prototype, on_restore: follow_source }
+    - { id: humanizer, path: vendor/humanizer, on_restore: follow_source }
+    - { id: diagram-design, path: vendor/diagram-design, on_restore: follow_source }
+  plugins:
+    # OpenRig's own plugin, as the daemon seeded it into its OpenRig home.
+    - id: openrig-core
+      source:
+        kind: local
+        path: "openrig-home:plugins/openrig-core"
+  runtime_resources:
+    # Turns on activity reporting for Claude Code seats. Codex seats skip it.
+    - id: claude-activity-hooks
+      path: runtime/claude-activity-hooks.json
+      runtime: claude-code
+      type: claude_activity_hooks
+
+# Each role has one profile per runtime, <role>-claude and <role>-codex. The two deliver the same
+# guidance and select the same resources; they differ only in the runtime and in the model and
+# effort the README's "Models" section suggests. configurations.yaml gives each seat its role's
+# profile for the runtime it runs on, and a rig may override any seat's model.
+profiles:
+  lead-claude:
+    summary: "Cuts the person's goal into missions and slices, locks their specs and decides the hard or risky slices the judge passes it."
+    preferences:
+      runtime: claude-code
+      model: claude-opus-5-5
+      effort: high
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, retro, triage, wayfinder, to-spec, expo-overview, grilling, domain-modeling, research, writing-for-agents, humanizer, diagram-design]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/lead.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  lead-codex:
+    summary: "Cuts the person's goal into missions and slices, locks their specs and decides the hard or risky slices the judge passes it."
+    preferences:
+      runtime: codex
+      model: gpt-6-astra
+      effort: high
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, retro, triage, wayfinder, to-spec, expo-overview, grilling, domain-modeling, research, writing-for-agents, humanizer, diagram-design]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/lead.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  clerk-claude:
+    summary: "Does the lead's routine coordination by fixed rules, and watches the lead. Takes the person's goals, assigns each locked slice its seats, relaunches freed seats, keeps the roster, checks the slice time limit, records deliveries and relaunches a lead that stays down."
+    preferences:
+      runtime: claude-code
+      model: claude-haiku-5-5
+      effort: low
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/clerk.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  clerk-codex:
+    summary: "Does the lead's routine coordination by fixed rules, and watches the lead. Takes the person's goals, assigns each locked slice its seats, relaunches freed seats, keeps the roster, checks the slice time limit, records deliveries and relaunches a lead that stays down."
+    preferences:
+      runtime: codex
+      model: gpt-6-luna
+      effort: low
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/clerk.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  builder-claude:
+    summary: "Builds each slice end to end in its own worktree, across the API, the database, the policy and the Expo app, and shows that it works."
+    preferences:
+      runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, react-native-best-practices, expo-overview, expo-router, expo-native-ui, expo-data-fetching, expo-design-system, expo-upgrade, domain-modeling, research, writing-for-agents, codebase-design, wizard, prototype, humanizer, diagram-design]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/builder.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  builder-codex:
+    summary: "Builds each slice end to end in its own worktree, across the API, the database, the policy and the Expo app, and shows that it works."
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, implement, tdd, diagnosing-bugs, react-native-best-practices, expo-overview, expo-router, expo-native-ui, expo-data-fetching, expo-design-system, expo-upgrade, domain-modeling, research, writing-for-agents, codebase-design, wizard, prototype, humanizer, diagram-design]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/builder.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  qa-claude:
+    summary: "Proves each commit's user-visible effect before review: the tests, the web export at phone width, the API and database tests, and iOS on Expo's simulators when the slice's Platforms line asks for it."
+    preferences:
+      runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, diagnosing-bugs, eas-simulator, eas-update, agent-device, react-native-testing]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/qa.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  qa-codex:
+    summary: "Proves each commit's user-visible effect before review: the tests, the web export at phone width, the API and database tests, and iOS on Expo's simulators when the slice's Platforms line asks for it."
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, diagnosing-bugs, eas-simulator, eas-update, agent-device, react-native-testing]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/qa.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  code-reviewer-claude:
+    summary: "Reviews a slice's commits, one of a pair on different runtimes, and sends its verdict to the judge."
+    preferences:
+      runtime: claude-code
+      model: claude-opus-5-5
+      effort: high
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, code-review, differential-review, sharp-edges, supply-chain-risk-auditor, agentic-actions-auditor, react-native-best-practices, writing-for-agents]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/code-reviewer.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  code-reviewer-codex:
+    summary: "Reviews a slice's commits, one of a pair on different runtimes, and sends its verdict to the judge."
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: high
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, ponytail-review, code-review, differential-review, sharp-edges, supply-chain-risk-auditor, agentic-actions-auditor, react-native-best-practices, writing-for-agents]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/code-reviewer.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  judge-claude:
+    summary: "Judges each slice's proof against its locked spec, passes the hard or risky ones to the lead, publishes the rest and keeps each pull request mergeable."
+    preferences:
+      runtime: claude-code
+      model: claude-sonnet-5-5
+      effort: medium
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, pr, humanizer]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/judge.md
+          delivery_hint: send_text
+          required: true
+      actions: []
+
+  judge-codex:
+    summary: "Judges each slice's proof against its locked spec, passes the hard or risky ones to the lead, publishes the rest and keeps each pull request mergeable."
+    preferences:
+      runtime: codex
+      model: gpt-6.1-sol
+      effort: medium
+    uses:
+      skills: [using-the-tui-together, page-proof, ponytail, pr, humanizer]
+      plugins: [openrig-core]
+      runtime_resources: [claude-activity-hooks]
+    startup:
+      files:
+        - path: guidance/judge.md
+          delivery_hint: send_text
+          required: true
+      actions: []
