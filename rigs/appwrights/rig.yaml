@@ -1,0 +1,175 @@
+version: "0.2"
+name: appwrights
+summary: >
+  An app team built on OpenRig's Workshop, for one person's React Native and Expo app: a lead
+  who cuts your goal into missions and slices and decides the hard calls, a clerk that takes
+  your goals, assigns seats and watches the lead, one full-stack builder, a QA seat that proves
+  each change on the web and, when a slice says so, on iOS, two code reviewers on different
+  runtimes who review each slice as a pair, and a judge that judges each slice's proof, passes
+  the hard or risky ones to the lead and publishes the rest. One stream of work, with up to two
+  slices in flight. Launch it with --cwd in a clone of your repository, or in a folder that
+  holds several clones.
+
+culture_file: CULTURE.md
+
+docs:
+  - path: README.md
+
+# Start steps shared by every seat; each seat's role file comes from its profile.
+startup:
+  files:
+    - path: startup/context.md
+      delivery_hint: send_text
+      required: true
+    # The team's roles and seats, and how to find them.
+    - path: startup/team-shape.md
+      delivery_hint: send_text
+      required: true
+    # The team settings. Replace this file to change a setting; every seat reads it at
+    # start and at refocus.
+    - path: settings.md
+      delivery_hint: send_text
+      required: true
+  # Each seat proves it received its start steps and can reach OpenRig.
+  actions:
+    - type: startup_proof
+      value: authenticated
+      idempotent: true
+
+# OpenRig writes its instruction blocks into each seat's working directory. Claude Code
+# seats get them in CLAUDE.local.md, so they stay out of a project's own CLAUDE.md. Codex
+# seats always use AGENTS.md.
+managed_blocks:
+  claude-code: CLAUDE.local.md
+
+# Every seat launches with permission prompts off. The README's "Permissions" section says
+# what that means.
+permission_policy: builtin:yolo
+non_interruptive: true
+
+# Pods group seats by role. This team doesn't grow: each role has one seat, and the code
+# reviewers one on each runtime.
+pods:
+  - id: orch
+    label: Orchestration
+    summary: Cuts your goal into missions and slices and decides the hard calls. The clerk takes your goals, assigns seats, relaunches them and watches the lead.
+    members:
+      - id: lead
+        agent_ref: "local:agents/appwrights"
+        profile: lead-claude
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/lead-first-move.md
+              delivery_hint: send_text
+              required: true
+            - path: startup/review-pair-lead.md
+              delivery_hint: send_text
+              required: true
+            - path: startup/slice-spec.md
+              delivery_hint: send_text
+              required: true
+      # Does the lead's routine coordination by fixed rules, and is the lead's watchdog.
+      - id: clerk
+        agent_ref: "local:agents/appwrights"
+        profile: clerk-claude
+        runtime: claude-code
+        cwd: "."
+    edges:
+      - kind: can_observe
+        from: clerk
+        to: lead
+      - kind: delegates_to
+        from: lead
+        to: clerk
+
+  - id: dev
+    label: Development
+    summary: Builds each slice in its own worktree, across the API, the database, the policy and the app.
+    members:
+      - id: builder
+        agent_ref: "local:agents/appwrights"
+        profile: builder-claude
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-builder.md
+              delivery_hint: send_text
+              required: true
+    edges: []
+
+  - id: quality
+    label: Quality
+    summary: Proves each commit's user-visible effect, on the web and on iOS when the slice says so, before the reviewers see it.
+    members:
+      - id: qa
+        agent_ref: "local:agents/appwrights"
+        profile: qa-codex
+        runtime: codex
+        cwd: "."
+    edges: []
+
+  # The two reviewers review the same commit independently; the judge compares their findings,
+  # judges the slice and publishes it.
+  - id: review
+    label: Review
+    summary: Two reviewers on different runtimes check each slice's commit independently; the judge compares their findings, judges each slice's proof and publishes it.
+    members:
+      - id: reviewer-claude
+        agent_ref: "local:agents/appwrights"
+        profile: code-reviewer-claude
+        runtime: claude-code
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-reviewer.md
+              delivery_hint: send_text
+              required: true
+      - id: reviewer-codex
+        agent_ref: "local:agents/appwrights"
+        profile: code-reviewer-codex
+        runtime: codex
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-reviewer.md
+              delivery_hint: send_text
+              required: true
+      # Judges each slice's proof against its locked spec, passes the hard or risky ones to the
+      # lead, and publishes the rest.
+      - id: judge
+        agent_ref: "local:agents/appwrights"
+        profile: judge-codex
+        runtime: codex
+        cwd: "."
+        startup:
+          files:
+            - path: startup/review-pair-judge.md
+              delivery_hint: send_text
+              required: true
+            - path: startup/slice-spec.md
+              delivery_hint: send_text
+              required: true
+    edges: []
+
+# OpenRig makes the source of a seat's delegates_to edge its orchestrator: the seat its stuck or
+# unclaimed queue rows escalate to. So the lead is the only delegates_to source, and every seat
+# reports back to it.
+edges:
+  - kind: delegates_to
+    from: orch.lead
+    to: dev.builder
+  - kind: delegates_to
+    from: orch.lead
+    to: quality.qa
+  - kind: delegates_to
+    from: orch.lead
+    to: review.reviewer-claude
+  - kind: delegates_to
+    from: orch.lead
+    to: review.reviewer-codex
+  - kind: delegates_to
+    from: orch.lead
+    to: review.judge

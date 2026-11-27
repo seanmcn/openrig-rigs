@@ -6,6 +6,7 @@ words these docs use, such as team, rig, seat and slice, are in the [glossary](G
 | Team | What it is |
 |---|---|
 | [`rigs/shipwrights`](rigs/shipwrights) | An engineering team built on OpenRig's Workshop. Its twelve seats (a lead, its peer, a clerk, a planner, a backend and a frontend builder, a QA seat for each builder, a pair of reviewers, a judge and a release manager) take a goal to judged pull requests that are ready to merge, and a rig grows the roles it needs. |
+| [`rigs/appwrights`](rigs/appwrights) | Shipwrights cut down for one person's React Native and Expo app. Its seven seats (a lead that also plans, a clerk that also watches the lead, one full-stack builder, a QA seat that proves on the web and on iOS, a pair of reviewers on different runtimes and a judge that also publishes) work one stream with up to two slices in flight. |
 
 Each team's README says how to install it.
 
